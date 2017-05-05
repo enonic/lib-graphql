@@ -5,19 +5,19 @@ var pageInfoType = graphQlLib.createObjectType({
     fields: {
         startCursor: {
             type: graphQlLib.nonNull(graphQlLib.GraphQLInt), //TODO Replace by base64
-            data: function (env) {
+            resolve: function (env) {
                 return toInt(env.source.startCursor);
             }
         },
         endCursor: {
             type: graphQlLib.nonNull(graphQlLib.GraphQLInt), //TODO Replace by base64
-            data: function (env) {
+            resolve: function (env) {
                 return toInt(env.source.endCursor);
             }
         },
         hasNext: {
             type: graphQlLib.nonNull(graphQlLib.GraphQLBoolean),
-            data: function (env) {
+            resolve: function (env) {
                 return env.source.hasNext;
             }
         }
@@ -30,13 +30,13 @@ function createEdgeType(name, type) {
         fields: {
             node: {
                 type: graphQlLib.nonNull(type),
-                data: function (env) {
+                resolve: function (env) {
                     return env.source.node;
                 }
             },
             cursor: {
                 type: graphQlLib.nonNull(graphQlLib.GraphQLInt), //TODO Replace by base64
-                data: function (env) {
+                resolve: function (env) {
                     return toInt(env.source.cursor);
                 }
             }
@@ -50,13 +50,13 @@ exports.createConnectionType = function (name, type) {
         fields: {
             totalCount: {
                 type: graphQlLib.nonNull(graphQlLib.GraphQLInt),
-                data: function (env) {
+                resolve: function (env) {
                     return env.source.total;
                 }
             },
             edges: {
                 type: graphQlLib.list(createEdgeType(name, type)),
-                data: function (env) {
+                resolve: function (env) {
                     var hits = env.source.hits;
                     var edges = [];
                     for (var i = 0; i < hits.length; i++) {
@@ -70,7 +70,7 @@ exports.createConnectionType = function (name, type) {
             },
             pageInfo: {
                 type: pageInfoType,
-                data: function (env) {
+                resolve: function (env) {
                     return {
                         startCursor: env.source.start,
                         endCursor: env.source.start + (env.source.count == 0 ? 0 : (env.source.count - 1)),
