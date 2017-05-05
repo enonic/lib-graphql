@@ -2,9 +2,17 @@ var graphQlLib = require('/lib/graphql');
 var assert = require('/lib/xp/assert');
 
 exports.test = function () {
-    var schema = createSchema();
-    var completeQuery = 'query($id:ID){getObject(id:$id){anId, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
-    var completeResult = graphQlLib.execute(schema, completeQuery, {id: '0000-0000-0000-0001'});
+    var database = {'0000-0000-0000-0001': {id: '0000-0000-0000-0001'}};
+    var schema = createSchema(database);
+    testCompleteQuery(schema);
+    testShortQuery(schema);
+    testMissingObjectQuery(schema);
+    testInvalidSyntaxQuery(schema);
+};
+
+function testCompleteQuery(schema) {
+    var query = 'query($id:ID){getObject(id:$id){anId, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
+    var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0001'});
     assert.assertJsonEquals({
         data: {
             getObject: {
@@ -23,71 +31,57 @@ exports.test = function () {
                 }
             }
         }
-    }, completeResult);
+    }, result);
+}
 
-
-    var shortQuery = 'query{getObject(id:"0000-0000-0000-0001"){anId}}';
-    var shortResult = graphQlLib.execute(schema, shortQuery, {id: '0000-0000-0000-0001'});
+function testShortQuery(schema) {
+    var query = '{getObject(id:"0000-0000-0000-0001"){anId}}';
+    var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         data: {
             getObject: {
                 anId: '0000-0000-0000-0001'
             }
         }
-    }, shortResult);
+    }, result);
+}
 
-
-    var nullQuery = 'query{getObject(id:"0000-0000-0000-0002"){anId}}';
-    var nullResult = graphQlLib.execute(schema, nullQuery);
+function testMissingObjectQuery(schema) {
+    var query = '{getObject(id:"0000-0000-0000-0002"){anId}}';
+    var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         data: {}
-    }, nullResult);
+    }, result);
+}
 
-
-    var customExceptionQuery = 'query{getObject{anId}}';
-    var customExceptionResult = graphQlLib.execute(schema, customExceptionQuery);
-    assert.assertJsonEquals({
-        "data": {},
-        "errors": [
-            {
-                "errorType": "DataFetchingException",
-                "message": "Exception while fetching data: com.enonic.xp.resource.ResourceProblemException: [id] must be specified",
-                "exception": {
-                    "name": "com.enonic.xp.resource.ResourceProblemException",
-                    "message": "[id] must be specified"
-                }
-            }
-        ]
-    }, customExceptionResult);
-
-
-    var syntaxExceptionQuery = 'query{getObjects{anId}}';
-    var syntaxExceptionResult = graphQlLib.execute(schema, syntaxExceptionQuery);
+function testInvalidSyntaxQuery(schema) {
+    var query = '{getObject(id:"0000-0000-0000-0001"){anId, aMissingField}}';
+    var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         "errors": [
             {
                 "errorType": "ValidationError",
-                "message": "Validation error of type FieldUndefined: Field getObjects is undefined",
+                "message": "Validation error of type FieldUndefined: Field aMissingField is undefined",
                 "locations": [
                     {
                         "line": 1,
-                        "column": 7
+                        "column": 44
                     }
                 ],
                 "validationErrorType": "FieldUndefined"
             }
         ]
-    }, syntaxExceptionResult);
-};
+    }, result);
+}
 
-function createSchema() {
+function createSchema(database) {
     return graphQlLib.createSchema({
-        query: createRootQueryType()//,
+        query: createRootQueryType(database)//,
         //mutation: createRootMutationType()
     });
 }
 
-function createRootQueryType() {
+function createRootQueryType(database) {
     return graphQlLib.createObjectType({
         name: 'Query',
         fields: {
@@ -98,10 +92,7 @@ function createRootQueryType() {
                 },
                 data: function (env) {
                     var id = env.args.id;
-                    if (id) {
-                        return id === '0000-0000-0000-0001' ? {id: '0000-0000-0000-0001'} : null;
-                    }
-                    throw "[id] must be specified";
+                    return database[id];
                 }
             }
         }
