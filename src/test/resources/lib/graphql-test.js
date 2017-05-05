@@ -8,6 +8,7 @@ exports.test = function () {
     testShortQuery(schema);
     testMissingObjectQuery(schema);
     testInvalidSyntaxQuery(schema);
+    testMutation(schema);
 };
 
 function testCompleteQuery(schema) {
@@ -74,10 +75,34 @@ function testInvalidSyntaxQuery(schema) {
     }, result);
 }
 
+function testMutation(schema) {
+    var query = 'mutation($id:ID){addObject(id:$id){anId, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
+    var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0002'});
+    assert.assertJsonEquals({
+        data: {
+            addObject: {
+                anId: '0000-0000-0000-0002',
+                anInteger: 1,
+                aFloat: 1.0,
+                aString: 'content',
+                aBoolean: false,
+                aList: [
+                    "first",
+                    "second",
+                    "third"
+                ],
+                aRelatedObject: {
+                    id: "0000-0000-0000-0002"
+                }
+            }
+        }
+    }, result);
+}
+
 function createSchema(database) {
     return graphQlLib.createSchema({
-        query: createRootQueryType(database)//,
-        //mutation: createRootMutationType()
+        query: createRootQueryType(database),
+        mutation: createRootMutationType(database)
     });
 }
 
@@ -92,6 +117,26 @@ function createRootQueryType(database) {
                 },
                 data: function (env) {
                     var id = env.args.id;
+                    return database[id];
+                }
+            }
+        }
+    });
+}
+
+function createRootMutationType(database) {
+    return graphQlLib.createObjectType({
+        name: 'Mutation',
+        fields: {
+            addObject: {
+                type: createObjectType(),
+                args: {
+                    id: graphQlLib.GraphQLID
+                },
+                data: function (env) {
+                    log.info('Test:' + JSON.stringify(env));
+                    var id = env.args.id;
+                    database[id] = {id: id};
                     return database[id];
                 }
             }
