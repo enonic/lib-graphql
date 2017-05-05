@@ -185,18 +185,18 @@ public class GraphQlBean
 
     private void setFieldData( final ScriptValue scriptFieldValue, final GraphQLFieldDefinition.Builder graphQlField )
     {
-        final ScriptValue data = scriptFieldValue.getMember( "data" );
-        if ( data.isFunction() )
+        final ScriptValue resolve = scriptFieldValue.getMember( "resolve" );
+        if ( resolve.isFunction() )
         {
             graphQlField.dataFetcher( ( env ) -> {
                 final DataFetchingEnvironmentMapper environmentMapper = new DataFetchingEnvironmentMapper( env );
-                final ScriptValue result = data.call( environmentMapper );
+                final ScriptValue result = resolve.call( environmentMapper );
                 return toGraphQlValue( result );
             } );
         }
         else
         {
-            graphQlField.staticValue( toGraphQlValue( data ) );
+            graphQlField.staticValue( toGraphQlValue( resolve ) );
         }
     }
 

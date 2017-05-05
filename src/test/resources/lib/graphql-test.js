@@ -115,7 +115,7 @@ function createRootQueryType(database) {
                 args: {
                     id: graphQlLib.GraphQLID
                 },
-                data: function (env) {
+                resolve: function (env) {
                     var id = env.args.id;
                     return database[id];
                 }
@@ -133,7 +133,7 @@ function createRootMutationType(database) {
                 args: {
                     id: graphQlLib.GraphQLID
                 },
-                data: function (env) {
+                resolve: function (env) {
                     log.info('Test:' + JSON.stringify(env));
                     var id = env.args.id;
                     database[id] = {id: id};
@@ -152,43 +152,43 @@ function createObjectType() {
         fields: {
             anId: {
                 type: graphQlLib.nonNull(graphQlLib.GraphQLID),
-                data: function (env) {
+                resolve: function (env) {
                     return env.source.id;
                 }
             },
             anInteger: {
                 type: graphQlLib.GraphQLInt,
-                data: function (env) {
+                resolve: function (env) {
                     return 1;
                 }
             },
             aFloat: {
                 type: graphQlLib.GraphQLFloat,
-                data: function (env) {
+                resolve: function (env) {
                     return 1.0;
                 }
             },
             aString: {
                 type: graphQlLib.GraphQLString,
-                data: function (env) {
+                resolve: function (env) {
                     return 'content';
                 }
             },
             aBoolean: {
                 type: graphQlLib.GraphQLBoolean,
-                data: function (env) {
+                resolve: function (env) {
                     return false;
                 }
             },
             aList: {
                 type: graphQlLib.list(graphQlLib.GraphQLString),
-                data: function (env) {
+                resolve: function (env) {
                     return ['first', 'second', 'third'];
                 }
             },
             aRelatedObject: {
                 type: createSubObjectType(),
-                data: function (env) {
+                resolve: function (env) {
                     return {
                         id: '0000-0000-0000-0002'
                     };
@@ -204,7 +204,7 @@ function createSubObjectType() {
         fields: {
             id: {
                 type: graphQlLib.nonNull(graphQlLib.GraphQLID),
-                data: function (env) {
+                resolve: function (env) {
                     return env.source.id;
                 }
             }
