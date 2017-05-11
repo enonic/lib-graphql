@@ -48,8 +48,8 @@ dependencies {
 Example
 -------
 
-You can then use this inside your javascript controller.
-Here's an example of using it inside a controller:
+You can then use this library inside your javascript controller.
+Here's an example using it inside a controller:
 
 ```js
 // Includes the library
