@@ -48,7 +48,7 @@ dependencies {
 Example
 -------
 
-You can then use this inside your javascript controller or other parts of your app.
+You can then use this inside your javascript controller.
 Here's an example of using it inside a controller:
 
 ```js
