@@ -56,8 +56,8 @@ Here's an example of using it inside a controller:
 var graphQlLib = require('/lib/graphql');
 
 // For the simplicity of the example we will use a JS object as database.
-// In a real life case you will rather retrieve nodes/contents/data using one of the following libraries: '/lib/xp/content', 
-// '/lib/xp/node' or '/lib/sql'.
+// In a real life case you will rather retrieve nodes/contents/data using one of the following libraries: 
+// '/lib/xp/content', '/lib/xp/node' or '/lib/sql'.
 var database = {
     'James': {
         name: 'James',
@@ -77,8 +77,8 @@ var database = {
 };
 
 // First defines the object types. 
-// In this case: an object type 'Person' with a mandatory String field 'name', a mandatory Integer field 'age' and an array of Person 
-// field 'children'.
+// In this case: an object type 'Person' with a mandatory String field 'name', a mandatory Integer field 'age' 
+// and an array of Person field 'children'.
 var personObjectType = graphQlLib.createObjectType({
     name: 'Person',
     description: 'A person type.',
@@ -86,16 +86,16 @@ var personObjectType = graphQlLib.createObjectType({
         name: {
             type: graphQlLib.nonNull(graphQlLib.GraphQLString),
             resolve: function (env) {
-                //The source on which is executed this function is one of the 3 person database objects defined above. 
-                // We will simply return the field 'name' of this object here.
+                //The source on which is executed this function is one of the 3 person database objects
+                // defined above. We will simply return the field 'name' of this object here.
                 return env.source.name;
             }
         },
         age: {
             type: graphQlLib.nonNull(graphQlLib.GraphQLInt),
             resolve: function (env) {
-                //The source on which is executed this function is one of the 3 person database objects defined above. 
-                // We will simply return the field 'age' of this object here.
+                //The source on which is executed this function is one of the 3 person database objects 
+                // defined above. We will simply return the field 'age' of this object here.
                 return env.source.age;
             }
         },
@@ -104,8 +104,8 @@ var personObjectType = graphQlLib.createObjectType({
             // If it had been defined it would have been: graphQlLib.list(personObjectType)
             type: graphQlLib.list(graphQlLib.reference('Person')),
             resolve: function (env) {
-                //The source on which is executed this function is one of the 3 person database objects defined above. 
-                // We will use the field 'children' to retrieve the corresponding database objects.
+                //The source on which is executed this function is one of the 3 person database objects 
+                // defined above. We will use the field 'children' to retrieve the corresponding database objects.
                 return env.source.children.map(function (childName) {
                     return database[childName];
                 });
@@ -118,7 +118,7 @@ var personObjectType = graphQlLib.createObjectType({
 var rootQueryType = graphQlLib.createObjectType({
     name: 'Query',
     fields: {
-        //We have here a unique request getPersonByName taking a mandatory String 'name' as parameter and returning a person 
+        // Uunique request getPersonByName taking a mandatory String 'name' as parameter and returning a person 
         getPersonByName: {
             type: personObjectType,
             args: {
@@ -137,7 +137,7 @@ var schema = graphQlLib.createSchema({
     query: rootQueryType
 });
 
-// Here is an example of a POST request handler that will execute the query received as parameter against the schema defined above.
+// POST request handler that will execute the query received as parameter against the schema defined above.
 exports.post = function (req) {
     var body = JSON.parse(req.body);
     var result = graphQlLib.execute(schema, body.query, body.variables);
@@ -149,8 +149,8 @@ exports.post = function (req) {
 
 
 // Example of unit test for this service:
-// We send the following query: query($name:String!){getPersonByName(name:$name){name, age, children{name, age}}}
-// With the following variables: {name: 'James'}
+// Query: query($name:String!){getPersonByName(name:$name){name, age, children{name, age}}}
+// Variables: {name: 'James'}
 // The result is then:
 // {
 //   data: {
