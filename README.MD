@@ -49,7 +49,7 @@ Example
 -------
 
 You can then use this library inside your javascript controller.
-Here's an example using it inside a controller:
+Below is an example of an Enonic XP service using the library.
 
 ```js
 // Includes the library
