@@ -22,8 +22,8 @@ var database = {
     }
 };
 
-// First defines the object types. 
-// In this case: an object type 'Person' with a mandatory String field 'name', a mandatory Integer field 'age' 
+// Defines the object types. 
+// Firstly, an object type 'Person' with a mandatory String field 'name', a mandatory Integer field 'age' 
 // and an array of Person field 'children'.
 var personObjectType = graphQlLib.createObjectType({
     name: 'Person',
@@ -32,7 +32,7 @@ var personObjectType = graphQlLib.createObjectType({
         name: {
             type: graphQlLib.nonNull(graphQlLib.GraphQLString),
             resolve: function (env) {
-                //The source on which is executed this function is one of the 3 person database objects
+                // The source on which is executed this function is one of the 3 person database objects
                 // defined above. We will simply return the field 'name' of this object here.
                 return env.source.name;
             }
@@ -40,7 +40,7 @@ var personObjectType = graphQlLib.createObjectType({
         age: {
             type: graphQlLib.nonNull(graphQlLib.GraphQLInt),
             resolve: function (env) {
-                //The source on which is executed this function is one of the 3 person database objects 
+                // The source on which is executed this function is one of the 3 person database objects 
                 // defined above. We will simply return the field 'age' of this object here.
                 return env.source.age;
             }
@@ -50,8 +50,8 @@ var personObjectType = graphQlLib.createObjectType({
             // If it had been defined it would have been: graphQlLib.list(personObjectType)
             type: graphQlLib.list(graphQlLib.reference('Person')),
             resolve: function (env) {
-                //The source on which is executed this function is one of the 3 person database objects 
-                // defined above. We will use the field 'children' to retrieve the corresponding database objects.
+                // The source on which is executed this function is one of the 3 person database objects. 
+                // We will use the field 'children' to retrieve the corresponding database objects.
                 return env.source.children.map(function (childName) {
                     return database[childName];
                 });
@@ -64,7 +64,7 @@ var personObjectType = graphQlLib.createObjectType({
 var rootQueryType = graphQlLib.createObjectType({
     name: 'Query',
     fields: {
-        // Uunique request getPersonByName taking a mandatory String 'name' as parameter and returning a person 
+        // Unique request getPersonByName taking a mandatory String 'name' as parameter and returning a person 
         getPersonByName: {
             type: personObjectType,
             args: {
