@@ -33,7 +33,7 @@ After this, add the following dependency (where ``<version>`` is the actual vers
 
 ```gradle
 dependencies {
-    include 'com.enonic.lib:lib-sql:<version>'
+    include 'com.enonic.lib:lib-graphql:<version>'
 }
 ```
 
