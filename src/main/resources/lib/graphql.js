@@ -19,6 +19,10 @@ exports.createSchema = function (params) {
 exports.createObjectType = function (params) {
     var name = required(params, 'name');
     var fields = required(params, 'fields');
+    forEachAttribute(fields, function(field){
+        required(field, 'type');
+        required(field, 'resolve');
+    });
     var interfaces = optional(params, 'interfaces');
     var description = optional(params, 'description');
     return graphQlBean.createObjectType(name, __.toScriptValue(fields), __.toScriptValue(interfaces), description);
@@ -27,6 +31,10 @@ exports.createObjectType = function (params) {
 exports.createInputObjectType = function (params) {
     var name = required(params, 'name');
     var fields = required(params, 'fields');
+    forEachAttribute(fields, function(field){
+        required(field, 'type');
+        required(field, 'resolve');
+    });
     var description = optional(params, 'description');
     return graphQlBean.createInputObjectType(name, __.toScriptValue(fields), description);
 };
@@ -34,6 +42,9 @@ exports.createInputObjectType = function (params) {
 exports.createInterfaceType = function (params) {
     var name = required(params, 'name');
     var fields = required(params, 'fields');
+    forEachAttribute(fields, function(field){
+        required(field, 'type');
+    });
     var description = optional(params, 'description');
     return graphQlBean.createInterfaceType(name, __.toScriptValue(fields), description);
 };
@@ -65,10 +76,12 @@ exports.execute = function (schema, query, variables) {
     return __.toNativeObject(graphQlBean.execute(schema, query, __.toScriptValue(variables)));
 };
 
+//Util functions
 function required(params, name) {
     var value = params[name];
     if (value === undefined) {
-        throw "Parameter '" + name + "' is required";
+        log.info('error:' + JSON.stringify(params) );
+        throw "Value '" + name + "' is required";
     }
     return value;
 }
@@ -81,3 +94,10 @@ function optional(params, name) {
     return value;
 }
 
+function forEachAttribute(object, callback) {
+    if (object) {
+        for (var fieldName in object) {
+            callback(object[fieldName]);
+        }
+    }
+}
