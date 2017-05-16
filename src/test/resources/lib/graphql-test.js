@@ -12,7 +12,7 @@ exports.test = function () {
 };
 
 function testCompleteQuery(schema) {
-    var query = 'query($id:ID){getObject(id:$id){anId, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
+    var query = 'query($id:ID){getObject(id:$id){anId, anInteger, aFloat, aString, aBoolean, aList,anEnum, aRelatedObject{id}}}';
     var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0001'});
     assert.assertJsonEquals({
         data: {
@@ -27,6 +27,7 @@ function testCompleteQuery(schema) {
                     "second",
                     "third"
                 ],
+                anEnum: "secondValue",
                 aRelatedObject: {
                     id: "0000-0000-0000-0002"
                 }
@@ -76,8 +77,8 @@ function testInvalidSyntaxQuery(schema) {
 }
 
 function testMutation(schema) {
-    var query = 'mutation($id:ID){addObject(id:$id){anId, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
-    var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0002'});
+    var query = 'mutation($id:ID!, $object: InputObjectType!){addObject(id:$id,object:$object){anId, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
+    var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0002', object:{id: '0000-0000-0000-0002'}});
     assert.assertJsonEquals({
         data: {
             addObject: {
@@ -131,12 +132,12 @@ function createRootMutationType(database) {
             addObject: {
                 type: createObjectType(),
                 args: {
-                    id: graphQlLib.GraphQLID
+                    id: graphQlLib.nonNull(graphQlLib.GraphQLID),
+                    object: graphQlLib.nonNull(createInputObjectType())
                 },
                 resolve: function (env) {
-                    log.info('Test:' + JSON.stringify(env));
                     var id = env.args.id;
-                    database[id] = {id: id};
+                    database[id] = env.args.object;
                     return database[id];
                 }
             }
@@ -186,6 +187,12 @@ function createObjectType() {
                     return ['first', 'second', 'third'];
                 }
             },
+            anEnum: {
+                type: createEnumType(),
+                resolve: function (env) {
+                    return 'secondValue';
+                } 
+            },
             aRelatedObject: {
                 type: createSubObjectType(),
                 resolve: function (env) {
@@ -194,6 +201,16 @@ function createObjectType() {
                     };
                 }
             }
+        }
+    });
+}
+
+function createEnumType() {
+    return graphQlLib.createEnumType({
+        name: 'EnumType',
+        values: {
+            firstValue: 'firstValue',
+            secondValue: 'secondValue'
         }
     });
 }
@@ -219,6 +236,21 @@ function createInterfaceType() {
         fields: {
             anId: {
                 type: graphQlLib.nonNull(graphQlLib.GraphQLID)
+            }
+        }
+    });
+}
+
+function createInputObjectType() {
+    return graphQlLib.createInputObjectType({
+        name: 'InputObjectType',
+        description: 'An input object type.',
+        fields: {
+            id: {
+                type: graphQlLib.nonNull(graphQlLib.GraphQLID),
+                resolve: function (env) {
+                    return env.source.id;
+                }
             }
         }
     });
