@@ -8,6 +8,7 @@ exports.test = function () {
     testShortQuery(schema);
     testMissingObjectQuery(schema);
     testInvalidSyntaxQuery(schema);
+    testFailingQuery(schema);
     testMutation(schema);
 };
 
@@ -76,9 +77,31 @@ function testInvalidSyntaxQuery(schema) {
     }, result);
 }
 
+function testFailingQuery(schema) {
+    var query = '{getObject(id:"0000-0000-0000-0001"){anId, aFailingField}}';
+    var result = graphQlLib.execute(schema, query);
+    assert.assertJsonEquals({
+        "data": {
+            "getObject": {
+                "anId": "0000-0000-0000-0001"
+            }
+        },
+        "errors": [
+            {
+                "errorType": "DataFetchingException",
+                "message": "Exception while fetching data: com.enonic.xp.resource.ResourceProblemException: Error while retrieving aFailingField",
+                "exception": {
+                    "name": "com.enonic.xp.resource.ResourceProblemException",
+                    "message": "Error while retrieving aFailingField"
+                }
+            }
+        ]
+    }, result);
+}
+
 function testMutation(schema) {
     var query = 'mutation($id:ID!, $object: InputObjectType!){addObject(id:$id,object:$object){anId, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
-    var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0002', object:{id: '0000-0000-0000-0002'}});
+    var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0002', object: {id: '0000-0000-0000-0002'}});
     assert.assertJsonEquals({
         data: {
             addObject: {
@@ -191,7 +214,7 @@ function createObjectType() {
                 type: createEnumType(),
                 resolve: function (env) {
                     return 'secondValue';
-                } 
+                }
             },
             aRelatedObject: {
                 type: createSubObjectType(),
@@ -199,6 +222,12 @@ function createObjectType() {
                     return {
                         id: '0000-0000-0000-0002'
                     };
+                }
+            },
+            aFailingField: {
+                type: graphQlLib.GraphQLString,
+                resolve: function (env) {
+                    throw 'Error while retrieving aFailingField';
                 }
             }
         }
