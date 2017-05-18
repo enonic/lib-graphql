@@ -38,15 +38,6 @@ dependencies {
 }
 ```
 
-The last step is to include the graphql-java this library uses in your app. This is done by adding it as an ``include`` dependency. Here's
-an example on how to include the graphql-java:
-
-```gradle
-dependencies {
-    include 'com.graphql-java:graphql-java:2.3.0'
-}
-```
-
 Example
 -------
 
