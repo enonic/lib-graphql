@@ -12,9 +12,9 @@ It allows you to define a GraphQL schema and execute GraphQL queries against thi
 Compatibility
 -------------
 
-| Version | XP Version -| Dependency                       |
+| Version | XP Version  | Dependency                       |
 |---------|-------------|----------------------------------|
-| 0.1.0   | 6.10.x      | com.enonic.lib:lib-graphql:0.1.0 |
+| 0.5.0   | 6.10.x      | com.enonic.lib:graphql:0.5.0 |
 
 
 Usage
@@ -34,7 +34,7 @@ After this, add the following dependency (where ``<version>`` is the actual vers
 
 ```gradle
 dependencies {
-    include 'com.enonic.lib:lib-graphql:<version>'
+    include 'com.enonic.lib:graphql:<version>'
 }
 ```
 
