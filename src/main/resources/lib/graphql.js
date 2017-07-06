@@ -33,7 +33,6 @@ exports.createInputObjectType = function (params) {
     var fields = required(params, 'fields');
     forEachAttribute(fields, function(field){
         required(field, 'type');
-        required(field, 'resolve');
     });
     var description = optional(params, 'description');
     return graphQlBean.createInputObjectType(name, __.toScriptValue(fields), description);

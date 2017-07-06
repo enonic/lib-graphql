@@ -276,10 +276,7 @@ function createInputObjectType() {
         description: 'An input object type.',
         fields: {
             id: {
-                type: graphQlLib.nonNull(graphQlLib.GraphQLID),
-                resolve: function (env) {
-                    return env.source.id;
-                }
+                type: graphQlLib.nonNull(graphQlLib.GraphQLID)
             }
         }
     });
