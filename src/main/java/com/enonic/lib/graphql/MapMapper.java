@@ -25,7 +25,7 @@ public final class MapMapper
         }
     }
 
-    private static void serializeMap( final MapGenerator gen, final Map<?, ?> map )
+    public static void serializeMap( final MapGenerator gen, final Map<?, ?> map )
     {
         for ( final Map.Entry<?, ?> entry : map.entrySet() )
         {
@@ -33,7 +33,7 @@ public final class MapMapper
         }
     }
 
-    private static void serializeKeyValue( final MapGenerator gen, final String key, final Object value )
+    public static void serializeKeyValue( final MapGenerator gen, final String key, final Object value )
     {
         if ( value instanceof List )
         {
@@ -49,7 +49,7 @@ public final class MapMapper
         }
     }
 
-    private static void serializeList( final MapGenerator gen, final String key, final List<?> values )
+    public static void serializeList( final MapGenerator gen, final String key, final List<?> values )
     {
         gen.array( key );
         for ( final Object value : values )
@@ -59,14 +59,14 @@ public final class MapMapper
         gen.end();
     }
 
-    private static void serializeMap( final MapGenerator gen, final String key, final Map<?, ?> map )
+    public static void serializeMap( final MapGenerator gen, final String key, final Map<?, ?> map )
     {
         gen.map( key );
         serializeMap( gen, map );
         gen.end();
     }
 
-    private static void serializeValue( final MapGenerator gen, final Object value )
+    public static void serializeValue( final MapGenerator gen, final Object value )
     {
         if ( value instanceof Map )
         {

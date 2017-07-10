@@ -18,7 +18,7 @@ public final class DataFetchingEnvironmentMapper
     @Override
     public void serialize( final MapGenerator gen )
     {
-        MapperHelper.serializeMap( "source", gen, this.env.getSource() );
-        MapperHelper.serializeMap( "args", gen, this.env.getArguments() );
+        MapMapper.serializeKeyValue( gen, "source", this.env.getSource() );
+        MapMapper.serializeKeyValue( gen, "args", this.env.getArguments() );
     }
 }
