@@ -97,13 +97,15 @@ public class GraphQlBean
         {
             final ScriptValue fieldScriptValue = fieldsScriptValue.getMember( fieldKey );
 
-            final GraphQLFieldDefinition.Builder graphQlField = GraphQLFieldDefinition.newFieldDefinition().
-                name( fieldKey );
+            if (fieldScriptValue != null) {
+                final GraphQLFieldDefinition.Builder graphQlField = GraphQLFieldDefinition.newFieldDefinition().
+                    name( fieldKey );
 
-            setFieldArguments( fieldScriptValue, graphQlField );
-            setFieldType( fieldScriptValue, graphQlField );
-            setFieldData( fieldScriptValue, graphQlField );
-            objectType.field( graphQlField );
+                setFieldArguments( fieldScriptValue, graphQlField );
+                setFieldType( fieldScriptValue, graphQlField );
+                setFieldData( fieldScriptValue, graphQlField );
+                objectType.field( graphQlField );
+            }
         }
     }
 
