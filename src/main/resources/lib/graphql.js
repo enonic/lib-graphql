@@ -96,7 +96,9 @@ function optional(params, name) {
 function forEachAttribute(object, callback) {
     if (object) {
         for (var fieldName in object) {
-            callback(object[fieldName]);
+            if (object[fieldName]) {
+                callback(object[fieldName]);
+            }
         }
     }
 }
