@@ -24,9 +24,9 @@ var pageInfoType = graphQlLib.createObjectType({
     }
 });
 
-function createEdgeType(name, type) {
+function createEdgeType(type) {
     return graphQlLib.createObjectType({
-        name: name + 'Edge',
+        name: type.getName() + 'Edge',
         fields: {
             node: {
                 type: graphQlLib.nonNull(type),
@@ -44,9 +44,9 @@ function createEdgeType(name, type) {
     });
 }
 
-exports.createConnectionType = function (name, type) {
+exports.createConnectionType = function (type) {
     return graphQlLib.createObjectType({
-        name: name + 'Connection',
+        name: type.getName() + 'Connection',
         fields: {
             totalCount: {
                 type: graphQlLib.nonNull(graphQlLib.GraphQLInt),
@@ -55,7 +55,7 @@ exports.createConnectionType = function (name, type) {
                 }
             },
             edges: {
-                type: graphQlLib.list(createEdgeType(name, type)),
+                type: graphQlLib.list(createEdgeType(type)),
                 resolve: function (env) {
                     var hits = env.source.hits;
                     var edges = [];
