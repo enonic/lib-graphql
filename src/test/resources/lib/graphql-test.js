@@ -1,16 +1,36 @@
 var graphQlLib = require('/lib/graphql');
+var graphQlConnectionLib = require('/lib/graphql-connection');
 var assert = require('/lib/xp/assert');
 
 exports.test = function () {
-    var database = {'0000-0000-0000-0001': {id: '0000-0000-0000-0001'}};
+    var database = {
+        map: {
+            '0000-0000-0000-0001': {id: '0000-0000-0000-0001'}
+        },
+        array: ['0000-0000-0000-0001']
+    };
     var schema = createSchema(database);
-    testCompleteQuery(schema);
     testShortQuery(schema);
+    testCompleteQuery(schema);
+    testShortConnection(schema);
+    testConnection(schema);
     testMissingObjectQuery(schema);
     testInvalidSyntaxQuery(schema);
     testFailingQuery(schema);
     testMutation(schema);
 };
+
+function testShortQuery(schema) {
+    var query = '{getObject(id:"0000-0000-0000-0001"){anId}}';
+    var result = graphQlLib.execute(schema, query);
+    assert.assertJsonEquals({
+        data: {
+            getObject: {
+                anId: '0000-0000-0000-0001'
+            }
+        }
+    }, result);
+}
 
 function testCompleteQuery(schema) {
     var query = 'query($id:ID){getObject(id:$id){anId, anInteger, aFloat, aString, aBoolean, aList,anEnum, aRelatedObject{id}}}';
@@ -37,23 +57,54 @@ function testCompleteQuery(schema) {
     }, result);
 }
 
-function testShortQuery(schema) {
-    var query = '{getObject(id:"0000-0000-0000-0001"){anId}}';
-    var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals({
-        data: {
-            getObject: {
-                anId: '0000-0000-0000-0001'
-            }
-        }
-    }, result);
-}
-
 function testMissingObjectQuery(schema) {
     var query = '{getObject(id:"0000-0000-0000-0002"){anId}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         data: {}
+    }, result);
+}
+
+function testShortConnection(schema) {
+    var query = '{getObjectConnection{edges{node{anId}}}}';
+    var result = graphQlLib.execute(schema, query);
+    assert.assertJsonEquals({
+        data: {
+            getObjectConnection: {
+                edges: [
+                    {
+                        node: {
+                            anId: "0000-0000-0000-0001"
+                        }
+                    }
+                ]
+            }
+        }
+    }, result);
+}
+
+function testConnection(schema) {
+    var query = '{getObjectConnection(first:1){ totalCount,edges{node{anId},cursor},pageInfo{startCursor,endCursor,hasNext}}}';
+    var result = graphQlLib.execute(schema, query);
+    assert.assertJsonEquals({
+        data: {
+            getObjectConnection: {
+                totalCount: 1,
+                edges: [
+                    {
+                        node: {
+                            anId: "0000-0000-0000-0001"
+                        },
+                        cursor: "MA=="
+                    }
+                ],
+                pageInfo: {
+                    startCursor: "MA==",
+                    endCursor: "MA==",
+                    hasNext: false
+                }
+            }
+        }
     }, result);
 }
 
@@ -131,17 +182,38 @@ function createSchema(database) {
 }
 
 function createRootQueryType(database) {
+    var objectType = createObjectType();
     return graphQlLib.createObjectType({
         name: 'Query',
         fields: {
             getObject: {
-                type: createObjectType(),
+                type: objectType,
                 args: {
                     id: graphQlLib.GraphQLID
                 },
                 resolve: function (env) {
                     var id = env.args.id;
-                    return database[id];
+                    return database.map[id];
+                }
+            },
+            getObjectConnection: {
+                type: graphQlConnectionLib.createConnectionType(objectType),
+                args: {
+                    after: graphQlLib.GraphQLString,
+                    first: graphQlLib.GraphQLInt
+                },
+                resolve: function (env) {
+                    var start = (env.args.after && parseInt(graphQlConnectionLib.decodeCursor(env.args.after))) || 0;
+                    var first = env.args.first;
+                    var objectKeys = first ? database.array.slice(start, start + first) : database.array.slice(start);
+                    return {
+                        total: database.array.length,
+                        start: start,
+                        count: objectKeys.length,
+                        hits: objectKeys.map(function (key) {
+                            return database.map[key];
+                        })
+                    };
                 }
             }
         }
@@ -160,8 +232,9 @@ function createRootMutationType(database) {
                 },
                 resolve: function (env) {
                     var id = env.args.id;
-                    database[id] = env.args.object;
-                    return database[id];
+                    database.map[id] = env.args.object;
+                    database.array.push(id);
+                    return database.map[id];
                 }
             }
         }

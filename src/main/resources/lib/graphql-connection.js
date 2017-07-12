@@ -4,15 +4,15 @@ var pageInfoType = graphQlLib.createObjectType({
     name: 'PageInfo',
     fields: {
         startCursor: {
-            type: graphQlLib.nonNull(graphQlLib.GraphQLInt), //TODO Replace by base64
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString),
             resolve: function (env) {
-                return toInt(env.source.startCursor);
+                return exports.encodeCursor(env.source.startCursor);
             }
         },
         endCursor: {
-            type: graphQlLib.nonNull(graphQlLib.GraphQLInt), //TODO Replace by base64
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString),
             resolve: function (env) {
-                return toInt(env.source.endCursor);
+                return exports.encodeCursor(env.source.endCursor);
             }
         },
         hasNext: {
@@ -35,9 +35,9 @@ function createEdgeType(type) {
                 }
             },
             cursor: {
-                type: graphQlLib.nonNull(graphQlLib.GraphQLInt), //TODO Replace by base64
+                type: graphQlLib.nonNull(graphQlLib.GraphQLString),
                 resolve: function (env) {
-                    return toInt(env.source.cursor);
+                    return exports.encodeCursor(env.source.cursor);
                 }
             }
         }
@@ -89,7 +89,3 @@ exports.encodeCursor = function(value) {
 exports.decodeCursor = function(value) {
     return Java.type('com.enonic.lib.graphql.CursorHelper').decode(value);
 };
-
-function toInt(number, defaultValue) {
-    return number == null ? defaultValue.intValue() : number.intValue();
-}
