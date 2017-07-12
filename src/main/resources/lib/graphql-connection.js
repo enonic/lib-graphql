@@ -82,6 +82,14 @@ exports.createConnectionType = function (type) {
     });
 };
 
+exports.encodeCursor = function(value) {
+    return Java.type('com.enonic.lib.graphql.CursorHelper').encode(value);
+};
+
+exports.decodeCursor = function(value) {
+    return Java.type('com.enonic.lib.graphql.CursorHelper').decode(value);
+};
+
 function toInt(number, defaultValue) {
     return number == null ? defaultValue.intValue() : number.intValue();
 }
