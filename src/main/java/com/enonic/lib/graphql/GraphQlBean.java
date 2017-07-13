@@ -140,7 +140,8 @@ public class GraphQlBean
 
     private void setFieldArguments( final ScriptValue fieldScriptValue, final GraphQLFieldDefinition.Builder graphQlField )
     {
-        if ( fieldScriptValue.hasMember( "args" ) )
+        final ScriptValue argsScriptValue = fieldScriptValue.getMember( "args" );
+        if ( argsScriptValue != null  )
         {
             Map<String, Object> argsMap = fieldScriptValue.getMember( "args" ).getMap();
             argsMap.entrySet().
