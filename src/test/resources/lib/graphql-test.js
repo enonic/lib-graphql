@@ -209,7 +209,6 @@ function createRootQueryType(database) {
                     return {
                         total: database.array.length,
                         start: start,
-                        count: objectKeys.length,
                         hits: objectKeys.map(function (key) {
                             return database.map[key];
                         })

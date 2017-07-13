@@ -71,10 +71,11 @@ exports.createConnectionType = function (type) {
             pageInfo: {
                 type: pageInfoType,
                 resolve: function (env) {
+                    var count = env.source.hits.length;
                     return {
                         startCursor: env.source.start,
-                        endCursor: env.source.start + (env.source.count == 0 ? 0 : (env.source.count - 1)),
-                        hasNext: (env.source.start + env.source.count) < env.source.total
+                        endCursor: env.source.start + (count == 0 ? 0 : (count - 1)),
+                        hasNext: (env.source.start + count) < env.source.total
                     }
                 }
             }
