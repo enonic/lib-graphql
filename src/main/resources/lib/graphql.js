@@ -44,8 +44,9 @@ exports.createInterfaceType = function (params) {
     forEachAttribute(fields, function(field){
         required(field, 'type');
     });
+    var typeResolver = required(params, 'typeResolver');
     var description = optional(params, 'description');
-    return graphQlBean.createInterfaceType(name, __.toScriptValue(fields), description);
+    return graphQlBean.createInterfaceType(name, __.toScriptValue(fields), __.toScriptValue(typeResolver), description);
 };
 
 exports.createEnumType = function (params) {

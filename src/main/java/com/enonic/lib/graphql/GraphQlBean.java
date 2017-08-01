@@ -63,11 +63,15 @@ public class GraphQlBean
     }
 
 
-    public GraphQLInterfaceType createInterfaceType( final String name, final ScriptValue fieldsScriptValue, final String description )
+    public GraphQLInterfaceType createInterfaceType( final String name, final ScriptValue fieldsScriptValue,
+                                                     final ScriptValue typeResolverScriptValue, final String description )
     {
         final GraphQLInterfaceType.Builder interfaceType = GraphQLInterfaceType.newInterface().
             name( name ).
-            typeResolver( ( object ) -> null ). //TODO
+            typeResolver( ( object ) -> {
+                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) object );
+                return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
+            } ).
             description( description );
         setTypeFields( fieldsScriptValue, interfaceType );
         return interfaceType.build();
@@ -97,7 +101,8 @@ public class GraphQlBean
         {
             final ScriptValue fieldScriptValue = fieldsScriptValue.getMember( fieldKey );
 
-            if (fieldScriptValue != null) {
+            if ( fieldScriptValue != null )
+            {
                 final GraphQLFieldDefinition.Builder graphQlField = GraphQLFieldDefinition.newFieldDefinition().
                     name( fieldKey );
 
@@ -141,7 +146,7 @@ public class GraphQlBean
     private void setFieldArguments( final ScriptValue fieldScriptValue, final GraphQLFieldDefinition.Builder graphQlField )
     {
         final ScriptValue argsScriptValue = fieldScriptValue.getMember( "args" );
-        if ( argsScriptValue != null  )
+        if ( argsScriptValue != null )
         {
             Map<String, Object> argsMap = fieldScriptValue.getMember( "args" ).getMap();
             argsMap.entrySet().

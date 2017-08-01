@@ -13,6 +13,7 @@ exports.test = function () {
     testShortQuery(schema);
     testCompleteQuery(schema);
     testShortConnection(schema);
+    testInterface(schema);
     testConnection(schema);
     testMissingObjectQuery(schema);
     testInvalidSyntaxQuery(schema);
@@ -82,6 +83,19 @@ function testShortConnection(schema) {
         }
     }, result);
 }
+
+function testInterface(schema) {
+    var query = '{getInterface(id:"0000-0000-0000-0001"){anId}}';
+    var result = graphQlLib.execute(schema, query);
+    assert.assertJsonEquals({
+        data: {
+            getInterface: {
+                anId: '0000-0000-0000-0001'
+            }
+        }
+    }, result);
+}
+
 
 function testConnection(schema) {
     var query = '{getObjectConnection(first:1){ totalCount,edges{node{anId},cursor},pageInfo{startCursor,endCursor,hasNext}}}';
@@ -181,11 +195,22 @@ function createSchema(database) {
     });
 }
 
+var objectType;
 function createRootQueryType(database) {
-    var objectType = createObjectType();
+    objectType = createObjectType();
     return graphQlLib.createObjectType({
         name: 'Query',
         fields: {
+            getInterface: {
+                type: graphQlLib.reference('InterfaceType'),
+                args: {
+                    id: graphQlLib.GraphQLID
+                },
+                resolve: function (env) {
+                    var id = env.args.id;
+                    return database.map[id];
+                }
+            },
             getObject: {
                 type: objectType,
                 args: {
@@ -333,6 +358,9 @@ function createSubObjectType() {
 function createInterfaceType() {
     return graphQlLib.createInterfaceType({
         name: 'InterfaceType',
+        typeResolver: function () {
+            return objectType
+        },
         description: 'An interface type.',
         fields: {
             anId: {
