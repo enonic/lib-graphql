@@ -13,13 +13,14 @@ exports.GraphQLID = Scalars.GraphQLID;
 exports.createSchema = function (params) {
     var query = required(params, 'query');
     var mutation = optional(params, 'mutation');
-    return graphQlBean.createSchema(query, mutation);
+    var dictionary = optional(params, 'dictionary');
+    return graphQlBean.createSchema(query, mutation, dictionary);
 };
 
 exports.createObjectType = function (params) {
     var name = required(params, 'name');
     var fields = required(params, 'fields');
-    forEachAttribute(fields, function(field){
+    forEachAttribute(fields, function (field) {
         required(field, 'type');
         required(field, 'resolve');
     });
@@ -31,7 +32,7 @@ exports.createObjectType = function (params) {
 exports.createInputObjectType = function (params) {
     var name = required(params, 'name');
     var fields = required(params, 'fields');
-    forEachAttribute(fields, function(field){
+    forEachAttribute(fields, function (field) {
         required(field, 'type');
     });
     var description = optional(params, 'description');
@@ -41,7 +42,7 @@ exports.createInputObjectType = function (params) {
 exports.createInterfaceType = function (params) {
     var name = required(params, 'name');
     var fields = required(params, 'fields');
-    forEachAttribute(fields, function(field){
+    forEachAttribute(fields, function (field) {
         required(field, 'type');
     });
     var typeResolver = required(params, 'typeResolver');
@@ -80,7 +81,7 @@ exports.execute = function (schema, query, variables) {
 function required(params, name) {
     var value = params[name];
     if (value === undefined) {
-        log.info('error:' + JSON.stringify(params) );
+        log.info('error:' + JSON.stringify(params));
         throw "Value '" + name + "' is required";
     }
     return value;

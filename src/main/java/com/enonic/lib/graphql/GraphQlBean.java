@@ -1,6 +1,8 @@
 package com.enonic.lib.graphql;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,8 @@ import com.enonic.xp.script.ScriptValue;
 
 public class GraphQlBean
 {
-    public GraphQLSchema createSchema( final GraphQLObjectType queryObjectType, final GraphQLObjectType mutationObjectType )
+    public GraphQLSchema createSchema( final GraphQLObjectType queryObjectType, final GraphQLObjectType mutationObjectType,
+                                       final GraphQLObjectType[] dictionary )
     {
         final GraphQLSchema.Builder graphQLSchema = GraphQLSchema.newSchema().query( queryObjectType );
         if ( mutationObjectType != null )
@@ -35,7 +38,7 @@ public class GraphQlBean
             graphQLSchema.mutation( mutationObjectType );
 
         }
-        return graphQLSchema.build();
+        return graphQLSchema.build(dictionary == null ? Collections.EMPTY_SET :new HashSet<>( Arrays.asList(dictionary) ));
     }
 
     public GraphQLObjectType createObjectType( final String name, final ScriptValue fieldsScriptValue,

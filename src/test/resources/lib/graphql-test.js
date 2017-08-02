@@ -191,7 +191,8 @@ function testMutation(schema) {
 function createSchema(database) {
     return graphQlLib.createSchema({
         query: createRootQueryType(database),
-        mutation: createRootMutationType(database)
+        mutation: createRootMutationType(database),
+        dictionary:[createSubObjectType()] 
     });
 }
 
@@ -314,7 +315,7 @@ function createObjectType() {
                 }
             },
             aRelatedObject: {
-                type: createSubObjectType(),
+                type: graphQlLib.reference('SubObjectType'),
                 resolve: function (env) {
                     return {
                         id: '0000-0000-0000-0002'
