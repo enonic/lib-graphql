@@ -197,7 +197,9 @@ public class GraphQlBean
     private void setFieldData( final ScriptValue scriptFieldValue, final GraphQLFieldDefinition.Builder graphQlField )
     {
         final ScriptValue resolve = scriptFieldValue.getMember( "resolve" );
-        if ( resolve.isFunction() )
+        if (resolve == null) {
+            return;
+        } else  if ( resolve.isFunction() )
         {
             graphQlField.dataFetcher( ( env ) -> {
                 final DataFetchingEnvironmentMapper environmentMapper = new DataFetchingEnvironmentMapper( env );

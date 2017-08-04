@@ -22,24 +22,24 @@ exports.test = function () {
 };
 
 function testShortQuery(schema) {
-    var query = '{getObject(id:"0000-0000-0000-0001"){anId}}';
+    var query = '{getObject(id:"0000-0000-0000-0001"){id}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         data: {
             getObject: {
-                anId: '0000-0000-0000-0001'
+                id: '0000-0000-0000-0001'
             }
         }
     }, result);
 }
 
 function testCompleteQuery(schema) {
-    var query = 'query($id:ID){getObject(id:$id){anId, anInteger, aFloat, aString, aBoolean, aList,anEnum, aRelatedObject{id}}}';
+    var query = 'query($id:ID){getObject(id:$id){id, anInteger, aFloat, aString, aBoolean, aList,anEnum, aRelatedObject{id}}}';
     var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0001'});
     assert.assertJsonEquals({
         data: {
             getObject: {
-                anId: '0000-0000-0000-0001',
+                id: '0000-0000-0000-0001',
                 anInteger: 1,
                 aFloat: 1.0,
                 aString: 'content',
@@ -59,7 +59,7 @@ function testCompleteQuery(schema) {
 }
 
 function testMissingObjectQuery(schema) {
-    var query = '{getObject(id:"0000-0000-0000-0002"){anId}}';
+    var query = '{getObject(id:"0000-0000-0000-0002"){id}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         data: {}
@@ -67,7 +67,7 @@ function testMissingObjectQuery(schema) {
 }
 
 function testShortConnection(schema) {
-    var query = '{getObjectConnection{edges{node{anId}}}}';
+    var query = '{getObjectConnection{edges{node{id}}}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         data: {
@@ -75,7 +75,7 @@ function testShortConnection(schema) {
                 edges: [
                     {
                         node: {
-                            anId: "0000-0000-0000-0001"
+                            id: "0000-0000-0000-0001"
                         }
                     }
                 ]
@@ -85,12 +85,12 @@ function testShortConnection(schema) {
 }
 
 function testInterface(schema) {
-    var query = '{getInterface(id:"0000-0000-0000-0001"){anId}}';
+    var query = '{getInterface(id:"0000-0000-0000-0001"){id}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         data: {
             getInterface: {
-                anId: '0000-0000-0000-0001'
+                id: '0000-0000-0000-0001'
             }
         }
     }, result);
@@ -98,7 +98,7 @@ function testInterface(schema) {
 
 
 function testConnection(schema) {
-    var query = '{getObjectConnection(first:1){ totalCount,edges{node{anId},cursor},pageInfo{startCursor,endCursor,hasNext}}}';
+    var query = '{getObjectConnection(first:1){ totalCount,edges{node{id},cursor},pageInfo{startCursor,endCursor,hasNext}}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         data: {
@@ -107,7 +107,7 @@ function testConnection(schema) {
                 edges: [
                     {
                         node: {
-                            anId: "0000-0000-0000-0001"
+                            id: "0000-0000-0000-0001"
                         },
                         cursor: "MA=="
                     }
@@ -123,7 +123,7 @@ function testConnection(schema) {
 }
 
 function testInvalidSyntaxQuery(schema) {
-    var query = '{getObject(id:"0000-0000-0000-0001"){anId, aMissingField}}';
+    var query = '{getObject(id:"0000-0000-0000-0001"){id, aMissingField}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         "errors": [
@@ -133,7 +133,7 @@ function testInvalidSyntaxQuery(schema) {
                 "locations": [
                     {
                         "line": 1,
-                        "column": 44
+                        "column": 42
                     }
                 ],
                 "validationErrorType": "FieldUndefined"
@@ -143,12 +143,12 @@ function testInvalidSyntaxQuery(schema) {
 }
 
 function testFailingQuery(schema) {
-    var query = '{getObject(id:"0000-0000-0000-0001"){anId, aFailingField}}';
+    var query = '{getObject(id:"0000-0000-0000-0001"){id, aFailingField}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
         "data": {
             "getObject": {
-                "anId": "0000-0000-0000-0001"
+                "id": "0000-0000-0000-0001"
             }
         },
         "errors": [
@@ -165,12 +165,12 @@ function testFailingQuery(schema) {
 }
 
 function testMutation(schema) {
-    var query = 'mutation($id:ID!, $object: InputObjectType!){addObject(id:$id,object:$object){anId, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
+    var query = 'mutation($id:ID!, $object: InputObjectType!){addObject(id:$id,object:$object){id, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
     var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0002', object: {id: '0000-0000-0000-0002'}});
     assert.assertJsonEquals({
         data: {
             addObject: {
-                anId: '0000-0000-0000-0002',
+                id: '0000-0000-0000-0002',
                 anInteger: 1,
                 aFloat: 1.0,
                 aString: 'content',
@@ -192,7 +192,7 @@ function createSchema(database) {
     return graphQlLib.createSchema({
         query: createRootQueryType(database),
         mutation: createRootMutationType(database),
-        dictionary:[createSubObjectType()] 
+        dictionary: [createSubObjectType()]
     });
 }
 
@@ -272,11 +272,8 @@ function createObjectType() {
         description: 'An object type.',
         interfaces: [createInterfaceType()],
         fields: {
-            anId: {
-                type: graphQlLib.nonNull(graphQlLib.GraphQLID),
-                resolve: function (env) {
-                    return env.source.id;
-                }
+            id: {
+                type: graphQlLib.nonNull(graphQlLib.GraphQLID)
             },
             anInteger: {
                 type: graphQlLib.GraphQLInt,
@@ -364,7 +361,7 @@ function createInterfaceType() {
         },
         description: 'An interface type.',
         fields: {
-            anId: {
+            id: {
                 type: graphQlLib.nonNull(graphQlLib.GraphQLID)
             }
         }

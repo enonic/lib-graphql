@@ -22,7 +22,6 @@ exports.createObjectType = function (params) {
     var fields = required(params, 'fields');
     forEachAttribute(fields, function (field) {
         required(field, 'type');
-        required(field, 'resolve');
     });
     var interfaces = optional(params, 'interfaces');
     var description = optional(params, 'description');
