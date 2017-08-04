@@ -86,12 +86,10 @@ var personObjectType = graphQlLib.createObjectType({
             }
         },
         age: {
-            type: graphQlLib.nonNull(graphQlLib.GraphQLInt),
-            resolve: function (env) {
-                // The source on which is executed this function is one of the 3 person database objects 
-                // defined above. We will simply return the field 'age' of this object here.
-                return env.source.age;
-            }
+            type: graphQlLib.nonNull(graphQlLib.GraphQLInt)
+            // If resolve is not defined a PropertyDataFetcher will be set. 
+            // In this case it will return the field 'age' of the source on which is executed this function, 
+            // similarly to the resolve function above
         },
         children: {
             // We use here a reference because the object type Person has not been defined yet.
