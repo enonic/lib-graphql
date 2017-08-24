@@ -49,6 +49,17 @@ exports.createInterfaceType = function (params) {
     return graphQlBean.createInterfaceType(name, __.toScriptValue(fields), __.toScriptValue(typeResolver), description);
 };
 
+exports.createUnionType = function (params) {
+    var name = required(params, 'name');
+    var types = required(params, 'types');
+    if (types == null || types.length === 0) {
+        throw "Value 'types' is required and cannot be empty";
+    }
+    var typeResolver = required(params, 'typeResolver');
+    var description = optional(params, 'description');
+    return graphQlBean.createUnionType(name, types, __.toScriptValue(typeResolver), description);
+};
+
 exports.createEnumType = function (params) {
     var name = required(params, 'name');
     var values = required(params, 'values');

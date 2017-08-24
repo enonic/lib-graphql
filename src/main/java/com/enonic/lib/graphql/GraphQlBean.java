@@ -38,7 +38,7 @@ public class GraphQlBean
             graphQLSchema.mutation( mutationObjectType );
 
         }
-        return graphQLSchema.build(dictionary == null ? Collections.EMPTY_SET :new HashSet<>( Arrays.asList(dictionary) ));
+        return graphQLSchema.build( dictionary == null ? Collections.EMPTY_SET : new HashSet<>( Arrays.asList( dictionary ) ) );
     }
 
     public GraphQLObjectType createObjectType( final String name, final ScriptValue fieldsScriptValue,
@@ -65,19 +65,32 @@ public class GraphQlBean
         return objectType.build();
     }
 
-
     public GraphQLInterfaceType createInterfaceType( final String name, final ScriptValue fieldsScriptValue,
                                                      final ScriptValue typeResolverScriptValue, final String description )
     {
         final GraphQLInterfaceType.Builder interfaceType = GraphQLInterfaceType.newInterface().
             name( name ).
+            description( description ).
+            typeResolver( ( object ) -> {
+                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) object );
+                return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
+            } );
+        setTypeFields( fieldsScriptValue, interfaceType );
+        return interfaceType.build();
+    }
+
+    public GraphQLUnionType createUnionType( final String name, final GraphQLObjectType[] types,
+                                             final ScriptValue typeResolverScriptValue, final String description )
+    {
+        return GraphQLUnionType.newUnionType().
+            name( name ).
+            description( description ).
             typeResolver( ( object ) -> {
                 final MapMapper mapMapper = new MapMapper( (Map<?, ?>) object );
                 return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
             } ).
-            description( description );
-        setTypeFields( fieldsScriptValue, interfaceType );
-        return interfaceType.build();
+            possibleTypes( types ).
+            build();
     }
 
     public GraphQLEnumType createEnumType( final String name, final ScriptValue valuesScriptValue, final String description )
@@ -197,9 +210,11 @@ public class GraphQlBean
     private void setFieldData( final ScriptValue scriptFieldValue, final GraphQLFieldDefinition.Builder graphQlField )
     {
         final ScriptValue resolve = scriptFieldValue.getMember( "resolve" );
-        if (resolve == null) {
+        if ( resolve == null )
+        {
             return;
-        } else  if ( resolve.isFunction() )
+        }
+        else if ( resolve.isFunction() )
         {
             graphQlField.dataFetcher( ( env ) -> {
                 final DataFetchingEnvironmentMapper environmentMapper = new DataFetchingEnvironmentMapper( env );

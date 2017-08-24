@@ -14,6 +14,7 @@ exports.test = function () {
     testCompleteQuery(schema);
     testShortConnection(schema);
     testInterface(schema);
+    testUnion(schema);
     testConnection(schema);
     testMissingObjectQuery(schema);
     testInvalidSyntaxQuery(schema);
@@ -90,6 +91,18 @@ function testInterface(schema) {
     assert.assertJsonEquals({
         data: {
             getInterface: {
+                id: '0000-0000-0000-0001'
+            }
+        }
+    }, result);
+}
+
+function testUnion(schema) {
+    var query = '{getUnion(id:"0000-0000-0000-0001"){... on ObjectType{id}}}';
+    var result = graphQlLib.execute(schema, query);
+    assert.assertJsonEquals({
+        data: {
+            getUnion: {
                 id: '0000-0000-0000-0001'
             }
         }
@@ -204,6 +217,16 @@ function createRootQueryType(database) {
         fields: {
             getInterface: {
                 type: graphQlLib.reference('InterfaceType'),
+                args: {
+                    id: graphQlLib.GraphQLID
+                },
+                resolve: function (env) {
+                    var id = env.args.id;
+                    return database.map[id];
+                }
+            },
+            getUnion: {
+                type: createUnionType(),
                 args: {
                     id: graphQlLib.GraphQLID
                 },
@@ -365,6 +388,17 @@ function createInterfaceType() {
                 type: graphQlLib.nonNull(graphQlLib.GraphQLID)
             }
         }
+    });
+}
+
+function createUnionType() {
+    return graphQlLib.createUnionType({
+        name: 'UnionType',
+        typeResolver: function () {
+            return objectType
+        },
+        description: 'A union type.',
+        types: [objectType]
     });
 }
 
