@@ -50,7 +50,17 @@ public class GraphQlBean
         if ( interfacesScriptValue != null )
         {
             interfacesScriptValue.getArray().
-                forEach( ( interfaceScriptValue ) -> objectType.withInterface( (GraphQLInterfaceType) interfaceScriptValue.getValue() ) );
+                forEach( ( interfaceScriptValue ) -> {
+                    final Object interfaceValue = interfaceScriptValue.getValue();
+                    if ( interfaceValue instanceof GraphQLInterfaceType )
+                    {
+                        objectType.withInterface( (GraphQLInterfaceType) interfaceScriptValue.getValue() );
+                    }
+                    else if ( interfaceValue instanceof GraphQLTypeReference )
+                    {
+                        objectType.withInterface( GraphQLInterfaceType.reference( ( (GraphQLTypeReference) interfaceValue ).getName() ) );
+                    }
+                } );
         }
         setTypeFields( fieldsScriptValue, objectType );
         return objectType.build();
@@ -109,7 +119,7 @@ public class GraphQlBean
             valuesScriptValue.getArray( String.class ).
                 forEach( enumType::value );
         }
-        else if (valuesScriptValue.isObject())
+        else if ( valuesScriptValue.isObject() )
         {
             for ( String valueKey : valuesScriptValue.getKeys() )
             {

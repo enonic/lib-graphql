@@ -206,7 +206,7 @@ function createSchema(database) {
     return graphQlLib.createSchema({
         query: createRootQueryType(database),
         mutation: createRootMutationType(database),
-        dictionary: [createSubObjectType()]
+        dictionary: [createSubObjectType(), createObjectType2()]
     });
 }
 
@@ -354,6 +354,19 @@ function createObjectType() {
                 resolve: function (env) {
                     throw 'Error while retrieving aFailingField';
                 }
+            }
+        }
+    });
+}
+
+function createObjectType2() {
+    return graphQlLib.createObjectType({
+        name: 'ObjectType2',
+        description: 'An object type.',
+        interfaces: [graphQlLib.reference('InterfaceType')],
+        fields: {
+            id: {
+                type: graphQlLib.nonNull(graphQlLib.GraphQLID)
             }
         }
     });
