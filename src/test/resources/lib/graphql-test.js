@@ -35,7 +35,7 @@ function testShortQuery(schema) {
 }
 
 function testCompleteQuery(schema) {
-    var query = 'query($id:ID){getObject(id:$id){id, anInteger, aFloat, aString, aBoolean, aList,anEnum, aRelatedObject{id}}}';
+    var query = 'query($id:ID){getObject(id:$id){id, anInteger, aFloat, aString, aBoolean, aList,anEnum, anEnum2, aRelatedObject{id}}}';
     var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0001'});
     assert.assertJsonEquals({
         data: {
@@ -51,6 +51,7 @@ function testCompleteQuery(schema) {
                     "third"
                 ],
                 anEnum: "secondValue",
+                anEnum2: "secondValue",
                 aRelatedObject: {
                     id: "0000-0000-0000-0002"
                 }
@@ -334,6 +335,12 @@ function createObjectType() {
                     return 'secondValue';
                 }
             },
+            anEnum2: {
+                type: createEnum2Type(),
+                resolve: function (env) {
+                    return 'secondValue';
+                }
+            },
             aRelatedObject: {
                 type: graphQlLib.reference('SubObjectType'),
                 resolve: function (env) {
@@ -359,6 +366,13 @@ function createEnumType() {
             firstValue: 'firstValue',
             secondValue: 'secondValue'
         }
+    });
+}
+
+function createEnum2Type() {
+    return graphQlLib.createEnumType({
+        name: 'Enum2Type',
+        values: ['firstValue', 'secondValue']
     });
 }
 

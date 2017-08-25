@@ -79,8 +79,8 @@ public class GraphQlBean
         return interfaceType.build();
     }
 
-    public GraphQLUnionType createUnionType( final String name, final GraphQLObjectType[] types,
-                                             final ScriptValue typeResolverScriptValue, final String description )
+    public GraphQLUnionType createUnionType( final String name, final GraphQLObjectType[] types, final ScriptValue typeResolverScriptValue,
+                                             final String description )
     {
         return GraphQLUnionType.newUnionType().
             name( name ).
@@ -104,10 +104,18 @@ public class GraphQlBean
 
     private void setValues( final ScriptValue valuesScriptValue, final GraphQLEnumType.Builder enumType )
     {
-        for ( String valueKey : valuesScriptValue.getKeys() )
+        if ( valuesScriptValue.isArray() )
         {
-            final ScriptValue valueScriptValue = valuesScriptValue.getMember( valueKey );
-            enumType.value( valueKey, valueScriptValue.getValue() );
+            valuesScriptValue.getArray( String.class ).
+                forEach( enumType::value );
+        }
+        else if (valuesScriptValue.isObject())
+        {
+            for ( String valueKey : valuesScriptValue.getKeys() )
+            {
+                final ScriptValue valueScriptValue = valuesScriptValue.getMember( valueKey );
+                enumType.value( valueKey, valueScriptValue.getValue() );
+            }
         }
     }
 
