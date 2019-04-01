@@ -1,6 +1,6 @@
 var graphQlLib = require('/lib/graphql');
 var graphQlConnectionLib = require('/lib/graphql-connection');
-var assert = require('/lib/xp/assert');
+var assert = require('/lib/xp/testing');
 
 exports.test = function () {
     var database = {
