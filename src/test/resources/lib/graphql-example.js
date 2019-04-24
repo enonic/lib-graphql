@@ -114,7 +114,7 @@ exports.post = function (req) {
 //     }
 //   }
 // }
-var assert = require('/lib/xp/assert');
+var assert = require('/lib/xp/testing');
 exports.test = function () {
     var query = 'query($name:String!){getPersonByName(name:$name){name, age, children{name, age}}}';
     var variables = {name: 'James'};
