@@ -17,7 +17,7 @@ Compatibility
 | 0.5.0   | 6.10.x      | com.enonic.lib:graphql:0.5.0 |
 | 0.5.1   | 6.10.x      | com.enonic.lib:graphql:0.5.1 |
 | 0.5.2   | 6.10.x      | com.enonic.lib:graphql:0.5.2 |
-| 1.0.0   | 7.0.0       | com.enonic.lib:graphql:1.0.0 |
+| 1.0.0   | 7.0.0       | com.enonic.lib:lib-graphql:1.0.0 |
 
 
 Usage
