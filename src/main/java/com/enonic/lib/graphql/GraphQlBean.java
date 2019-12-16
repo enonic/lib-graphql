@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import graphql.ExecutionResult;
 import graphql.GraphQL;
-import graphql.execution.SimpleExecutionStrategy;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLFieldDefinition;
@@ -286,7 +285,7 @@ public class GraphQlBean
 
     public ExecutionResultMapper execute( final GraphQLSchema schema, final String query, final ScriptValue variables )
     {
-        GraphQL graphQL = new GraphQL( schema, new SimpleExecutionStrategy() );
+        GraphQL graphQL = GraphQL.newGraphQL( schema ).build();
         final Map<String, Object> variablesMap = variables == null ? Collections.<String, Object>emptyMap() : variables.getMap();
         final ExecutionResult executionResult = graphQL.execute( query, (Object) null, variablesMap );
 

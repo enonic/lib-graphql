@@ -143,7 +143,7 @@ function testInvalidSyntaxQuery(schema) {
         "errors": [
             {
                 "errorType": "ValidationError",
-                "message": "Validation error of type FieldUndefined: Field aMissingField is undefined",
+                "message": "Validation error of type FieldUndefined: Field 'aMissingField' in type 'ObjectType' is undefined",
                 "locations": [
                     {
                         "line": 1,
@@ -168,7 +168,13 @@ function testFailingQuery(schema) {
         "errors": [
             {
                 "errorType": "DataFetchingException",
-                "message": "Exception while fetching data: Error while retrieving aFailingField",
+                "message": "Exception while fetching data (/getObject/aFailingField) : Error while retrieving aFailingField",
+                "locations": [
+                    {
+                        "line": 1,
+                        "column": 42
+                    }
+                ],
                 "exception": {
                     "name": "com.enonic.xp.resource.ResourceProblemException",
                     "message": "Error while retrieving aFailingField"
