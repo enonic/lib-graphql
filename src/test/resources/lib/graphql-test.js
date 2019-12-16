@@ -168,7 +168,7 @@ function testFailingQuery(schema) {
         "errors": [
             {
                 "errorType": "DataFetchingException",
-                "message": "Exception while fetching data: com.enonic.xp.resource.ResourceProblemException: Error while retrieving aFailingField",
+                "message": "Exception while fetching data: Error while retrieving aFailingField",
                 "exception": {
                     "name": "com.enonic.xp.resource.ResourceProblemException",
                     "message": "Error while retrieving aFailingField"
@@ -206,13 +206,14 @@ function createSchema(database) {
     return graphQlLib.createSchema({
         query: createRootQueryType(database),
         mutation: createRootMutationType(database),
-        dictionary: [createSubObjectType(), createObjectType2()]
+        additonalTypes: [createSubObjectType(), createObjectType2()]
     });
 }
 
 var objectType;
+
 function createRootQueryType(database) {
-    objectType = createObjectType();
+    objectType = objectType || createObjectType();
     return graphQlLib.createObjectType({
         name: 'Query',
         fields: {
@@ -274,7 +275,7 @@ function createRootMutationType(database) {
         name: 'Mutation',
         fields: {
             addObject: {
-                type: createObjectType(),
+                type: objectType || createObjectType(),
                 args: {
                     id: graphQlLib.nonNull(graphQlLib.GraphQLID),
                     object: graphQlLib.nonNull(createInputObjectType())
@@ -406,7 +407,7 @@ function createSubObjectType() {
 function createInterfaceType() {
     return graphQlLib.createInterfaceType({
         name: 'InterfaceType',
-        typeResolver: function () {
+        typeResolver: function (arg) {
             return objectType
         },
         description: 'An interface type.',

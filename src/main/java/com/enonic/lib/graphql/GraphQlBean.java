@@ -30,7 +30,7 @@ import com.enonic.xp.script.ScriptValue;
 public class GraphQlBean
 {
     public GraphQLSchema createSchema( final GraphQLObjectType queryObjectType, final GraphQLObjectType mutationObjectType,
-                                       final GraphQLObjectType[] dictionary )
+                                       final GraphQLObjectType[] additonalTypes )
     {
         final GraphQLSchema.Builder graphQLSchema = GraphQLSchema.newSchema().query( queryObjectType );
         if ( mutationObjectType != null )
@@ -38,7 +38,7 @@ public class GraphQlBean
             graphQLSchema.mutation( mutationObjectType );
 
         }
-        return graphQLSchema.build( dictionary == null ? Collections.EMPTY_SET : new HashSet<>( Arrays.asList( dictionary ) ) );
+        return graphQLSchema.build( additonalTypes == null ? Collections.EMPTY_SET : new HashSet<>( Arrays.asList( additonalTypes ) ) );
     }
 
     public GraphQLObjectType createObjectType( final String name, final ScriptValue fieldsScriptValue,
@@ -54,11 +54,11 @@ public class GraphQlBean
                     final Object interfaceValue = interfaceScriptValue.getValue();
                     if ( interfaceValue instanceof GraphQLInterfaceType )
                     {
-                        objectType.withInterface( (GraphQLInterfaceType) interfaceScriptValue.getValue() );
+                        objectType.withInterface( (GraphQLInterfaceType) interfaceValue );
                     }
                     else if ( interfaceValue instanceof GraphQLTypeReference )
                     {
-                        objectType.withInterface( GraphQLInterfaceType.reference( ( (GraphQLTypeReference) interfaceValue ).getName() ) );
+                        objectType.withInterface( (GraphQLTypeReference) interfaceValue );
                     }
                 } );
         }
@@ -81,8 +81,8 @@ public class GraphQlBean
         final GraphQLInterfaceType.Builder interfaceType = GraphQLInterfaceType.newInterface().
             name( name ).
             description( description ).
-            typeResolver( ( object ) -> {
-                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) object );
+            typeResolver( ( typeResolutionEnvironment ) -> {
+                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
                 return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
             } );
         setTypeFields( fieldsScriptValue, interfaceType );
@@ -95,8 +95,8 @@ public class GraphQlBean
         return GraphQLUnionType.newUnionType().
             name( name ).
             description( description ).
-            typeResolver( ( object ) -> {
-                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) object );
+            typeResolver( ( typeResolutionEnvironment ) -> {
+                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
                 return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
             } ).
             possibleTypes( types ).
