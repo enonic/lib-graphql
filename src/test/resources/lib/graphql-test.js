@@ -212,7 +212,7 @@ function createSchema(database) {
     return graphQlLib.createSchema({
         query: createRootQueryType(database),
         mutation: createRootMutationType(database),
-        additonalTypes: [createSubObjectType(), createObjectType2()]
+        dictionary: [createSubObjectType(), createObjectType2()]
     });
 }
 

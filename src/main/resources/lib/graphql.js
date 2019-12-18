@@ -13,7 +13,7 @@ exports.GraphQLID = Scalars.GraphQLID;
 exports.createSchema = function (params) {
     var query = required(params, 'query');
     var mutation = optional(params, 'mutation');
-    var additonalTypes = optional(params, 'additonalTypes');
+    var additonalTypes = optional(params, 'dictionary');
     return graphQlBean.createSchema(query, mutation, additonalTypes);
 };
 
