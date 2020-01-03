@@ -6,8 +6,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.execution.reactive.SingleSubscriberPublisher;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLFieldDefinition;
@@ -29,12 +33,17 @@ import com.enonic.xp.script.ScriptValue;
 public class GraphQlBean
 {
     public GraphQLSchema createSchema( final GraphQLObjectType queryObjectType, final GraphQLObjectType mutationObjectType,
-                                       final GraphQLObjectType[] additonalTypes )
+                                       final GraphQLObjectType subscriptionObjectType, final GraphQLObjectType[] additonalTypes )
     {
         final GraphQLSchema.Builder graphQLSchema = GraphQLSchema.newSchema().query( queryObjectType );
         if ( mutationObjectType != null )
         {
             graphQLSchema.mutation( mutationObjectType );
+
+        }
+        if ( subscriptionObjectType != null )
+        {
+            graphQLSchema.subscription( subscriptionObjectType );
 
         }
         return graphQLSchema.build( additonalTypes == null ? Collections.EMPTY_SET : new HashSet<>( Arrays.asList( additonalTypes ) ) );
@@ -109,6 +118,17 @@ public class GraphQlBean
             description( description );
         setValues( valuesScriptValue, enumType );
         return enumType.build();
+    }
+
+    public Publisher createPublisher()
+    {
+        return new SingleSubscriberPublisher();
+    }
+
+    public Subscriber createSubscriber(final ScriptValue onNext)
+    {
+        return new ExecutionResultSubscriber(onNext);
+
     }
 
     private void setValues( final ScriptValue valuesScriptValue, final GraphQLEnumType.Builder enumType )
@@ -227,22 +247,22 @@ public class GraphQlBean
     private void setFieldData( final ScriptValue scriptFieldValue, final GraphQLFieldDefinition.Builder graphQlField )
     {
         final ScriptValue resolve = scriptFieldValue.getMember( "resolve" );
-        if ( resolve == null )
+        if ( resolve != null )
         {
-            return;
+            if ( resolve.isFunction() )
+            {
+                graphQlField.dataFetcher( ( env ) -> {
+                    final DataFetchingEnvironmentMapper environmentMapper = new DataFetchingEnvironmentMapper( env );
+                    final ScriptValue result = resolve.call( environmentMapper );
+                    return toGraphQlValue( result );
+                } );
+            }
+            else
+            {
+                graphQlField.staticValue( toGraphQlValue( resolve ) );
+            }
         }
-        else if ( resolve.isFunction() )
-        {
-            graphQlField.dataFetcher( ( env ) -> {
-                final DataFetchingEnvironmentMapper environmentMapper = new DataFetchingEnvironmentMapper( env );
-                final ScriptValue result = resolve.call( environmentMapper );
-                return toGraphQlValue( result );
-            } );
-        }
-        else
-        {
-            graphQlField.staticValue( toGraphQlValue( resolve ) );
-        }
+
     }
 
     private Object toGraphQlValue( final ScriptValue data )
@@ -288,7 +308,6 @@ public class GraphQlBean
         GraphQL graphQL = GraphQL.newGraphQL( schema ).build();
         final Map<String, Object> variablesMap = variables == null ? Collections.<String, Object>emptyMap() : variables.getMap();
         final ExecutionResult executionResult = graphQL.execute( query, (Object) null, variablesMap );
-
         return new ExecutionResultMapper( executionResult );
     }
 }

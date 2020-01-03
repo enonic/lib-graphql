@@ -13,8 +13,9 @@ exports.GraphQLID = Scalars.GraphQLID;
 exports.createSchema = function (params) {
     var query = required(params, 'query');
     var mutation = optional(params, 'mutation');
+    var subscription = optional(params, 'subscription');
     var additonalTypes = optional(params, 'dictionary');
-    return graphQlBean.createSchema(query, mutation, additonalTypes);
+    return graphQlBean.createSchema(query, mutation, subscription, additonalTypes);
 };
 
 exports.createObjectType = function (params) {
@@ -65,6 +66,15 @@ exports.createEnumType = function (params) {
     var values = required(params, 'values');
     var description = optional(params, 'description');
     return graphQlBean.createEnumType(name, __.toScriptValue(values), description);
+};
+
+exports.createPublisher = function (params) {
+    return graphQlBean.createPublisher();
+};
+
+exports.createSubscriber = function (params) {
+    const onNext = optional(params, 'onNext');
+    return graphQlBean.createSubscriber(__.toScriptValue(onNext));
 };
 
 
