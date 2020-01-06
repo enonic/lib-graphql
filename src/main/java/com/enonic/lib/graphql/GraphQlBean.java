@@ -11,7 +11,6 @@ import org.reactivestreams.Subscriber;
 
 import graphql.ExecutionResult;
 import graphql.GraphQL;
-import graphql.execution.reactive.SingleSubscriberPublisher;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLFieldDefinition;
@@ -27,6 +26,8 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.GraphQLType;
 import graphql.schema.GraphQLTypeReference;
 import graphql.schema.GraphQLUnionType;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 
 import com.enonic.xp.script.ScriptValue;
 
@@ -118,17 +119,22 @@ public class GraphQlBean
             description( description );
         setValues( valuesScriptValue, enumType );
         return enumType.build();
+
     }
 
-    public Publisher createPublisher()
+    public Publisher createSingleSubscriberPublisher()
     {
         return new SingleSubscriberPublisher();
     }
 
-    public Subscriber createSubscriber(final ScriptValue onNext)
+    public Publisher createOnSubscribePublisher( final ScriptValue onSubscribe )
     {
-        return new ExecutionResultSubscriber(onNext);
+        return Flowable.create( emitter -> onSubscribe.call( emitter ), BackpressureStrategy.BUFFER );
+    }
 
+    public Subscriber createSubscriber( final ScriptValue onNext )
+    {
+        return new ExecutionResultSubscriber( onNext );
     }
 
     private void setValues( final ScriptValue valuesScriptValue, final GraphQLEnumType.Builder enumType )

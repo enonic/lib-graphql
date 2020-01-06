@@ -68,8 +68,15 @@ exports.createEnumType = function (params) {
     return graphQlBean.createEnumType(name, __.toScriptValue(values), description);
 };
 
-exports.createPublisher = function (params) {
-    return graphQlBean.createPublisher();
+exports.createSingleSubscriberPublisher = function () {
+    return graphQlBean.createSingleSubscriberPublisher();
+};
+
+exports.createOnSubscribePublisher = function (onSubscribe) {
+    if (onSubscribe === undefined) {
+        throw "Value 'onSubscribe' is required";
+    }
+    return graphQlBean.createOnSubscribePublisher(__.toScriptValue(onSubscribe));
 };
 
 exports.createSubscriber = function (params) {
