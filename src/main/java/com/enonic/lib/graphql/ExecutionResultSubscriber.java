@@ -31,8 +31,6 @@ public class ExecutionResultSubscriber
         final Subscription subscription = this.subscription;
         if ( subscription != null )
         {
-            final Object data = executionResult.getData();
-            System.out.println( "onNext:" + data );
             if ( onNext != null )
             {
                 final ExecutionResultMapper executionResultMapper = new ExecutionResultMapper( executionResult );
@@ -52,5 +50,14 @@ public class ExecutionResultSubscriber
     public void onComplete()
     {
 
+    }
+
+    public void cancelSubscription()
+    {
+        final Subscription subscription = this.subscription;
+        if ( subscription != null )
+        {
+            subscription.cancel();
+        }
     }
 }
