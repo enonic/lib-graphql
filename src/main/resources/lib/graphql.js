@@ -68,14 +68,14 @@ exports.createEnumType = function (params) {
     return graphQlBean.createEnumType(name, __.toScriptValue(values), description);
 };
 
-exports.createSingleSubscriberPublisher = function () {
-    return graphQlBean.createSingleSubscriberPublisher();
-};
-
 exports.createOnSubscribePublisher = function (params) {
     var onSubscribe = required(params, 'onSubscribe');
     var onCancel = optional(params, 'onCancel');
     return graphQlBean.createOnSubscribePublisher(__.toScriptValue(onSubscribe), __.toScriptValue(onCancel));
+};
+
+exports.createPublishProcessor = function () {
+    return graphQlBean.createPublishProcessor();
 };
 
 exports.createSubscriber = function (params) {

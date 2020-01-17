@@ -30,6 +30,7 @@ import graphql.schema.GraphQLUnionType;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.processors.PublishProcessor;
 
 import com.enonic.xp.script.ScriptValue;
 
@@ -124,11 +125,6 @@ public class GraphQlBean
 
     }
 
-    public Publisher createSingleSubscriberPublisher()
-    {
-        return new SingleSubscriberPublisher();
-    }
-
     public Publisher createOnSubscribePublisher( final ScriptValue onSubscribe, final ScriptValue onCancel )
     {
         return Flowable.create( emitter -> {
@@ -153,6 +149,11 @@ public class GraphQlBean
                 } );
             }
         }, BackpressureStrategy.BUFFER ); //TODO Increase buffer and change strategy
+    }
+
+    public PublishProcessor<Object> createPublishProcessor()
+    {
+        return PublishProcessor.create();
     }
 
     public Subscriber createSubscriber( final ScriptValue onNext )
