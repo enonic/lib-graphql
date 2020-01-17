@@ -72,11 +72,10 @@ exports.createSingleSubscriberPublisher = function () {
     return graphQlBean.createSingleSubscriberPublisher();
 };
 
-exports.createOnSubscribePublisher = function (onSubscribe) {
-    if (onSubscribe === undefined) {
-        throw "Value 'onSubscribe' is required";
-    }
-    return graphQlBean.createOnSubscribePublisher(__.toScriptValue(onSubscribe));
+exports.createOnSubscribePublisher = function (params) {
+    var onSubscribe = required(params, 'onSubscribe');
+    var onCancel = optional(params, 'onCancel');
+    return graphQlBean.createOnSubscribePublisher(__.toScriptValue(onSubscribe), __.toScriptValue(onCancel));
 };
 
 exports.createSubscriber = function (params) {

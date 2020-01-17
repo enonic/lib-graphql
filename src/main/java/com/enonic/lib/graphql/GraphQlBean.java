@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
@@ -28,6 +29,7 @@ import graphql.schema.GraphQLTypeReference;
 import graphql.schema.GraphQLUnionType;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 
 import com.enonic.xp.script.ScriptValue;
 
@@ -127,9 +129,30 @@ public class GraphQlBean
         return new SingleSubscriberPublisher();
     }
 
-    public Publisher createOnSubscribePublisher( final ScriptValue onSubscribe )
+    public Publisher createOnSubscribePublisher( final ScriptValue onSubscribe, final ScriptValue onCancel )
     {
-        return Flowable.create( emitter -> onSubscribe.call( emitter ), BackpressureStrategy.BUFFER );
+        return Flowable.create( emitter -> {
+            onSubscribe.call( emitter );
+            if ( onCancel != null )
+            {
+                emitter.setDisposable( new Disposable()
+                {
+                    private AtomicBoolean disposed = new AtomicBoolean( false );
+
+                    @Override
+                    public void dispose()
+                    {
+                        onCancel.call( emitter );
+                    }
+
+                    @Override
+                    public boolean isDisposed()
+                    {
+                        return disposed.get();
+                    }
+                } );
+            }
+        }, BackpressureStrategy.BUFFER ); //TODO Increase buffer and change strategy
     }
 
     public Subscriber createSubscriber( final ScriptValue onNext )
