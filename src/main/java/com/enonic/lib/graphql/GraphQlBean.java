@@ -125,6 +125,7 @@ public class GraphQlBean
 
     }
 
+    //TODO Extract in separate library
     public Publisher createOnSubscribePublisher( final ScriptValue onSubscribe, final ScriptValue onCancel )
     {
         return Flowable.create( emitter -> {
@@ -151,11 +152,13 @@ public class GraphQlBean
         }, BackpressureStrategy.BUFFER ); //TODO Extend to allow to define strategy
     }
 
+    //TODO Extract in separate library
     public PublishProcessor<Object> createPublishProcessor()
     {
         return PublishProcessor.create();
     }
 
+    //TODO Extract in separate library
     public Subscriber createSubscriber( final ScriptValue onNext )
     {
         return new ExecutionResultSubscriber( onNext );
