@@ -148,7 +148,7 @@ public class GraphQlBean
                     }
                 } );
             }
-        }, BackpressureStrategy.BUFFER ); //TODO Increase buffer and change strategy
+        }, BackpressureStrategy.BUFFER ); //TODO Extend to allow to define strategy
     }
 
     public PublishProcessor<Object> createPublishProcessor()
