@@ -1,9 +1,10 @@
-package com.enonic.lib.graphql;
+package com.enonic.lib.graphql.rx;
 
 import org.reactivestreams.Subscription;
 
 import graphql.ExecutionResult;
 
+import com.enonic.lib.graphql.ExecutionResultMapper;
 import com.enonic.xp.script.ScriptValue;
 
 public class ExecutionResultSubscriber

@@ -1,4 +1,4 @@
-package com.enonic.lib.graphql;
+package com.enonic.lib.graphql.rx;
 
 import org.reactivestreams.Subscriber;
 

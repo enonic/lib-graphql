@@ -68,22 +68,6 @@ exports.createEnumType = function (params) {
     return graphQlBean.createEnumType(name, __.toScriptValue(values), description);
 };
 
-exports.createOnSubscribePublisher = function (params) {
-    var onSubscribe = required(params, 'onSubscribe');
-    var onCancel = optional(params, 'onCancel');
-    return graphQlBean.createOnSubscribePublisher(__.toScriptValue(onSubscribe), __.toScriptValue(onCancel));
-};
-
-exports.createPublishProcessor = function () {
-    return graphQlBean.createPublishProcessor();
-};
-
-exports.createSubscriber = function (params) {
-    const onNext = optional(params, 'onNext');
-    return graphQlBean.createSubscriber(__.toScriptValue(onNext));
-};
-
-
 //Schema util functions
 exports.list = function (type) {
     return graphQlBean.list(type);
@@ -96,7 +80,6 @@ exports.nonNull = function (type) {
 exports.reference = function (typeKey) {
     return graphQlBean.reference(typeKey);
 };
-
 
 //Query execution
 exports.execute = function (schema, query, variables) {
