@@ -5,7 +5,7 @@ import org.reactivestreams.Subscriber;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
 @JsonIgnoreType
-public class Publisher
+public class Publisher<T>
 {
     private final org.reactivestreams.Publisher publisher;
 

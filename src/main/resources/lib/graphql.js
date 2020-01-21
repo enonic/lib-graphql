@@ -90,7 +90,7 @@ exports.execute = function (schema, query, variables) {
 function required(params, name) {
     var value = params[name];
     if (value === undefined) {
-        log.info('error:' + JSON.stringify(params));
+        log.error('error:' + JSON.stringify(params));
         throw "Value '" + name + "' is required";
     }
     return value;
