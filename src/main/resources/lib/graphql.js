@@ -13,8 +13,9 @@ exports.GraphQLID = Scalars.GraphQLID;
 exports.createSchema = function (params) {
     var query = required(params, 'query');
     var mutation = optional(params, 'mutation');
-    var dictionary = optional(params, 'dictionary');
-    return graphQlBean.createSchema(query, mutation, dictionary);
+    var subscription = optional(params, 'subscription');
+    var additonalTypes = optional(params, 'dictionary');
+    return graphQlBean.createSchema(query, mutation, subscription, additonalTypes);
 };
 
 exports.createObjectType = function (params) {
@@ -67,7 +68,6 @@ exports.createEnumType = function (params) {
     return graphQlBean.createEnumType(name, __.toScriptValue(values), description);
 };
 
-
 //Schema util functions
 exports.list = function (type) {
     return graphQlBean.list(type);
@@ -81,7 +81,6 @@ exports.reference = function (typeKey) {
     return graphQlBean.reference(typeKey);
 };
 
-
 //Query execution
 exports.execute = function (schema, query, variables) {
     return __.toNativeObject(graphQlBean.execute(schema, query, __.toScriptValue(variables)));
@@ -91,7 +90,7 @@ exports.execute = function (schema, query, variables) {
 function required(params, name) {
     var value = params[name];
     if (value === undefined) {
-        log.info('error:' + JSON.stringify(params));
+        log.error('error:' + JSON.stringify(params));
         throw "Value '" + name + "' is required";
     }
     return value;

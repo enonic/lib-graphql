@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import graphql.ExecutionResult;
 import graphql.GraphQL;
-import graphql.execution.SimpleExecutionStrategy;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLFieldDefinition;
@@ -30,7 +29,7 @@ import com.enonic.xp.script.ScriptValue;
 public class GraphQlBean
 {
     public GraphQLSchema createSchema( final GraphQLObjectType queryObjectType, final GraphQLObjectType mutationObjectType,
-                                       final GraphQLObjectType[] dictionary )
+                                       final GraphQLObjectType subscriptionObjectType, final GraphQLObjectType[] additonalTypes )
     {
         final GraphQLSchema.Builder graphQLSchema = GraphQLSchema.newSchema().query( queryObjectType );
         if ( mutationObjectType != null )
@@ -38,7 +37,12 @@ public class GraphQlBean
             graphQLSchema.mutation( mutationObjectType );
 
         }
-        return graphQLSchema.build( dictionary == null ? Collections.EMPTY_SET : new HashSet<>( Arrays.asList( dictionary ) ) );
+        if ( subscriptionObjectType != null )
+        {
+            graphQLSchema.subscription( subscriptionObjectType );
+
+        }
+        return graphQLSchema.build( additonalTypes == null ? Collections.EMPTY_SET : new HashSet<>( Arrays.asList( additonalTypes ) ) );
     }
 
     public GraphQLObjectType createObjectType( final String name, final ScriptValue fieldsScriptValue,
@@ -54,11 +58,11 @@ public class GraphQlBean
                     final Object interfaceValue = interfaceScriptValue.getValue();
                     if ( interfaceValue instanceof GraphQLInterfaceType )
                     {
-                        objectType.withInterface( (GraphQLInterfaceType) interfaceScriptValue.getValue() );
+                        objectType.withInterface( (GraphQLInterfaceType) interfaceValue );
                     }
                     else if ( interfaceValue instanceof GraphQLTypeReference )
                     {
-                        objectType.withInterface( GraphQLInterfaceType.reference( ( (GraphQLTypeReference) interfaceValue ).getName() ) );
+                        objectType.withInterface( (GraphQLTypeReference) interfaceValue );
                     }
                 } );
         }
@@ -81,8 +85,8 @@ public class GraphQlBean
         final GraphQLInterfaceType.Builder interfaceType = GraphQLInterfaceType.newInterface().
             name( name ).
             description( description ).
-            typeResolver( ( object ) -> {
-                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) object );
+            typeResolver( ( typeResolutionEnvironment ) -> {
+                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
                 return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
             } );
         setTypeFields( fieldsScriptValue, interfaceType );
@@ -95,8 +99,8 @@ public class GraphQlBean
         return GraphQLUnionType.newUnionType().
             name( name ).
             description( description ).
-            typeResolver( ( object ) -> {
-                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) object );
+            typeResolver( ( typeResolutionEnvironment ) -> {
+                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
                 return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
             } ).
             possibleTypes( types ).
@@ -110,6 +114,7 @@ public class GraphQlBean
             description( description );
         setValues( valuesScriptValue, enumType );
         return enumType.build();
+
     }
 
     private void setValues( final ScriptValue valuesScriptValue, final GraphQLEnumType.Builder enumType )
@@ -228,22 +233,22 @@ public class GraphQlBean
     private void setFieldData( final ScriptValue scriptFieldValue, final GraphQLFieldDefinition.Builder graphQlField )
     {
         final ScriptValue resolve = scriptFieldValue.getMember( "resolve" );
-        if ( resolve == null )
+        if ( resolve != null )
         {
-            return;
+            if ( resolve.isFunction() )
+            {
+                graphQlField.dataFetcher( ( env ) -> {
+                    final DataFetchingEnvironmentMapper environmentMapper = new DataFetchingEnvironmentMapper( env );
+                    final ScriptValue result = resolve.call( environmentMapper );
+                    return toGraphQlValue( result );
+                } );
+            }
+            else
+            {
+                graphQlField.staticValue( toGraphQlValue( resolve ) );
+            }
         }
-        else if ( resolve.isFunction() )
-        {
-            graphQlField.dataFetcher( ( env ) -> {
-                final DataFetchingEnvironmentMapper environmentMapper = new DataFetchingEnvironmentMapper( env );
-                final ScriptValue result = resolve.call( environmentMapper );
-                return toGraphQlValue( result );
-            } );
-        }
-        else
-        {
-            graphQlField.staticValue( toGraphQlValue( resolve ) );
-        }
+
     }
 
     private Object toGraphQlValue( final ScriptValue data )
@@ -286,10 +291,9 @@ public class GraphQlBean
 
     public ExecutionResultMapper execute( final GraphQLSchema schema, final String query, final ScriptValue variables )
     {
-        GraphQL graphQL = new GraphQL( schema, new SimpleExecutionStrategy() );
+        GraphQL graphQL = GraphQL.newGraphQL( schema ).build();
         final Map<String, Object> variablesMap = variables == null ? Collections.<String, Object>emptyMap() : variables.getMap();
         final ExecutionResult executionResult = graphQL.execute( query, (Object) null, variablesMap );
-
         return new ExecutionResultMapper( executionResult );
     }
 }

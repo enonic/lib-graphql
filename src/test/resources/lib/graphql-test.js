@@ -143,7 +143,7 @@ function testInvalidSyntaxQuery(schema) {
         "errors": [
             {
                 "errorType": "ValidationError",
-                "message": "Validation error of type FieldUndefined: Field aMissingField is undefined",
+                "message": "Validation error of type FieldUndefined: Field 'aMissingField' in type 'ObjectType' is undefined @ 'getObject/aMissingField'",
                 "locations": [
                     {
                         "line": 1,
@@ -168,7 +168,13 @@ function testFailingQuery(schema) {
         "errors": [
             {
                 "errorType": "DataFetchingException",
-                "message": "Exception while fetching data: com.enonic.xp.resource.ResourceProblemException: Error while retrieving aFailingField",
+                "message": "Exception while fetching data (/getObject/aFailingField) : Error while retrieving aFailingField",
+                "locations": [
+                    {
+                        "line": 1,
+                        "column": 42
+                    }
+                ],
                 "exception": {
                     "name": "com.enonic.xp.resource.ResourceProblemException",
                     "message": "Error while retrieving aFailingField"
@@ -211,8 +217,9 @@ function createSchema(database) {
 }
 
 var objectType;
+
 function createRootQueryType(database) {
-    objectType = createObjectType();
+    objectType = objectType || createObjectType();
     return graphQlLib.createObjectType({
         name: 'Query',
         fields: {
@@ -274,7 +281,7 @@ function createRootMutationType(database) {
         name: 'Mutation',
         fields: {
             addObject: {
-                type: createObjectType(),
+                type: objectType || createObjectType(),
                 args: {
                     id: graphQlLib.nonNull(graphQlLib.GraphQLID),
                     object: graphQlLib.nonNull(createInputObjectType())
@@ -406,7 +413,7 @@ function createSubObjectType() {
 function createInterfaceType() {
     return graphQlLib.createInterfaceType({
         name: 'InterfaceType',
-        typeResolver: function () {
+        typeResolver: function (arg) {
             return objectType
         },
         description: 'An interface type.',
