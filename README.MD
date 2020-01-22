@@ -14,6 +14,7 @@ Compatibility
 
 | Version | XP Version  | Dependency                       |
 |---------|-------------|----------------------------------|
+| 1.1.0   | 7.0.0       | com.enonic.lib:lib-graphql:1.1.0 |
 | 1.0.0   | 7.0.0       | com.enonic.lib:lib-graphql:1.0.0 |
 | 0.5.2   | 6.10.x      | com.enonic.lib:graphql:0.5.2 |
 | 0.5.1   | 6.10.x      | com.enonic.lib:graphql:0.5.1 |
