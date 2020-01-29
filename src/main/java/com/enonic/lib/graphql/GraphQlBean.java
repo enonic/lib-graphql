@@ -289,11 +289,17 @@ public class GraphQlBean
         return new GraphQLTypeReference( typeKey );
     }
 
-    public ExecutionResultMapper execute( final GraphQLSchema schema, final String query, final ScriptValue variables )
+    public Object execute( final GraphQLSchema schema, final String query, final ScriptValue variables )
     {
         GraphQL graphQL = GraphQL.newGraphQL( schema ).build();
         final Map<String, Object> variablesMap = variables == null ? Collections.<String, Object>emptyMap() : variables.getMap();
         final ExecutionResult executionResult = graphQL.execute( query, (Object) null, variablesMap );
+
+        if ( executionResult.getData() instanceof Map )
+        {
+            return Collections.singletonMap( "data", executionResult.getData() );
+        }
+
         return new ExecutionResultMapper( executionResult );
     }
 }
