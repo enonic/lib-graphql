@@ -64,7 +64,9 @@ function testMissingObjectQuery(schema) {
     var query = '{getObject(id:"0000-0000-0000-0002"){id}}';
     var result = graphQlLib.execute(schema, query);
     assert.assertJsonEquals({
-        data: {}
+        data: {
+            getObject: null
+        }
     }, result);
 }
 
@@ -162,7 +164,8 @@ function testFailingQuery(schema) {
     assert.assertJsonEquals({
         "data": {
             "getObject": {
-                "id": "0000-0000-0000-0001"
+                "id": "0000-0000-0000-0001",
+                "aFailingField": null
             }
         },
         "errors": [
