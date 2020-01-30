@@ -294,12 +294,6 @@ public class GraphQlBean
         GraphQL graphQL = GraphQL.newGraphQL( schema ).build();
         final Map<String, Object> variablesMap = variables == null ? Collections.<String, Object>emptyMap() : variables.getMap();
         final ExecutionResult executionResult = graphQL.execute( query, (Object) null, variablesMap );
-
-        if ( executionResult.getData() instanceof Map )
-        {
-            return Collections.singletonMap( "data", executionResult.getData() );
-        }
-
         return new ExecutionResultMapper( executionResult );
     }
 }

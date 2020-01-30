@@ -1,10 +1,15 @@
 package com.enonic.lib.graphql;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+
 import com.enonic.xp.script.serializer.MapGenerator;
+import com.enonic.xp.script.serializer.MapGeneratorBase;
 import com.enonic.xp.script.serializer.MapSerializable;
+import com.enonic.xp.util.Exceptions;
 
 public final class MapMapper
     implements MapSerializable
@@ -42,6 +47,21 @@ public final class MapMapper
         else if ( value instanceof Map )
         {
             serializeMap( gen, key, (Map<?, ?>) value );
+        }
+        //Temporary workaround. Remove as soon as __.toNativeObject allows to return null values
+        else if ( value == null )
+        {
+            try
+            {
+                final Field currentField = MapGeneratorBase.class.getDeclaredField( "current" );
+                currentField.setAccessible( true );
+                final Object map = currentField.get( gen );
+                ( (ScriptObjectMirror) map ).put( key, value );
+            }
+            catch ( NoSuchFieldException | IllegalAccessException e )
+            {
+                throw Exceptions.unchecked( e );
+            }
         }
         else
         {
