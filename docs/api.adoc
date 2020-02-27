@@ -1,4 +1,5 @@
 = GraphQL Library API
+:toc: right
 
 This document describes the constants and functions accessible through the library's API.
 
@@ -15,8 +16,63 @@ GraphQL comes with a set of default scalar types:
 * GraphQLBoolean
 * GraphQLID
 
+== Type wrappers
+
+By default the type of field has an occurrence of 0..1.
+To make the field mandatory or a list, use the functions ``nonNull`` or ``list``
+
+=== nonNull
+
+Returns a modified type that indicates the underlying wrapped type will not be null
+
+==== Parameters
+|===
+|Name: Type | Description
+|type: GraphQLType | Wrapped GraphQL type
+|===
+
+=== list
+
+Returns a modified type that indicates a list of the underlying wrapped type
+
+==== Parameters
+|===
+|Name: Type | Description
+|type: GraphQLType | Wrapped GraphQL type
+|===
+
+=== reference
+
+Returns a special type that allows an object/interface type to reference a type by its key. Necessary for self reference.
+
+==== Parameters
+|===
+|Name: Type | Description
+|typeName: String | The type name
+|===
+
+
+
+== Schema execution function
+
+
+
+=== execute
+
+Executes a GraphQL query and variables against a schema
+
+==== Parameters
+|===
+|Name(Arguments):Type | Description
+
+|schema: Schema | GraphQL schema created
+|query: String | GraphQL query to execute
+|variables: Object | JS Object containing the variables used in the query
+|===
 
 == Schema creation functions
+
+
 
 
 
