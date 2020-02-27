@@ -1,5 +1,4 @@
-GraphQL lib for Enonic XP
-=========================
+# GraphQL lib for Enonic XP
 
 [![Build Status](https://travis-ci.org/enonic/lib-graphql.svg?branch=master)](https://travis-ci.org/enonic/lib-graphql)
 [![codecov](https://codecov.io/gh/enonic/lib-graphql/branch/master/graph/badge.svg)](https://codecov.io/gh/enonic/lib-graphql)
@@ -9,8 +8,7 @@ This is a library for implementing a GraphQL service on Enonic XP.
 It allows you to define a GraphQL schema and execute GraphQL queries against this schema.
 
 
-Compatibility
--------------
+## Compatibility
 
 | Version | XP Version  | Dependency                       |
 |---------|-------------|----------------------------------|
@@ -22,10 +20,9 @@ Compatibility
 | 0.5.0   | 6.10.x      | com.enonic.lib:graphql:0.5.0 |
 
 
-Usage
------
+## Usage
 
-First, you will need to add Enonic repository to the repository list:
+To include this library into your project, you will need to add the Enonic repository to the repository list if not already done
 
 ```gradle
 repositories {
@@ -35,7 +32,7 @@ repositories {
 }
 ```
 
-After this, add the following dependency (where ``<version>`` is the actual version to use):
+After this, add the following dependency (where ``<version>`` is the library version to use):
 
 ```gradle
 dependencies {
@@ -43,8 +40,11 @@ dependencies {
 }
 ```
 
-Example
--------
+## API
+
+The browse the list of constants and functions accessible through the library's API, please see [GraphQL Library API](./docs/api.adoc)
+
+## Example
 
 You can then use this library inside your javascript controller.
 Below is an example of an Enonic XP service using the library.

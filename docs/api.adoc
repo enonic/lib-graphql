@@ -1,0 +1,23 @@
+= GraphQL Library API
+
+This document describes the constants and functions accessible through the library's API.
+
+== Scalar types
+
+A GraphQL object type has a name and fields, but at some point those fields have to resolve to some concrete data.
+That's where the scalar types come in: they represent the leaves of the query.
+
+GraphQL comes with a set of default scalar types:
+
+* GraphQLInt
+* GraphQLFloat
+* GraphQLString
+* GraphQLBoolean
+* GraphQLID
+
+
+== Schema creation functions
+
+
+
+
