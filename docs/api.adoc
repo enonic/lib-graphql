@@ -25,9 +25,8 @@ To make the field mandatory or a list, use the functions ``nonNull`` or ``list``
 
 Returns a modified type that indicates the underlying wrapped type will not be null
 
-==== Parameters
+==== Arguments
 |===
-|Name: Type | Description
 |type: GraphQLType | Wrapped GraphQL type
 |===
 
@@ -35,9 +34,8 @@ Returns a modified type that indicates the underlying wrapped type will not be n
 
 Returns a modified type that indicates a list of the underlying wrapped type
 
-==== Parameters
+==== Arguments
 |===
-|Name: Type | Description
 |type: GraphQLType | Wrapped GraphQL type
 |===
 
@@ -45,9 +43,8 @@ Returns a modified type that indicates a list of the underlying wrapped type
 
 Returns a special type that allows an object/interface type to reference a type by its key. Necessary for self reference.
 
-==== Parameters
+==== Arguments
 |===
-|Name: Type | Description
 |typeName: String | The type name
 |===
 
@@ -55,22 +52,86 @@ Returns a special type that allows an object/interface type to reference a type 
 
 == Schema execution function
 
-
-
 === execute
 
 Executes a GraphQL query and variables against a schema
 
-==== Parameters
+==== Arguments
 |===
-|Name(Arguments):Type | Description
-
-|schema: Schema | GraphQL schema created
-|query: String | GraphQL query to execute
-|variables: Object | JS Object containing the variables used in the query
+|schema: Schema (Required) | GraphQL schema created
+|query: String (Required) | GraphQL query to execute
+|variables: JS Object (Required) | JS Object containing the variables used in the query
 |===
 
 == Schema creation functions
+
+=== createSchema
+
+Creates a GraphQL schema
+
+==== Parameters
+|===
+|query: GraphQLObjectType (Required) | Root query type
+|mutation: GraphQLObjectType | Root mutation type
+|subscription: GraphQLObjectType | Root subscription type
+|dictionary: String | Additional types (Necessary for types accessed through references)
+|===
+
+=== createObjectType
+
+Creates a GraphQL object type
+
+==== Parameters
+|===
+|name: String (Required) | Type name
+|fields: JS Object (Required) | JS Object containing the type fields
+|interfaces: Array<GraphQLInterfaceType OR GraphQLTypeReference> | Type interfaces
+|description: String | Type description
+|===
+
+=== createInputObjectType
+
+Creates a GraphQL input object type
+
+==== Parameters
+|===
+|name: String (Required) | Type name
+|fields: JS Object (Required) | JS Object containing the type fields
+|description: String | Type description
+|===
+
+=== createInterfaceType
+
+Creates a GraphQL interface type
+
+==== Parameters
+|===
+|name: String (Required) | Type name
+|fields: JS Object (Required) | JS Object containing the type fields
+|typeResolver: Function (Required) | Type resolution function
+|description: String | Type description
+|===
+
+=== createUnionType
+
+Creates a GraphQL union type
+
+==== Parameters
+|===
+|name: String (Required) | Type name
+|types: Array<GraphQLObjectType> | Possible types
+|===
+
+=== createEnumType
+
+Creates a GraphQL enum type
+
+==== Parameters
+|===
+|name: String (Required) | Type name
+|values: Array<String> (Required) | Possible values
+|description: String | Description
+|===
 
 
 
