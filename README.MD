@@ -1,6 +1,6 @@
 # GraphQL lib for Enonic XP
 
-[![Build Status](https://travis-ci.org/enonic/lib-graphql.svg?branch=master)](https://travis-ci.org/enonic/lib-graphql)
+[![Actions Status](https://github.com/enonic/lib-graphql/workflows/Gradle%20Build/badge.svg)](https://github.com/enonic/lib-graphql/actions)
 [![codecov](https://codecov.io/gh/enonic/lib-graphql/branch/master/graph/badge.svg)](https://codecov.io/gh/enonic/lib-graphql)
 [![License](https://img.shields.io/github/license/enonic/lib-sql.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
