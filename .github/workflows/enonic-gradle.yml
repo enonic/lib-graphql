@@ -48,7 +48,7 @@ jobs:
         run: ./gradlew publish -PrepoKey=public -PrepoUser=${{ secrets.ARTIFACTORY_USERNAME }} -PrepoPassword=${{ secrets.ARTIFACTORY_PASSWORD }}
 
       - name: Create Release
-        if: "!contains(steps.read_version.outputs.value, '-SNAPSHOT') && && github.ref == 'refs/heads/master'"
+        if: "!contains(steps.read_version.outputs.value, '-SNAPSHOT') && github.ref == 'refs/heads/master'"
         id: create_release
         uses: actions/create-release@v1
         env:
