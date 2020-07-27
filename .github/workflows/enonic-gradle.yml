@@ -25,6 +25,8 @@ jobs:
 
       - uses: codecov/codecov-action@v1.0.10
 
+      ### PUBLISHING STEPS ###
+
       - name: Read version property
         id: read_version
         uses: christian-draeger/read-properties@1.0.1
@@ -39,23 +41,38 @@ jobs:
           path: './gradle.properties'
           property: 'projectName'
 
-      - name: Publish to snapshot repository
-        if: "contains(steps.read_version.outputs.value, '-SNAPSHOT') && github.ref == 'refs/heads/master'"
-        run: ./gradlew publish -PrepoKey=snapshot -PrepoUser=${{ secrets.ARTIFACTORY_USERNAME }} -PrepoPassword=${{ secrets.ARTIFACTORY_PASSWORD }}
+      - name: Fail on bad config
+        if: steps.read_version.outputs.value == '' || steps.read_project_name.outputs.value == ''
+        run: exit 1
 
-      - name: Publish to release repository
-        if: "!contains(steps.read_version.outputs.value, '-SNAPSHOT') && github.ref == 'refs/heads/master'"
-        run: ./gradlew publish -PrepoKey=public -PrepoUser=${{ secrets.ARTIFACTORY_USERNAME }} -PrepoPassword=${{ secrets.ARTIFACTORY_PASSWORD }}
+      - name: Get publishing variables
+        id: get_publish_vars
+        run: |
+            PUBLISH=${{ github.ref == 'refs/heads/master' }}
+
+            echo ::set-output name=publish::$PUBLISH
+
+            if ${{ contains(steps.read_version.outputs.value, '-SNAPSHOT') }};
+            then
+              echo "::set-output name=release::false"
+              echo "::set-output name=repo::snapshot"
+            else
+              echo "::set-output name=release::true"
+              echo "::set-output name=repo::public"
+            fi
+
+      - name: Publish
+        if: steps.get_publish_vars.outputs.publish == 'true'
+        run: ./gradlew publish -PrepoKey=${{ steps.get_publish_vars.outputs.repo }} -PrepoUser=${{ secrets.ARTIFACTORY_USERNAME }} -PrepoPassword=${{ secrets.ARTIFACTORY_PASSWORD }}
 
       - name: Create Release
-        if: "!contains(steps.read_version.outputs.value, '-SNAPSHOT') && github.ref == 'refs/heads/master'"
+        if: steps.get_publish_vars.outputs.release == 'true'
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.read_version.outputs.value }}
-          release_name: GraphQL lib for Enonic XP ${{ steps.read_version.outputs.value }}
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -64,7 +81,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "build/libs/${{ steps.read_project_name.outputs.value }}-${{ steps.read_version.outputs.value }}.jar"
           asset_name: "${{ steps.read_project_name.outputs.value }}-${{ steps.read_version.outputs.value }}.jar"
           asset_content_type: application/java-archive
