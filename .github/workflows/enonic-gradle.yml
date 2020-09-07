@@ -29,59 +29,36 @@ jobs:
 
       ### PUBLISHING STEPS ###
 
-      - name: Read version property
-        id: read_version
-        uses: christian-draeger/read-properties@1.0.1
-        with:
-          path: './gradle.properties'
-          property: 'version'
-
-      - name: Read projectName property
-        id: read_project_name
-        uses: christian-draeger/read-properties@1.0.1
-        with:
-          path: './gradle.properties'
-          property: 'projectName'
+      - name: Get publishing variables
+        id: publish_vars
+        uses: enonic/release-tools/publish-vars@master
+        env:
+          PROPERTIES_PATH: './gradle.properties'
 
       - name: Fail on bad config
-        if: steps.read_version.outputs.value == '' || steps.read_project_name.outputs.value == ''
+        if: steps.publish_vars.outputs.version == '' || steps.publish_vars.outputs.projectName == ''
         run: exit 1
 
-      - name: Get publishing variables
-        id: get_publish_vars
-        run: |
-            PUBLISH=${{ github.ref == 'refs/heads/master' }}
-
-            echo ::set-output name=publish::$PUBLISH
-
-            if ${{ contains(steps.read_version.outputs.value, '-SNAPSHOT') }};
-            then
-              echo "::set-output name=release::false"
-              echo "::set-output name=repo::snapshot"
-            else
-              echo "::set-output name=release::true"
-              echo "::set-output name=repo::public"
-            fi
-
       - name: Publish
-        if: steps.get_publish_vars.outputs.publish == 'true'
-        run: ./gradlew publish -PrepoKey=${{ steps.get_publish_vars.outputs.repo }} -PrepoUser=${{ secrets.ARTIFACTORY_USERNAME }} -PrepoPassword=${{ secrets.ARTIFACTORY_PASSWORD }}
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: ./gradlew publish -PrepoKey=${{ steps.publish_vars.outputs.repo }} -PrepoUser=${{ secrets.ARTIFACTORY_USERNAME }} -PrepoPassword=${{ secrets.ARTIFACTORY_PASSWORD }}
 
       - name: Download changelog
-        if: steps.get_publish_vars.outputs.release == 'true'
+        if: steps.publish_vars.outputs.release == 'true'
         uses: actions/download-artifact@v2
         with:
           name: changelog
 
       - name: Create Release
-        if: steps.get_publish_vars.outputs.release == 'true'
+        if: steps.publish_vars.outputs.release == 'true'
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.read_version.outputs.value }}
+          tag_name: ${{ steps.publish_vars.outputs.tag_name }}
           body_path: changelog.md
+          prerelease: ${{ steps.publish_vars.outputs.prerelease == 'true' }}
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -91,9 +68,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "build/libs/${{ steps.read_project_name.outputs.value }}-${{ steps.read_version.outputs.value }}.jar"
-          asset_name: "${{ steps.read_project_name.outputs.value }}-${{ steps.read_version.outputs.value }}.jar"
+          asset_path: "build/libs/${{ steps.publish_vars.outputs.projectName }}-${{ steps.publish_vars.outputs.version }}.jar"
+          asset_name: "${{ steps.publish_vars.outputs.projectName }}-${{ steps.publish_vars.outputs.version }}.jar"
           asset_content_type: application/java-archive
+
+      - name: Write new snapshot version
+        if: steps.publish_vars.outputs.release == 'true'
+        uses: christian-draeger/write-properties@1.0.1
+        with:
+          path: './gradle.properties'
+          property: 'version'
+          value: ${{ steps.publish_vars.outputs.nextSnapshot }}
+
+      - name: Commit and push new version
+        if: steps.publish_vars.outputs.release == 'true'
+        run: |
+          git add ./gradle.properties
+          git commit -am 'Updated to next SNAPSHOT version'
+          git push origin
 
   release_notes:
     runs-on: ubuntu-latest
