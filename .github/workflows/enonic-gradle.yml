@@ -34,6 +34,7 @@ jobs:
         uses: enonic/release-tools/publish-vars@master
         env:
           PROPERTIES_PATH: './gradle.properties'
+          JAVA_HOME: ''
 
       - name: Fail on bad config
         if: steps.publish_vars.outputs.version == '' || steps.publish_vars.outputs.projectName == ''
