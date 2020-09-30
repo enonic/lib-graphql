@@ -261,13 +261,13 @@ public class GraphQlBean
             }
             else if ( data.isObject() )
             {
-                return data.getMap();
+                return data.getMapIncludeNullValues();
             }
             else if ( data.isArray() )
             {
                 return data.getArray().
                     stream().
-                    map( ( subData ) -> toGraphQlValue( subData ) ).
+                    map( this::toGraphQlValue ).
                     collect( Collectors.toList() );
             }
         }

@@ -83,7 +83,7 @@ exports.reference = function (typeKey) {
 
 //Query execution
 exports.execute = function (schema, query, variables) {
-    return __.toNativeObject(graphQlBean.execute(schema, query, __.toScriptValue(variables)));
+    return JSON.stringify(__.toNativeObjectIncludeNullValues(graphQlBean.execute(schema, query, __.toScriptValue(variables))));
 };
 
 //Util functions
