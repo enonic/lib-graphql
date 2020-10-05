@@ -121,7 +121,7 @@ exports.test = function () {
     var result = exports.post({
         body: JSON.stringify({query: query, variables: variables})
     }).body;
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             getPersonByName: {
                 name: 'James',
@@ -138,5 +138,5 @@ exports.test = function () {
                 ]
             }
         }
-    }), result);
+    }, result);
 };

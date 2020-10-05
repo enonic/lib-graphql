@@ -25,19 +25,19 @@ exports.test = function () {
 function testShortQuery(schema) {
     var query = '{getObject(id:"0000-0000-0000-0001"){id}}';
     var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             getObject: {
                 id: '0000-0000-0000-0001'
             }
         }
-    }), result);
+    }, result);
 }
 
 function testCompleteQuery(schema) {
     var query = 'query($id:ID){getObject(id:$id){id, anInteger, aFloat, aString, aBoolean, aList,anEnum, anEnum2, aRelatedObject{id}}}';
     var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0001'});
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             getObject: {
                 id: '0000-0000-0000-0001',
@@ -57,23 +57,23 @@ function testCompleteQuery(schema) {
                 }
             }
         }
-    }), result);
+    }, result);
 }
 
 function testMissingObjectQuery(schema) {
     var query = '{getObject(id:"0000-0000-0000-0002"){id}}';
     var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             getObject: null
         }
-    }), result);
+    }, result);
 }
 
 function testShortConnection(schema) {
     var query = '{getObjectConnection{edges{node{id}}}}';
     var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             getObjectConnection: {
                 edges: [
@@ -85,38 +85,38 @@ function testShortConnection(schema) {
                 ]
             }
         }
-    }), result);
+    }, result);
 }
 
 function testInterface(schema) {
     var query = '{getInterface(id:"0000-0000-0000-0001"){id}}';
     var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             getInterface: {
                 id: '0000-0000-0000-0001'
             }
         }
-    }), result);
+    }, result);
 }
 
 function testUnion(schema) {
     var query = '{getUnion(id:"0000-0000-0000-0001"){... on ObjectType{id}}}';
     var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             getUnion: {
                 id: '0000-0000-0000-0001'
             }
         }
-    }), result);
+    }, result);
 }
 
 
 function testConnection(schema) {
     var query = '{getObjectConnection(first:1){ totalCount,edges{node{id},cursor},pageInfo{startCursor,endCursor,hasNext}}}';
     var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             getObjectConnection: {
                 totalCount: 1,
@@ -135,13 +135,13 @@ function testConnection(schema) {
                 }
             }
         }
-    }), result);
+    }, result);
 }
 
 function testInvalidSyntaxQuery(schema) {
     var query = '{getObject(id:"0000-0000-0000-0001"){id, aMissingField}}';
     var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         "errors": [
             {
                 "errorType": "ValidationError",
@@ -155,13 +155,13 @@ function testInvalidSyntaxQuery(schema) {
                 "validationErrorType": "FieldUndefined"
             }
         ]
-    }), result);
+    }, result);
 }
 
 function testFailingQuery(schema) {
     var query = '{getObject(id:"0000-0000-0000-0001"){id, aFailingField}}';
     var result = graphQlLib.execute(schema, query);
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         "data": {
             "getObject": {
                 "id": "0000-0000-0000-0001",
@@ -184,13 +184,13 @@ function testFailingQuery(schema) {
                 }
             }
         ]
-    }), result);
+    }, result);
 }
 
 function testMutation(schema) {
     var query = 'mutation($id:ID!, $object: InputObjectType!){addObject(id:$id,object:$object){id, anInteger, aFloat, aString, aBoolean, aList, aRelatedObject{id}}}';
     var result = graphQlLib.execute(schema, query, {id: '0000-0000-0000-0002', object: {id: '0000-0000-0000-0002'}});
-    assert.assertJsonEquals(JSON.stringify({
+    assert.assertJsonEquals({
         data: {
             addObject: {
                 id: '0000-0000-0000-0002',
@@ -208,7 +208,7 @@ function testMutation(schema) {
                 }
             }
         }
-    }), result);
+    }, result);
 }
 
 function createSchema(database) {
