@@ -16,7 +16,7 @@ GraphQL comes with a set of default scalar types:
 * GraphQLBoolean
 * GraphQLID
 
-Since version 1.2.0 of GraphQL Lib also supported the following scalars:
+The following scalars are supported starting from version 1.2.0 of GraphQL Lib:
 
 * Json
 * Date
