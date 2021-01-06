@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLFieldDefinition;
@@ -292,7 +293,14 @@ public class GraphQlBean
 
     public Object execute( final GraphQLSchema schema, final String query, final ScriptValue variables, final Object context )
     {
-        final GraphQL graphQL = GraphQL.newGraphQL( schema ).build();
+        final GraphQLSchema.Builder schemaBuilder = GraphQLSchema.newSchema( schema );
+
+        schemaBuilder.additionalType( ExtendedScalars.Json );
+        schemaBuilder.additionalType( ExtendedScalars.DateTime );
+        schemaBuilder.additionalType( ExtendedScalars.Date );
+        schemaBuilder.additionalType( ExtendedScalars.Time );
+
+        final GraphQL graphQL = GraphQL.newGraphQL( schemaBuilder.build() ).build();
 
         final Map<String, Object> variablesMap = variables == null ? Collections.emptyMap() : variables.getMap();
 
