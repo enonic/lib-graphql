@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.schema.GraphQLArgument;
@@ -289,11 +290,20 @@ public class GraphQlBean
         return new GraphQLTypeReference( typeKey );
     }
 
-    public Object execute( final GraphQLSchema schema, final String query, final ScriptValue variables )
+    public Object execute( final GraphQLSchema schema, final String query, final ScriptValue variables, final Object context )
     {
-        GraphQL graphQL = GraphQL.newGraphQL( schema ).build();
-        final Map<String, Object> variablesMap = variables == null ? Collections.<String, Object>emptyMap() : variables.getMap();
-        final ExecutionResult executionResult = graphQL.execute( query, (Object) null, variablesMap );
+        final GraphQL graphQL = GraphQL.newGraphQL( schema ).build();
+
+        final Map<String, Object> variablesMap = variables == null ? Collections.emptyMap() : variables.getMap();
+
+        final ExecutionInput executionInput = ExecutionInput.newExecutionInput().
+            query( query ).
+            context( context ).
+            variables( variablesMap ).
+            build();
+
+        final ExecutionResult executionResult = graphQL.execute( executionInput );
+
         return new ExecutionResultMapper( executionResult );
     }
 }

@@ -61,6 +61,7 @@ Executes a GraphQL query and variables against a schema
 |schema: Schema (Required) | GraphQL schema created
 |query: String (Required) | GraphQL query to execute
 |variables: JS Object (Required) | JS Object containing the variables used in the query
+|context: JS Object (Optional) | The context object to use for GraphQL call. Data of this object available for each field
 |===
 
 == Schema creation functions

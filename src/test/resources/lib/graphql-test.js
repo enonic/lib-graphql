@@ -20,6 +20,7 @@ exports.test = function () {
     testInvalidSyntaxQuery(schema);
     testFailingQuery(schema);
     testMutation(schema);
+    testReadValueFromContext(schema);
 };
 
 function testShortQuery(schema) {
@@ -211,6 +212,18 @@ function testMutation(schema) {
     }, result);
 }
 
+function testReadValueFromContext(schema) {
+    let query = '{getContextAsJson}';
+    let result = graphQlLib.execute(schema, query, null, {
+        propName: 'propValue'
+    });
+    assert.assertJsonEquals({
+        "data": {
+            "getContextAsJson": "{\"propName\":\"propValue\"}"
+        }
+    }, result);
+}
+
 function createSchema(database) {
     return graphQlLib.createSchema({
         query: createRootQueryType(database),
@@ -273,6 +286,16 @@ function createRootQueryType(database) {
                             return database.map[key];
                         })
                     };
+                }
+            },
+            getContextAsJson: {
+                type: graphQlLib.GraphQLString,
+                resolve: function (env) {
+                    if (env.context) {
+                        return JSON.stringify(env.context)
+                    }
+
+                    return null;
                 }
             }
         }
