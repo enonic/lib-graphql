@@ -20,5 +20,6 @@ public final class DataFetchingEnvironmentMapper
     {
         MapMapper.serializeKeyValue( gen, "source", this.env.getSource() );
         MapMapper.serializeKeyValue( gen, "args", this.env.getArguments() );
+        MapMapper.serializeKeyValue( gen, "context", this.env.getContext() );
     }
 }

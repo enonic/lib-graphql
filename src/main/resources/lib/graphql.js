@@ -82,8 +82,8 @@ exports.reference = function (typeKey) {
 };
 
 //Query execution
-exports.execute = function (schema, query, variables) {
-    return __.toNativeObject(graphQlBean.execute(schema, query, __.toScriptValue(variables)));
+exports.execute = function (schema, query, variables, context) {
+    return __.toNativeObject(graphQlBean.execute(schema, query, __.toScriptValue(variables), context));
 };
 
 //Util functions
