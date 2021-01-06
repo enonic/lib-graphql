@@ -16,6 +16,13 @@ GraphQL comes with a set of default scalar types:
 * GraphQLBoolean
 * GraphQLID
 
+Since version 1.2.0 of GraphQL Lib also supported the following scalars:
+
+* Json
+* Date
+* Time
+* DateTime
+
 == Type wrappers
 
 By default the type of field has an occurrence of 0..1.

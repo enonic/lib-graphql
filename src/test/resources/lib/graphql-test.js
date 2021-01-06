@@ -219,7 +219,7 @@ function testReadValueFromContext(schema) {
     });
     assert.assertJsonEquals({
         "data": {
-            "getContextAsJson": "{\"propName\":\"propValue\"}"
+            "getContextAsJson": {propName: "propValue"}
         }
     }, result);
 }
@@ -289,13 +289,9 @@ function createRootQueryType(database) {
                 }
             },
             getContextAsJson: {
-                type: graphQlLib.GraphQLString,
+                type: graphQlLib.Json,
                 resolve: function (env) {
-                    if (env.context) {
-                        return JSON.stringify(env.context)
-                    }
-
-                    return null;
+                    return env.context ? env.context : null;
                 }
             }
         }

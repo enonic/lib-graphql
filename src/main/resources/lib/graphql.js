@@ -1,13 +1,18 @@
 var graphQlBean = __.newBean('com.enonic.lib.graphql.GraphQlBean');
 
 //Scalars
-var Scalars = Java.type('graphql.Scalars')
+var Scalars = Java.type('graphql.Scalars');
 exports.GraphQLInt = Scalars.GraphQLInt;
 exports.GraphQLFloat = Scalars.GraphQLFloat;
 exports.GraphQLString = Scalars.GraphQLString;
 exports.GraphQLBoolean = Scalars.GraphQLBoolean;
 exports.GraphQLID = Scalars.GraphQLID;
 
+var ExtendedScalars = Java.type('graphql.scalars.ExtendedScalars');
+exports.DateTime = ExtendedScalars.DateTime;
+exports.Date = ExtendedScalars.Date;
+exports.Time = ExtendedScalars.Time;
+exports.Json = ExtendedScalars.Json;
 
 //Schema creation
 exports.createSchema = function (params) {
