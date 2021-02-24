@@ -9,10 +9,14 @@ exports.GraphQLBoolean = Scalars.GraphQLBoolean;
 exports.GraphQLID = Scalars.GraphQLID;
 
 var ExtendedScalars = Java.type('graphql.scalars.ExtendedScalars');
-exports.DateTime = ExtendedScalars.DateTime;
 exports.Date = ExtendedScalars.Date;
+exports.DateTime = ExtendedScalars.DateTime;
 exports.Time = ExtendedScalars.Time;
 exports.Json = ExtendedScalars.Json;
+
+var CustomScalars = Java.type('com.enonic.lib.graphql.CustomScalars');
+exports.LocalDateTime = CustomScalars.LocalDateTime;
+exports.LocalTime = CustomScalars.LocalTime;
 
 //Schema creation
 exports.createSchema = function (params) {
