@@ -1,31 +1,33 @@
 var graphQlLib = require('./graphql');
 
-var pageInfoType = graphQlLib.createObjectType({
-    name: 'PageInfo',
-    fields: {
-        startCursor: {
-            type: graphQlLib.nonNull(graphQlLib.GraphQLString),
-            resolve: function (env) {
-                return exports.encodeCursor(env.source.startCursor);
-            }
-        },
-        endCursor: {
-            type: graphQlLib.nonNull(graphQlLib.GraphQLString),
-            resolve: function (env) {
-                return exports.encodeCursor(env.source.endCursor);
-            }
-        },
-        hasNext: {
-            type: graphQlLib.nonNull(graphQlLib.GraphQLBoolean),
-            resolve: function (env) {
-                return env.source.hasNext;
+function createPageInfoType(schemaGenerator) {
+    return schemaGenerator.createPageInfoObjectType({
+        name: 'PageInfo',
+        fields: {
+            startCursor: {
+                type: graphQlLib.nonNull(graphQlLib.GraphQLString),
+                resolve: function (env) {
+                    return exports.encodeCursor(env.source.startCursor);
+                }
+            },
+            endCursor: {
+                type: graphQlLib.nonNull(graphQlLib.GraphQLString),
+                resolve: function (env) {
+                    return exports.encodeCursor(env.source.endCursor);
+                }
+            },
+            hasNext: {
+                type: graphQlLib.nonNull(graphQlLib.GraphQLBoolean),
+                resolve: function (env) {
+                    return env.source.hasNext;
+                }
             }
         }
-    }
-});
+    });
+}
 
-function createEdgeType(type) {
-    return graphQlLib.createObjectType({
+function createEdgeType(schemaGenerator, type) {
+    return schemaGenerator.createObjectType({
         name: type.getName() + 'Edge',
         fields: {
             node: {
@@ -44,8 +46,8 @@ function createEdgeType(type) {
     });
 }
 
-exports.createConnectionType = function (type) {
-    return graphQlLib.createObjectType({
+exports.createConnectionType = function (schemaGenerator, type) {
+    return schemaGenerator.createObjectType({
         name: type.getName() + 'Connection',
         fields: {
             totalCount: {
@@ -55,7 +57,7 @@ exports.createConnectionType = function (type) {
                 }
             },
             edges: {
-                type: graphQlLib.list(createEdgeType(type)),
+                type: graphQlLib.list(createEdgeType(schemaGenerator, type)),
                 resolve: function (env) {
                     var hits = env.source.hits;
                     var edges = [];
@@ -69,12 +71,12 @@ exports.createConnectionType = function (type) {
                 }
             },
             pageInfo: {
-                type: pageInfoType,
+                type: createPageInfoType(schemaGenerator),
                 resolve: function (env) {
                     var count = env.source.hits.length;
                     return {
                         startCursor: env.source.start,
-                        endCursor: env.source.start + (count == 0 ? 0 : (count - 1)),
+                        endCursor: env.source.start + (count === 0 ? 0 : (count - 1)),
                         hasNext: (env.source.start + count) < env.source.total
                     }
                 }

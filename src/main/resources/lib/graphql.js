@@ -1,4 +1,4 @@
-var graphQlBean = __.newBean('com.enonic.lib.graphql.GraphQlBean');
+var graphQLHelper = __.newBean('com.enonic.lib.graphql.GraphQLHandler');
 
 //Scalars
 var Scalars = Java.type('graphql.Scalars');
@@ -18,81 +18,97 @@ var CustomScalars = Java.type('com.enonic.lib.graphql.CustomScalars');
 exports.LocalDateTime = CustomScalars.LocalDateTime;
 exports.LocalTime = CustomScalars.LocalTime;
 
-//Schema creation
-exports.createSchema = function (params) {
-    var query = required(params, 'query');
-    var mutation = optional(params, 'mutation');
-    var subscription = optional(params, 'subscription');
-    var additonalTypes = optional(params, 'dictionary');
-    return graphQlBean.createSchema(query, mutation, subscription, additonalTypes);
-};
+exports.schemaGenerator = function () {
+    var graphQlBean = __.newBean('com.enonic.lib.graphql.GraphQlBean');
 
-exports.createObjectType = function (params) {
-    var name = required(params, 'name');
-    var fields = required(params, 'fields');
-    forEachAttribute(fields, function (field) {
-        required(field, 'type');
-    });
-    var interfaces = optional(params, 'interfaces');
-    var description = optional(params, 'description');
-    return graphQlBean.createObjectType(name, __.toScriptValue(fields), __.toScriptValue(interfaces), description);
-};
+    return {
+        createSchema: function (params) {
+            var query = required(params, 'query');
+            var mutation = optional(params, 'mutation');
+            var subscription = optional(params, 'subscription');
+            var additonalTypes = optional(params, 'dictionary');
+            return graphQlBean.createSchema(query, mutation, subscription, additonalTypes);
+        },
 
-exports.createInputObjectType = function (params) {
-    var name = required(params, 'name');
-    var fields = required(params, 'fields');
-    forEachAttribute(fields, function (field) {
-        required(field, 'type');
-    });
-    var description = optional(params, 'description');
-    return graphQlBean.createInputObjectType(name, __.toScriptValue(fields), description);
-};
+        createPageInfoObjectType: function (params) {
+            var name = required(params, 'name');
+            var fields = required(params, 'fields');
+            forEachAttribute(fields, function (field) {
+                required(field, 'type');
+            });
+            var interfaces = optional(params, 'interfaces');
+            var description = optional(params, 'description');
+            return graphQlBean.createPageInfoObjectType(name, __.toScriptValue(fields), __.toScriptValue(interfaces), description);
+        },
 
-exports.createInterfaceType = function (params) {
-    var name = required(params, 'name');
-    var fields = required(params, 'fields');
-    forEachAttribute(fields, function (field) {
-        required(field, 'type');
-    });
-    var typeResolver = required(params, 'typeResolver');
-    var description = optional(params, 'description');
-    return graphQlBean.createInterfaceType(name, __.toScriptValue(fields), __.toScriptValue(typeResolver), description);
-};
+        createObjectType: function (params) {
+            var name = required(params, 'name');
+            var fields = required(params, 'fields');
+            forEachAttribute(fields, function (field) {
+                required(field, 'type');
+            });
+            var interfaces = optional(params, 'interfaces');
+            var description = optional(params, 'description');
+            return graphQlBean.createObjectType(name, __.toScriptValue(fields), __.toScriptValue(interfaces), description);
+        },
 
-exports.createUnionType = function (params) {
-    var name = required(params, 'name');
-    var types = required(params, 'types');
-    if (types == null || types.length === 0) {
-        throw "Value 'types' is required and cannot be empty";
-    }
-    var typeResolver = required(params, 'typeResolver');
-    var description = optional(params, 'description');
-    return graphQlBean.createUnionType(name, types, __.toScriptValue(typeResolver), description);
-};
+        createInputObjectType: function (params) {
+            var name = required(params, 'name');
+            var fields = required(params, 'fields');
+            forEachAttribute(fields, function (field) {
+                required(field, 'type');
+            });
+            var description = optional(params, 'description');
+            return graphQlBean.createInputObjectType(name, __.toScriptValue(fields), description);
+        },
 
-exports.createEnumType = function (params) {
-    var name = required(params, 'name');
-    var values = required(params, 'values');
-    var description = optional(params, 'description');
-    return graphQlBean.createEnumType(name, __.toScriptValue(values), description);
+        createInterfaceType: function (params) {
+            var name = required(params, 'name');
+            var fields = required(params, 'fields');
+            forEachAttribute(fields, function (field) {
+                required(field, 'type');
+            });
+            var typeResolver = required(params, 'typeResolver');
+            var description = optional(params, 'description');
+            return graphQlBean.createInterfaceType(name, __.toScriptValue(fields), __.toScriptValue(typeResolver), description);
+        },
+
+        createUnionType: function (params) {
+            var name = required(params, 'name');
+            var types = required(params, 'types');
+            if (types == null || types.length === 0) {
+                throw "Value 'types' is required and cannot be empty";
+            }
+            var typeResolver = required(params, 'typeResolver');
+            var description = optional(params, 'description');
+            return graphQlBean.createUnionType(name, types, __.toScriptValue(typeResolver), description);
+        },
+
+        createEnumType: function (params) {
+            var name = required(params, 'name');
+            var values = required(params, 'values');
+            var description = optional(params, 'description');
+            return graphQlBean.createEnumType(name, __.toScriptValue(values), description);
+        }
+    };
 };
 
 //Schema util functions
 exports.list = function (type) {
-    return graphQlBean.list(type);
+    return graphQLHelper.list(type);
 };
 
 exports.nonNull = function (type) {
-    return graphQlBean.nonNull(type);
+    return graphQLHelper.nonNull(type);
 };
 
 exports.reference = function (typeKey) {
-    return graphQlBean.reference(typeKey);
+    return graphQLHelper.reference(typeKey);
 };
 
 //Query execution
 exports.execute = function (schema, query, variables, context) {
-    return __.toNativeObject(graphQlBean.execute(schema, query, __.toScriptValue(variables), context));
+    return __.toNativeObject(graphQLHelper.execute(schema, query, __.toScriptValue(variables), context));
 };
 
 //Util functions

@@ -1,28 +1,23 @@
 package com.enonic.lib.graphql;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import graphql.ExecutionInput;
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.scalars.ExtendedScalars;
+import graphql.schema.DataFetcher;
+import graphql.schema.FieldCoordinates;
 import graphql.schema.GraphQLArgument;
+import graphql.schema.GraphQLCodeRegistry;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLInputObjectField;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLInterfaceType;
-import graphql.schema.GraphQLList;
-import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
-import graphql.schema.GraphQLType;
 import graphql.schema.GraphQLTypeReference;
 import graphql.schema.GraphQLUnionType;
 
@@ -30,21 +25,43 @@ import com.enonic.xp.script.ScriptValue;
 
 public class GraphQlBean
 {
+    private GraphQLCodeRegistry.Builder codeRegistryBuilder = GraphQLCodeRegistry.newCodeRegistry();
+
+    private GraphQLObjectType pageInfoObjectType;
+
     public GraphQLSchema createSchema( final GraphQLObjectType queryObjectType, final GraphQLObjectType mutationObjectType,
-                                       final GraphQLObjectType subscriptionObjectType, final GraphQLObjectType[] additonalTypes )
+                                       final GraphQLObjectType subscriptionObjectType, final GraphQLObjectType[] additionalTypes )
     {
         final GraphQLSchema.Builder graphQLSchema = GraphQLSchema.newSchema().query( queryObjectType );
         if ( mutationObjectType != null )
         {
             graphQLSchema.mutation( mutationObjectType );
-
         }
         if ( subscriptionObjectType != null )
         {
             graphQLSchema.subscription( subscriptionObjectType );
-
         }
-        return graphQLSchema.build( additonalTypes == null ? Collections.EMPTY_SET : new HashSet<>( Arrays.asList( additonalTypes ) ) );
+        if ( additionalTypes != null )
+        {
+            graphQLSchema.additionalTypes( new HashSet<>( Arrays.asList( additionalTypes ) ) );
+        }
+
+        graphQLSchema.codeRegistry( codeRegistryBuilder.build() );
+
+        return graphQLSchema.build();
+    }
+
+    public GraphQLObjectType createPageInfoObjectType( final String name, final ScriptValue fieldsScriptValue,
+                                                       final ScriptValue interfacesScriptValue, final String description )
+    {
+        if ( pageInfoObjectType != null )
+        {
+            return pageInfoObjectType;
+        }
+
+        pageInfoObjectType = createObjectType( name, fieldsScriptValue, interfacesScriptValue, description );
+
+        return pageInfoObjectType;
     }
 
     public GraphQLObjectType createObjectType( final String name, final ScriptValue fieldsScriptValue,
@@ -68,7 +85,7 @@ public class GraphQlBean
                     }
                 } );
         }
-        setTypeFields( fieldsScriptValue, objectType );
+        setTypeFields( name, fieldsScriptValue, objectType );
         return objectType.build();
     }
 
@@ -86,11 +103,13 @@ public class GraphQlBean
     {
         final GraphQLInterfaceType.Builder interfaceType = GraphQLInterfaceType.newInterface().
             name( name ).
-            description( description ).
-            typeResolver( ( typeResolutionEnvironment ) -> {
-                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
-                return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
-            } );
+            description( description );
+
+        codeRegistryBuilder.typeResolver( name, ( typeResolutionEnvironment ) -> {
+            final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
+            return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
+        } );
+
         setTypeFields( fieldsScriptValue, interfaceType );
         return interfaceType.build();
     }
@@ -98,15 +117,17 @@ public class GraphQlBean
     public GraphQLUnionType createUnionType( final String name, final GraphQLObjectType[] types, final ScriptValue typeResolverScriptValue,
                                              final String description )
     {
-        return GraphQLUnionType.newUnionType().
+        final GraphQLUnionType.Builder unionType = GraphQLUnionType.newUnionType().
             name( name ).
             description( description ).
-            typeResolver( ( typeResolutionEnvironment ) -> {
-                final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
-                return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
-            } ).
-            possibleTypes( types ).
-            build();
+            possibleTypes( types );
+
+        codeRegistryBuilder.typeResolver( name, ( typeResolutionEnvironment ) -> {
+            final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
+            return (GraphQLObjectType) typeResolverScriptValue.call( mapMapper ).getValue();
+        } );
+
+        return unionType.build();
     }
 
     public GraphQLEnumType createEnumType( final String name, final ScriptValue valuesScriptValue, final String description )
@@ -116,7 +137,6 @@ public class GraphQlBean
             description( description );
         setValues( valuesScriptValue, enumType );
         return enumType.build();
-
     }
 
     private void setValues( final ScriptValue valuesScriptValue, final GraphQLEnumType.Builder enumType )
@@ -136,7 +156,8 @@ public class GraphQlBean
         }
     }
 
-    private void setTypeFields( final ScriptValue fieldsScriptValue, final GraphQLObjectType.Builder objectType )
+    private void setTypeFields( final String parentTypeName, final ScriptValue fieldsScriptValue,
+                                final GraphQLObjectType.Builder objectType )
     {
         for ( String fieldKey : fieldsScriptValue.getKeys() )
         {
@@ -149,7 +170,7 @@ public class GraphQlBean
 
                 setFieldArguments( fieldScriptValue, graphQlField );
                 setFieldType( fieldScriptValue, graphQlField );
-                setFieldData( fieldScriptValue, graphQlField );
+                setFieldData( parentTypeName, fieldKey, fieldScriptValue );
                 objectType.field( graphQlField );
             }
         }
@@ -194,7 +215,7 @@ public class GraphQlBean
                 stream().
                 map( ( argEntry ) -> GraphQLArgument.newArgument().name( argEntry.getKey() ).type(
                     (GraphQLInputType) argEntry.getValue() ).build() ).
-                forEach( graphQLArgument -> graphQlField.argument( graphQLArgument ) );
+                forEach( graphQlField::argument );
         }
     }
 
@@ -232,25 +253,25 @@ public class GraphQlBean
         }
     }
 
-    private void setFieldData( final ScriptValue scriptFieldValue, final GraphQLFieldDefinition.Builder graphQlField )
+    private void setFieldData( final String objectTypeName, final String fieldName, final ScriptValue scriptFieldValue )
     {
         final ScriptValue resolve = scriptFieldValue.getMember( "resolve" );
+
         if ( resolve != null )
         {
-            if ( resolve.isFunction() )
-            {
-                graphQlField.dataFetcher( ( env ) -> {
+            codeRegistryBuilder.dataFetcher( FieldCoordinates.coordinates( objectTypeName, fieldName ), (DataFetcher<Object>) env -> {
+                if ( resolve.isFunction() )
+                {
                     final DataFetchingEnvironmentMapper environmentMapper = new DataFetchingEnvironmentMapper( env );
                     final ScriptValue result = resolve.call( environmentMapper );
                     return toGraphQlValue( result );
-                } );
-            }
-            else
-            {
-                graphQlField.staticValue( toGraphQlValue( resolve ) );
-            }
+                }
+                else
+                {
+                    return toGraphQlValue( resolve );
+                }
+            } );
         }
-
     }
 
     private Object toGraphQlValue( final ScriptValue data )
@@ -269,49 +290,10 @@ public class GraphQlBean
             {
                 return data.getArray().
                     stream().
-                    map( ( subData ) -> toGraphQlValue( subData ) ).
+                    map( this::toGraphQlValue ).
                     collect( Collectors.toList() );
             }
         }
         return null;
-    }
-
-    public GraphQLList list( GraphQLType type )
-    {
-        return new GraphQLList( type );
-    }
-
-    public GraphQLNonNull nonNull( GraphQLType type )
-    {
-        return new GraphQLNonNull( type );
-    }
-
-    public GraphQLTypeReference reference( final String typeKey )
-    {
-        return new GraphQLTypeReference( typeKey );
-    }
-
-    public Object execute( final GraphQLSchema schema, final String query, final ScriptValue variables, final Object context )
-    {
-        final GraphQLSchema.Builder schemaBuilder = GraphQLSchema.newSchema( schema );
-
-        schemaBuilder.additionalType( ExtendedScalars.Json );
-        schemaBuilder.additionalType( ExtendedScalars.DateTime );
-        schemaBuilder.additionalType( ExtendedScalars.Date );
-        schemaBuilder.additionalType( ExtendedScalars.Time );
-
-        final GraphQL graphQL = GraphQL.newGraphQL( schemaBuilder.build() ).build();
-
-        final Map<String, Object> variablesMap = variables == null ? Collections.emptyMap() : variables.getMap();
-
-        final ExecutionInput executionInput = ExecutionInput.newExecutionInput().
-            query( query ).
-            context( context ).
-            variables( variablesMap ).
-            build();
-
-        final ExecutionResult executionResult = graphQL.execute( executionInput );
-
-        return new ExecutionResultMapper( executionResult );
     }
 }
