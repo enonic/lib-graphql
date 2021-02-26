@@ -1,6 +1,7 @@
 var graphQlLib = require('/lib/graphql');
 var graphQlConnectionLib = require('/lib/graphql-connection');
 var assert = require('/lib/xp/testing');
+var schemaGenerator = graphQlLib.schemaGenerator();
 
 exports.test = function () {
     var database = {
@@ -225,7 +226,7 @@ function testReadValueFromContext(schema) {
 }
 
 function createSchema(database) {
-    return graphQlLib.createSchema({
+    return schemaGenerator.createSchema({
         query: createRootQueryType(database),
         mutation: createRootMutationType(database),
         dictionary: [createSubObjectType(), createObjectType2()]
@@ -236,7 +237,7 @@ var objectType;
 
 function createRootQueryType(database) {
     objectType = objectType || createObjectType();
-    return graphQlLib.createObjectType({
+    return schemaGenerator.createObjectType({
         name: 'Query',
         fields: {
             getInterface: {
@@ -270,7 +271,7 @@ function createRootQueryType(database) {
                 }
             },
             getObjectConnection: {
-                type: graphQlConnectionLib.createConnectionType(objectType),
+                type: graphQlConnectionLib.createConnectionType(schemaGenerator, objectType),
                 args: {
                     after: graphQlLib.GraphQLString,
                     first: graphQlLib.GraphQLInt
@@ -299,7 +300,7 @@ function createRootQueryType(database) {
 }
 
 function createRootMutationType(database) {
-    return graphQlLib.createObjectType({
+    return schemaGenerator.createObjectType({
         name: 'Mutation',
         fields: {
             addObject: {
@@ -320,7 +321,7 @@ function createRootMutationType(database) {
 }
 
 function createObjectType() {
-    return graphQlLib.createObjectType({
+    return schemaGenerator.createObjectType({
         name: 'ObjectType',
         description: 'An object type.',
         interfaces: [createInterfaceType()],
@@ -389,7 +390,7 @@ function createObjectType() {
 }
 
 function createObjectType2() {
-    return graphQlLib.createObjectType({
+    return schemaGenerator.createObjectType({
         name: 'ObjectType2',
         description: 'An object type.',
         interfaces: [graphQlLib.reference('InterfaceType')],
@@ -402,7 +403,7 @@ function createObjectType2() {
 }
 
 function createEnumType() {
-    return graphQlLib.createEnumType({
+    return schemaGenerator.createEnumType({
         name: 'EnumType',
         values: {
             firstValue: 'firstValue',
@@ -412,14 +413,14 @@ function createEnumType() {
 }
 
 function createEnum2Type() {
-    return graphQlLib.createEnumType({
+    return schemaGenerator.createEnumType({
         name: 'Enum2Type',
         values: ['firstValue', 'secondValue']
     });
 }
 
 function createSubObjectType() {
-    return graphQlLib.createObjectType({
+    return schemaGenerator.createObjectType({
         name: 'SubObjectType',
         fields: {
             id: {
@@ -433,7 +434,7 @@ function createSubObjectType() {
 }
 
 function createInterfaceType() {
-    return graphQlLib.createInterfaceType({
+    return schemaGenerator.createInterfaceType({
         name: 'InterfaceType',
         typeResolver: function (arg) {
             return objectType
@@ -448,7 +449,7 @@ function createInterfaceType() {
 }
 
 function createUnionType() {
-    return graphQlLib.createUnionType({
+    return schemaGenerator.createUnionType({
         name: 'UnionType',
         typeResolver: function () {
             return objectType
@@ -459,7 +460,7 @@ function createUnionType() {
 }
 
 function createInputObjectType() {
-    return graphQlLib.createInputObjectType({
+    return schemaGenerator.createInputObjectType({
         name: 'InputObjectType',
         description: 'An input object type.',
         fields: {

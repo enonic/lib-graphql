@@ -25,7 +25,10 @@ var database = {
 // Defines the object types. 
 // Firstly, an object type 'Person' with a mandatory String field 'name', a mandatory Integer field 'age' 
 // and an array of Person field 'children'.
-var personObjectType = graphQlLib.createObjectType({
+
+var schemaGenerator = graphQlLib.schemaGenerator();
+
+var personObjectType = schemaGenerator.createObjectType({
     name: 'Person',
     description: 'A person type.',
     fields: {
@@ -59,7 +62,7 @@ var personObjectType = graphQlLib.createObjectType({
 });
 
 // Defines a second object type 'Query', the root object type containing all the root retrieval requests.
-var rootQueryType = graphQlLib.createObjectType({
+var rootQueryType = schemaGenerator.createObjectType({
     name: 'Query',
     fields: {
         // Unique request getPersonByName taking a mandatory String 'name' as parameter and returning a person 
@@ -77,7 +80,7 @@ var rootQueryType = graphQlLib.createObjectType({
 });
 
 // Define the GraphQL schema
-var schema = graphQlLib.createSchema({
+var schema = schemaGenerator.createSchema({
     query: rootQueryType
 });
 

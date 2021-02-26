@@ -1,5 +1,6 @@
 var graphQlLib = require('/lib/graphql');
 var assert = require('/lib/xp/testing');
+var schemaGenerator = graphQlLib.schemaGenerator();
 
 var database = [
     {
@@ -21,7 +22,7 @@ var database = [
         }
     }];
 
-var employeeObjectType = graphQlLib.createObjectType({
+var employeeObjectType = schemaGenerator.createObjectType({
     name: 'Employee',
     description: 'TestScalars type.',
     fields: {
@@ -58,7 +59,7 @@ var employeeObjectType = graphQlLib.createObjectType({
     }
 });
 
-var rootQueryType = graphQlLib.createObjectType({
+var rootQueryType = schemaGenerator.createObjectType({
     name: 'Query',
     fields: {
         getEmployees: {
@@ -83,7 +84,7 @@ var rootQueryType = graphQlLib.createObjectType({
     }
 });
 
-var schema = graphQlLib.createSchema({
+var schema = schemaGenerator.createSchema({
     query: rootQueryType
 });
 
