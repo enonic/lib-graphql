@@ -114,13 +114,28 @@ public class GraphQlBean
         return interfaceType.build();
     }
 
-    public GraphQLUnionType createUnionType( final String name, final GraphQLObjectType[] types, final ScriptValue typeResolverScriptValue,
-                                             final String description )
+    public GraphQLUnionType createUnionType( final String name, final ScriptValue possibleTypesValue,
+                                             final ScriptValue typeResolverScriptValue, final String description )
     {
         final GraphQLUnionType.Builder unionType = GraphQLUnionType.newUnionType().
             name( name ).
-            description( description ).
-            possibleTypes( types );
+            description( description );
+
+        if ( possibleTypesValue != null )
+        {
+            possibleTypesValue.getArray().
+                forEach( ( possibleType ) -> {
+                    final Object possibleTypeValue = possibleType.getValue();
+                    if ( possibleTypeValue instanceof GraphQLObjectType )
+                    {
+                        unionType.possibleType( (GraphQLObjectType) possibleTypeValue );
+                    }
+                    else if ( possibleTypeValue instanceof GraphQLTypeReference )
+                    {
+                        unionType.possibleType( (GraphQLTypeReference) possibleTypeValue );
+                    }
+                } );
+        }
 
         codeRegistryBuilder.typeResolver( name, ( typeResolutionEnvironment ) -> {
             final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
