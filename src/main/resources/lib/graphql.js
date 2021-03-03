@@ -81,7 +81,7 @@ exports.schemaGenerator = function () {
             }
             var typeResolver = required(params, 'typeResolver');
             var description = optional(params, 'description');
-            return graphQlBean.createUnionType(name, types, __.toScriptValue(typeResolver), description);
+            return graphQlBean.createUnionType(name, __.toScriptValue(types), __.toScriptValue(typeResolver), description);
         },
 
         createEnumType: function (params) {

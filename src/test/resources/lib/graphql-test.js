@@ -455,7 +455,7 @@ function createUnionType() {
             return objectType
         },
         description: 'A union type.',
-        types: [objectType]
+        types: [objectType, graphQlLib.reference('SubObjectType')]
     });
 }
 
