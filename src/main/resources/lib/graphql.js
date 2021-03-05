@@ -18,7 +18,7 @@ var CustomScalars = Java.type('com.enonic.lib.graphql.CustomScalars');
 exports.LocalDateTime = CustomScalars.LocalDateTime;
 exports.LocalTime = CustomScalars.LocalTime;
 
-exports.schemaGenerator = function () {
+exports.newSchemaGenerator = function () {
     var graphQlBean = __.newBean('com.enonic.lib.graphql.GraphQlBean');
 
     return {

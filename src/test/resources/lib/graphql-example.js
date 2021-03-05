@@ -26,7 +26,7 @@ var database = {
 // Firstly, an object type 'Person' with a mandatory String field 'name', a mandatory Integer field 'age' 
 // and an array of Person field 'children'.
 
-var schemaGenerator = graphQlLib.schemaGenerator();
+var schemaGenerator = graphQlLib.newSchemaGenerator();
 
 var personObjectType = schemaGenerator.createObjectType({
     name: 'Person',

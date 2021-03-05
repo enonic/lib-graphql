@@ -1,7 +1,7 @@
 var graphQlLib = require('/lib/graphql');
 var graphQlConnectionLib = require('/lib/graphql-connection');
 var assert = require('/lib/xp/testing');
-var schemaGenerator = graphQlLib.schemaGenerator();
+var schemaGenerator = graphQlLib.newSchemaGenerator();
 
 exports.test = function () {
     var database = {
