@@ -23,6 +23,11 @@ The following scalars are supported starting from version 1.2.0 of GraphQL Lib:
 * Time
 * DateTime
 
+The following scalars are supported starting from version 2.0.0 of GraphQL Lib:
+
+* LocalDateTime
+* LocalTime
+
 == Type wrappers
 
 By default the type of field has an occurrence of 0..1.
@@ -72,6 +77,8 @@ Executes a GraphQL query and variables against a schema
 |===
 
 == Schema creation functions
+
+Since version 2.0.0 of GraphQL Lib in order to create a schema you must to use a `schemaGenerator` object, which contains the following creation functions:
 
 === createSchema
 
@@ -127,7 +134,8 @@ Creates a GraphQL union type
 ==== Parameters
 |===
 |name: String (Required) | Type name
-|types: Array<GraphQLObjectType> | Possible types
+|types: Array<GraphQLObjectType OR GraphQLTypeReference> (Required) | Possible types
+|typeResolver: Function (Required) | Type resolution function
 |===
 
 === createEnumType
@@ -141,8 +149,21 @@ Creates a GraphQL enum type
 |description: String | Description
 |===
 
+In order to create an instance of `schemaGenerator` enough to call the `newSchemaGenerator()` method of GraphQL Lib, for instance:
 
+```
+const libGraphQL = require('/lib/graphql');
 
+const schemaGenerator = libGraphQL.newSchemaGenerator();
+
+schemaGenerator.createObjectType({
+   ...
+});
+```
+
+=== Breaking changes
+
+Since version 2.0.0 GraphQL Lib does not support creation functions directly instead of must be used the `schemaGenerator` object.
 
 
 
