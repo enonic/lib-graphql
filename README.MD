@@ -12,6 +12,7 @@ It allows you to define a GraphQL schema and execute GraphQL queries against thi
 
 | Version | XP Version  | Dependency                       |
 |---------|-------------|----------------------------------|
+| 2.0.0   | 7.0.0       | com.enonic.lib:lib-graphql:2.0.0 |
 | 1.1.1   | 7.0.0       | com.enonic.lib:lib-graphql:1.1.1 |
 | 1.1.0   | 7.0.0       | com.enonic.lib:lib-graphql:1.1.0 |
 | 1.0.0   | 7.0.0       | com.enonic.lib:lib-graphql:1.0.0 |
@@ -74,10 +75,12 @@ var database = {
     }
 };
 
+var schemaGenerator = graphQlLib.newSchemaGenerator();
+
 // Defines the object types. 
 // Firstly, an object type 'Person' with a mandatory String field 'name', a mandatory Integer field 'age' 
 // and an array of Person field 'children'.
-var personObjectType = graphQlLib.createObjectType({
+var personObjectType = schemaGenerator.createObjectType({
     name: 'Person',
     description: 'A person type.',
     fields: {
@@ -111,7 +114,7 @@ var personObjectType = graphQlLib.createObjectType({
 });
 
 // Defines a second object type 'Query', the root object type containing all the root retrieval requests.
-var rootQueryType = graphQlLib.createObjectType({
+var rootQueryType = schemaGenerator.createObjectType({
     name: 'Query',
     fields: {
         // Unique request getPersonByName taking a mandatory String 'name' as parameter and returning a person 
@@ -129,14 +132,14 @@ var rootQueryType = graphQlLib.createObjectType({
 });
 
 // Define the GraphQL schema
-var schema = graphQlLib.createSchema({
+var schema = schemaGenerator.createSchema({
     query: rootQueryType
 });
 
 // POST request handler that will execute the query received as parameter against the schema defined above.
 exports.post = function (req) {
     var body = JSON.parse(req.body);
-    var result = graphQlLib.execute(schema, body.query, body.variables);
+    var result = JSON.stringify(graphQlLib.execute(schema, body.query, body.variables));
     return {
         contentType: 'application/json',
         body: result
@@ -193,3 +196,6 @@ exports.test = function () {
     }, result);
 };
 ```
+### Breaking changes
+
+Since version 2.0.0 GraphQL Lib does not support creation functions directly instead of must be used the `schemaGenerator` object.
