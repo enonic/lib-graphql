@@ -16,14 +16,14 @@ GraphQL comes with a set of default scalar types:
 * GraphQLBoolean
 * GraphQLID
 
-The following scalars are supported starting from version 1.2.0 of GraphQL Lib:
+The following scalars are supported starting from version 1.2.0 of the GraphQL Lib:
 
 * Json
 * Date
 * Time
 * DateTime
 
-The following scalars are supported starting from version 2.0.0 of GraphQL Lib:
+The following scalars are supported starting from version 2.0.0 of the GraphQL Lib:
 
 * LocalDateTime
 * LocalTime
@@ -78,7 +78,7 @@ Executes a GraphQL query and variables against a schema
 
 == Schema creation functions
 
-Since version 2.0.0 of GraphQL Lib in order to create a schema you must to use a `schemaGenerator` object, which contains the following creation functions:
+Starting from version 2.0.0 of the GraphQL Lib in order to create a schema you must use `schemaGenerator` object, which contains the following functions:
 
 === createSchema
 
@@ -149,7 +149,7 @@ Creates a GraphQL enum type
 |description: String | Description
 |===
 
-In order to create an instance of `schemaGenerator` enough to call the `newSchemaGenerator()` method of GraphQL Lib, for instance:
+In order to create an instance of `schemaGenerator` call `newSchemaGenerator()` method of the GraphQL Lib, for instance:
 
 ```
 const libGraphQL = require('/lib/graphql');
@@ -163,7 +163,8 @@ schemaGenerator.createObjectType({
 
 === Breaking changes
 
-Since version 2.0.0 GraphQL Lib does not support creation functions directly instead of must be used the `schemaGenerator` object.
+==== 2.0.0
+Functions can no longer be created directly, use the `schemaGenerator` object instead.
 
 
 
