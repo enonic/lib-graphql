@@ -198,5 +198,5 @@ exports.test = function () {
 ```
 ### Breaking changes
 
-*2.0.0*
+#### 2.0.0
 Functions can no longer be created directly, use the `schemaGenerator` object instead.
