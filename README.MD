@@ -198,4 +198,5 @@ exports.test = function () {
 ```
 ### Breaking changes
 
-Since version 2.0.0 GraphQL Lib does not support creation functions directly instead of must be used the `schemaGenerator` object.
+*2.0.0*
+Functions can no longer be created directly, use the `schemaGenerator` object instead.
