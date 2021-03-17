@@ -20,7 +20,7 @@ public class LocalTimeScalarTest
         Coercing coercing = LocalTimeScalar.newLocalTime().getCoercing();
 
         assertEquals( "21:20:50", coercing.serialize( "21:20:50" ).toString() );
-        assertEquals( "16:40:00", coercing.serialize( "16:40" ).toString() );
+        assertEquals( "16:40", coercing.serialize( "16:40" ).toString() );
         assertEquals( "12:00:27", coercing.serialize( LocalTime.parse( "12:00:27" ) ).toString() );
         assertThrows( CoercingSerializeException.class, () -> coercing.serialize( 1L ) );
         assertThrows( CoercingSerializeException.class, () -> coercing.serialize( "12" ) );
@@ -32,7 +32,7 @@ public class LocalTimeScalarTest
         Coercing coercing = LocalTimeScalar.newLocalTime().getCoercing();
 
         assertEquals( LocalTime.parse( "21:20:50" ), coercing.parseValue( "21:20:50" ) );
-        assertEquals( LocalTime.parse( "21:20:00" ), coercing.parseValue( LocalTime.parse( "21:20" ) ) );
+        assertEquals( LocalTime.parse( "21:20" ), coercing.parseValue( LocalTime.parse( "21:20" ) ) );
         assertThrows( CoercingParseValueException.class, () -> coercing.parseValue( null ) );
         assertThrows( CoercingParseValueException.class, () -> coercing.parseValue( "21" ) );
     }

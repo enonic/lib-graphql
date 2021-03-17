@@ -110,7 +110,7 @@ exports.test = function () {
                 dateOfBirth: '1980-03-03',
                 creationTime: '2021-02-23T12:32:35',
                 workingScheduleStartTime: '09:00:00',
-                workingScheduleEndTime: '18:00:00'
+                workingScheduleEndTime: '18:00'
             }]
         }
     }, result);
@@ -129,7 +129,7 @@ exports.test = function () {
                 dateOfBirth: '1981-12-03',
                 creationTime: '2020-02-23T12:32:30',
                 workingScheduleStartTime: '09:00:00',
-                workingScheduleEndTime: '15:00:00'
+                workingScheduleEndTime: '15:00'
             }]
         }
     }, result);
@@ -147,7 +147,7 @@ exports.test = function () {
                 dateOfBirth: '1981-12-03',
                 creationTime: '2020-02-23T12:32:30',
                 workingScheduleStartTime: '09:00:00',
-                workingScheduleEndTime: '15:00:00'
+                workingScheduleEndTime: '15:00'
             }]
         }
     }, result);
