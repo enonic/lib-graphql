@@ -20,7 +20,7 @@ public class LocalDateTimeScalarTest
         Coercing coercing = LocalDateTimeScalar.newLocalDateTime().getCoercing();
 
         assertEquals( "2020-04-12T21:20:50", coercing.serialize( "2020-04-12T21:20:50" ).toString() );
-        assertEquals( "2020-12-19T16:40:00", coercing.serialize( "2020-12-19T16:40" ).toString() );
+        assertEquals( "2020-12-19T16:40", coercing.serialize( "2020-12-19T16:40" ).toString() );
         assertEquals( "2020-01-01T12:00:27", coercing.serialize( LocalDateTime.parse( "2020-01-01T12:00:27" ) ).toString() );
         assertThrows( CoercingSerializeException.class, () -> coercing.serialize( 1L ) );
         assertThrows( CoercingSerializeException.class, () -> coercing.serialize( "2020-01-01T12" ) );
@@ -32,7 +32,7 @@ public class LocalDateTimeScalarTest
         Coercing coercing = LocalDateTimeScalar.newLocalDateTime().getCoercing();
 
         assertEquals( LocalDateTime.parse( "2020-04-12T21:20:50" ), coercing.parseValue( "2020-04-12T21:20:50" ) );
-        assertEquals( LocalDateTime.parse( "2020-04-12T21:20:00" ), coercing.parseValue( LocalDateTime.parse( "2020-04-12T21:20" ) ) );
+        assertEquals( LocalDateTime.parse( "2020-04-12T21:20" ), coercing.parseValue( LocalDateTime.parse( "2020-04-12T21:20" ) ) );
         assertThrows( CoercingParseValueException.class, () -> coercing.parseValue( null ) );
         assertThrows( CoercingParseValueException.class, () -> coercing.parseValue( "2020-04-12T21" ) );
     }

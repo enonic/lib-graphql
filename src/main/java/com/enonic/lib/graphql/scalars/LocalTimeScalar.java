@@ -37,12 +37,13 @@ public class LocalTimeScalar
                     if ( !( input instanceof String ) )
                     {
                         throw new CoercingSerializeException(
-                            String.format( "Expected something what can convert to 'java.time.temporal.Temporal' but was '%s'",
+                            String.format( "Expected something what can convert to 'java.time.LocalTime' but was '%s'",
                                            Kit.typeName( input ) ) );
                     }
 
-                    LocalTime lt = LocalTime.parse( input.toString(), DateTimeFormatter.ISO_LOCAL_TIME );
-                    return DateTimeFormatter.ISO_LOCAL_TIME.format( lt );
+                    LocalTime.parse( input.toString(), DateTimeFormatter.ISO_LOCAL_TIME );
+                    // returns actual value if input is a valid
+                    return input.toString();
                 }
             }
             catch ( DateTimeException e )
