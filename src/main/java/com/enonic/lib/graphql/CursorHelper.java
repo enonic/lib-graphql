@@ -4,11 +4,14 @@ import java.util.Base64;
 
 public class CursorHelper
 {
-    public static String encode(final String value) {
+    public static String encode( final String value )
+    {
         final byte[] encodedBytes = Base64.getEncoder().encode( value.getBytes() );
         return new String( encodedBytes );
     }
-    public static String decode(final String value) {
+
+    public static String decode( final String value )
+    {
         final byte[] decodedBytes = Base64.getDecoder().decode( value.getBytes() );
         return new String( decodedBytes );
     }

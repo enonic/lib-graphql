@@ -4,12 +4,9 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-
 import com.enonic.xp.script.serializer.MapGenerator;
 import com.enonic.xp.script.serializer.MapGeneratorBase;
 import com.enonic.xp.script.serializer.MapSerializable;
-import com.enonic.xp.util.Exceptions;
 
 public final class MapMapper
     implements MapSerializable
@@ -48,19 +45,33 @@ public final class MapMapper
         {
             serializeMap( gen, key, (Map<?, ?>) value );
         }
-        //Temporary workaround. Remove as soon as __.toNativeObject allows to return null values
         else if ( value == null )
         {
-            try
+            //Temporary workaround. XP < 7.8 ignores null values in MapGenerator. XP >= 7.8 gen.rawValue( key, null ) stores null
+            if ( gen instanceof MapGeneratorBase )
             {
-                final Field currentField = MapGeneratorBase.class.getDeclaredField( "current" );
-                currentField.setAccessible( true );
-                final Object map = currentField.get( gen );
-                ( (ScriptObjectMirror) map ).put( key, value );
+                try
+                {
+                    final Field currentField = MapGeneratorBase.class.getDeclaredField( "current" );
+                    currentField.setAccessible( true );
+                    final Object map = currentField.get( gen );
+                    if ( map instanceof Map ) // On Nashorn it is true. On GraalJS it is false.
+                    {
+                        ( (Map) map ).put( key, null );
+                    }
+                    else
+                    {
+                        gen.rawValue( key, null );
+                    }
+                }
+                catch ( NoSuchFieldException | IllegalAccessException e )
+                {
+                    gen.rawValue( key, null );
+                }
             }
-            catch ( NoSuchFieldException | IllegalAccessException e )
+            else
             {
-                throw Exceptions.unchecked( e );
+                gen.rawValue( key, null );
             }
         }
         else

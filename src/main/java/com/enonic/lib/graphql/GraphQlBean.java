@@ -21,6 +21,7 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.GraphQLTypeReference;
 import graphql.schema.GraphQLUnionType;
 
+import com.enonic.lib.graphql.rx.PublishProcessor;
 import com.enonic.xp.script.ScriptValue;
 
 public class GraphQlBean
@@ -67,23 +68,20 @@ public class GraphQlBean
     public GraphQLObjectType createObjectType( final String name, final ScriptValue fieldsScriptValue,
                                                final ScriptValue interfacesScriptValue, final String description )
     {
-        final GraphQLObjectType.Builder objectType = GraphQLObjectType.newObject().
-            name( name ).
-            description( description );
+        final GraphQLObjectType.Builder objectType = GraphQLObjectType.newObject().name( name ).description( description );
         if ( interfacesScriptValue != null )
         {
-            interfacesScriptValue.getArray().
-                forEach( ( interfaceScriptValue ) -> {
-                    final Object interfaceValue = interfaceScriptValue.getValue();
-                    if ( interfaceValue instanceof GraphQLInterfaceType )
-                    {
-                        objectType.withInterface( (GraphQLInterfaceType) interfaceValue );
-                    }
-                    else if ( interfaceValue instanceof GraphQLTypeReference )
-                    {
-                        objectType.withInterface( (GraphQLTypeReference) interfaceValue );
-                    }
-                } );
+            interfacesScriptValue.getArray().forEach( ( interfaceScriptValue ) -> {
+                final Object interfaceValue = interfaceScriptValue.getValue();
+                if ( interfaceValue instanceof GraphQLInterfaceType )
+                {
+                    objectType.withInterface( (GraphQLInterfaceType) interfaceValue );
+                }
+                else if ( interfaceValue instanceof GraphQLTypeReference )
+                {
+                    objectType.withInterface( (GraphQLTypeReference) interfaceValue );
+                }
+            } );
         }
         setTypeFields( name, fieldsScriptValue, objectType );
         return objectType.build();
@@ -91,9 +89,7 @@ public class GraphQlBean
 
     public GraphQLInputObjectType createInputObjectType( final String name, final ScriptValue fieldsScriptValue, final String description )
     {
-        final GraphQLInputObjectType.Builder objectType = GraphQLInputObjectType.newInputObject().
-            name( name ).
-            description( description );
+        final GraphQLInputObjectType.Builder objectType = GraphQLInputObjectType.newInputObject().name( name ).description( description );
         setTypeFields( fieldsScriptValue, objectType );
         return objectType.build();
     }
@@ -101,9 +97,7 @@ public class GraphQlBean
     public GraphQLInterfaceType createInterfaceType( final String name, final ScriptValue fieldsScriptValue,
                                                      final ScriptValue typeResolverScriptValue, final String description )
     {
-        final GraphQLInterfaceType.Builder interfaceType = GraphQLInterfaceType.newInterface().
-            name( name ).
-            description( description );
+        final GraphQLInterfaceType.Builder interfaceType = GraphQLInterfaceType.newInterface().name( name ).description( description );
 
         codeRegistryBuilder.typeResolver( name, ( typeResolutionEnvironment ) -> {
             final MapMapper mapMapper = new MapMapper( (Map<?, ?>) typeResolutionEnvironment.getObject() );
@@ -117,24 +111,21 @@ public class GraphQlBean
     public GraphQLUnionType createUnionType( final String name, final ScriptValue possibleTypesValue,
                                              final ScriptValue typeResolverScriptValue, final String description )
     {
-        final GraphQLUnionType.Builder unionType = GraphQLUnionType.newUnionType().
-            name( name ).
-            description( description );
+        final GraphQLUnionType.Builder unionType = GraphQLUnionType.newUnionType().name( name ).description( description );
 
         if ( possibleTypesValue != null )
         {
-            possibleTypesValue.getArray().
-                forEach( ( possibleType ) -> {
-                    final Object possibleTypeValue = possibleType.getValue();
-                    if ( possibleTypeValue instanceof GraphQLObjectType )
-                    {
-                        unionType.possibleType( (GraphQLObjectType) possibleTypeValue );
-                    }
-                    else if ( possibleTypeValue instanceof GraphQLTypeReference )
-                    {
-                        unionType.possibleType( (GraphQLTypeReference) possibleTypeValue );
-                    }
-                } );
+            possibleTypesValue.getArray().forEach( ( possibleType ) -> {
+                final Object possibleTypeValue = possibleType.getValue();
+                if ( possibleTypeValue instanceof GraphQLObjectType )
+                {
+                    unionType.possibleType( (GraphQLObjectType) possibleTypeValue );
+                }
+                else if ( possibleTypeValue instanceof GraphQLTypeReference )
+                {
+                    unionType.possibleType( (GraphQLTypeReference) possibleTypeValue );
+                }
+            } );
         }
 
         codeRegistryBuilder.typeResolver( name, ( typeResolutionEnvironment ) -> {
@@ -147,9 +138,7 @@ public class GraphQlBean
 
     public GraphQLEnumType createEnumType( final String name, final ScriptValue valuesScriptValue, final String description )
     {
-        final GraphQLEnumType.Builder enumType = GraphQLEnumType.newEnum().
-            name( name ).
-            description( description );
+        final GraphQLEnumType.Builder enumType = GraphQLEnumType.newEnum().name( name ).description( description );
         setValues( valuesScriptValue, enumType );
         return enumType.build();
     }
@@ -158,8 +147,7 @@ public class GraphQlBean
     {
         if ( valuesScriptValue.isArray() )
         {
-            valuesScriptValue.getArray( String.class ).
-                forEach( enumType::value );
+            valuesScriptValue.getArray( String.class ).forEach( enumType::value );
         }
         else if ( valuesScriptValue.isObject() )
         {
@@ -180,8 +168,7 @@ public class GraphQlBean
 
             if ( fieldScriptValue != null )
             {
-                final GraphQLFieldDefinition.Builder graphQlField = GraphQLFieldDefinition.newFieldDefinition().
-                    name( fieldKey );
+                final GraphQLFieldDefinition.Builder graphQlField = GraphQLFieldDefinition.newFieldDefinition().name( fieldKey );
 
                 setFieldArguments( fieldScriptValue, graphQlField );
                 setFieldType( fieldScriptValue, graphQlField );
@@ -197,8 +184,7 @@ public class GraphQlBean
         {
             final ScriptValue fieldScriptValue = fieldsScriptValue.getMember( fieldKey );
 
-            final GraphQLInputObjectField.Builder graphQlField = GraphQLInputObjectField.newInputObjectField().
-                name( fieldKey );
+            final GraphQLInputObjectField.Builder graphQlField = GraphQLInputObjectField.newInputObjectField().name( fieldKey );
 
             setFieldType( fieldScriptValue, graphQlField );
             objectType.field( graphQlField );
@@ -211,8 +197,7 @@ public class GraphQlBean
         {
             final ScriptValue fieldScriptValue = fieldsScriptValue.getMember( fieldKey );
 
-            final GraphQLFieldDefinition.Builder graphQlField = GraphQLFieldDefinition.newFieldDefinition().
-                name( fieldKey );
+            final GraphQLFieldDefinition.Builder graphQlField = GraphQLFieldDefinition.newFieldDefinition().name( fieldKey );
 
             setFieldArguments( fieldScriptValue, graphQlField );
             setFieldType( fieldScriptValue, graphQlField );
@@ -226,11 +211,13 @@ public class GraphQlBean
         if ( argsScriptValue != null )
         {
             Map<String, Object> argsMap = fieldScriptValue.getMember( "args" ).getMap();
-            argsMap.entrySet().
-                stream().
-                map( ( argEntry ) -> GraphQLArgument.newArgument().name( argEntry.getKey() ).type(
-                    (GraphQLInputType) argEntry.getValue() ).build() ).
-                forEach( graphQlField::argument );
+            argsMap.entrySet()
+                .stream()
+                .map( ( argEntry ) -> GraphQLArgument.newArgument()
+                    .name( argEntry.getKey() )
+                    .type( (GraphQLInputType) argEntry.getValue() )
+                    .build() )
+                .forEach( graphQlField::argument );
         }
     }
 
@@ -299,14 +286,18 @@ public class GraphQlBean
             }
             else if ( data.isObject() )
             {
-                return data.getMap();
+                if ( data.getValue() instanceof PublishProcessor )
+                {
+                    return data.getValue();
+                }
+                else
+                {
+                    return data.getMap();
+                }
             }
             else if ( data.isArray() )
             {
-                return data.getArray().
-                    stream().
-                    map( this::toGraphQlValue ).
-                    collect( Collectors.toList() );
+                return data.getArray().stream().map( this::toGraphQlValue ).collect( Collectors.toList() );
             }
         }
         return null;
