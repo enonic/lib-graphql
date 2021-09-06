@@ -86,9 +86,9 @@ exports.createConnectionType = function (schemaGenerator, type) {
 };
 
 exports.encodeCursor = function(value) {
-    return Java.type('com.enonic.lib.graphql.CursorHelper').encode(value);
+    return Java.type('com.enonic.lib.graphql.CursorHelper').encode(String(value));
 };
 
 exports.decodeCursor = function(value) {
-    return Java.type('com.enonic.lib.graphql.CursorHelper').decode(value);
+    return Java.type('com.enonic.lib.graphql.CursorHelper').decode(String(value));
 };

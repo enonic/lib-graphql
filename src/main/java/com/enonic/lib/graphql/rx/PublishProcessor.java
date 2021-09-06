@@ -9,11 +9,10 @@ import io.reactivex.functions.Predicate;
 
 public class PublishProcessor<T>
     implements org.reactivestreams.Publisher<T>, Processor<T, T>, FlowableSubscriber<T>
-
 {
-    private io.reactivex.processors.PublishProcessor<T> publishProcessor;
+    private final io.reactivex.processors.PublishProcessor<T> publishProcessor;
 
-    public PublishProcessor( final io.reactivex.processors.PublishProcessor publishProcessor )
+    public PublishProcessor( final io.reactivex.processors.PublishProcessor<T> publishProcessor )
     {
         this.publishProcessor = publishProcessor;
     }
@@ -50,8 +49,6 @@ public class PublishProcessor<T>
 
     public final Flowable<T> filter( Predicate<? super T> predicate )
     {
-        return new Flowable( publishProcessor.filter( predicate ) );
+        return new Flowable<>( publishProcessor.filter( predicate ) );
     }
-
-
 }
