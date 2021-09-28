@@ -89,7 +89,7 @@ Creates a GraphQL schema
 |query: GraphQLObjectType (Required) | Root query type
 |mutation: GraphQLObjectType | Root mutation type
 |subscription: GraphQLObjectType | Root subscription type
-|dictionary: String | Additional types (Necessary for types accessed through references)
+|dictionary: Array<GraphQLObjectType> | Additional types (Necessary for types accessed through references)
 |===
 
 === createObjectType
