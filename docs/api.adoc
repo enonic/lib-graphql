@@ -127,6 +127,16 @@ Creates a GraphQL interface type
 |description: String | Type description
 |===
 
+There is a bit of a "chicken or the egg" problem when it comes to interface-types and object-types.
+You cannot alter an interface- or object-type after it's definition, but both of them reference each other upon definition, so who do you define first?
+Luckily lib-graphql comes with a reference-type which can be used to point to something by name.
+So even though it's not defined yet, we assume it will be defined by the time it's needed.
+
+There is one last challenge. Inside a type resolver, you have to return an actual object-type, NOT a reference-type.
+You can solve this in two ways:
+1. Either define the object-types first, and store a pointer to each of them in their own constants, and then use those constants when defining the type resolver.
+2. Or make a "global" javascript object, where each object-type is a property, it doesn't matter that the property isn't added yet (upon definition), because it's only needed when the resolver is executed (runtime).
+
 === createUnionType
 
 Creates a GraphQL union type
@@ -165,6 +175,3 @@ schemaGenerator.createObjectType({
 
 ==== 2.0.0
 Functions can no longer be created directly, use the `schemaGenerator` object instead.
-
-
-
