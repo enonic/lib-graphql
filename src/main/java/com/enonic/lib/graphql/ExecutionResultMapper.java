@@ -7,7 +7,7 @@ import graphql.ExecutionResult;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
 import graphql.validation.ValidationError;
-import graphql.validation.ValidationErrorType;
+import graphql.validation.ValidationErrorClassification;
 
 import com.enonic.lib.graphql.rx.Publisher;
 import com.enonic.xp.script.serializer.MapGenerator;
@@ -78,7 +78,7 @@ public class ExecutionResultMapper
 
         if ( error instanceof ValidationError )
         {
-            final ValidationErrorType validationErrorType = ( (ValidationError) error ).getValidationErrorType();
+            final ValidationErrorClassification validationErrorType = ( (ValidationError) error ).getValidationErrorType();
             gen.value( "validationErrorType", validationErrorType );
         }
         else if ( error instanceof ExceptionWhileDataFetching )
