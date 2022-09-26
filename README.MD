@@ -12,6 +12,7 @@ It allows you to define a GraphQL schema and execute GraphQL queries against thi
 
 | Version | XP Version  | Dependency                       |
 |---------|-------------|----------------------------------|
+| 2.0.2   | 7.0.0       | com.enonic.lib:lib-graphql:2.0.2 |
 | 2.0.1   | 7.0.0       | com.enonic.lib:lib-graphql:2.0.1 |
 | 2.0.0   | 7.0.0       | com.enonic.lib:lib-graphql:2.0.0 |
 | 1.1.1   | 7.0.0       | com.enonic.lib:lib-graphql:1.1.1 |
