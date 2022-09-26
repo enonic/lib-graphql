@@ -147,7 +147,7 @@ function testInvalidSyntaxQuery(schema) {
         "errors": [
             {
                 "errorType": "ValidationError",
-                "message": "Validation error of type FieldUndefined: Field 'aMissingField' in type 'ObjectType' is undefined @ 'getObject/aMissingField'",
+                "message": "Validation error (FieldUndefined@[getObject/aMissingField]) : Field 'aMissingField' in type 'ObjectType' is undefined",
                 "locations": [
                     {
                         "line": 1,
