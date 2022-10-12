@@ -2,8 +2,12 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'maven-publish'
-    id 'com.enonic.defaults' version '2.0.1'
     id 'com.enonic.xp.base' version '3.2.0'
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 repositories {
@@ -29,3 +33,43 @@ jacocoTestReport {
 }
 
 check.dependsOn jacocoTestReport
+
+publishing {
+    publications {
+        mavenJava( MavenPublication ) {
+            components.java
+
+            pom {
+                name = 'GraphQL lib for Enonic XP'
+                description = 'GraphQL lib for Enonic XP'
+                url = 'https://github.com/enonic/lib-graphql'
+                licenses {
+                    license {
+                        name = 'GNU General Public License v3.0'
+                        url = 'https://github.com/enonic/lib-graphql/blob/master/LICENSE.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'developers'
+                        name = 'Enonic developers'
+                        email = 'developers@enonic.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git@github.com:enonic/lib-graphql.git'
+                    developerConnection = 'scm:git:git@github.com:enonic/lib-graphql.git'
+                    url = 'https://github.com/enonic/lib-graphql'
+                }
+            }
+
+            repositories {
+                maven {
+                    credentials(PasswordCredentials)
+                    name "public"
+                    url "https://repo.enonic.com/${project.findProperty( 'repoKey' ) ?: 'public'}"
+                }
+            }
+        }
+    }
+}
