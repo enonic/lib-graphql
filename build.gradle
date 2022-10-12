@@ -66,8 +66,8 @@ publishing {
             repositories {
                 maven {
                     credentials(PasswordCredentials)
-                    name "public"
-                    url "https://repo.enonic.com/${project.findProperty( 'repoKey' ) ?: 'public'}"
+                    name "enonicRepo"
+                    url "https://repo.enonic.com/${project.findProperty( 'repoKey' ) ?: 'snapshot'}"
                 }
             }
         }
