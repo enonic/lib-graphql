@@ -37,7 +37,7 @@ check.dependsOn jacocoTestReport
 publishing {
     publications {
         mavenJava( MavenPublication ) {
-            components.java
+            from components.java
 
             pom {
                 name = 'GraphQL lib for Enonic XP'
