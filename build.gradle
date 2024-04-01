@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     compileOnly "com.enonic.xp:script-api:${xpVersion}"
-    implementation 'com.graphql-java:graphql-java:21.4'
+    implementation 'com.graphql-java:graphql-java:21.5'
     implementation 'com.graphql-java:graphql-java-extended-scalars:21.0'
     implementation "io.reactivex.rxjava2:rxjava:2.2.21"
     testImplementation 'junit:junit:4.13.2'
