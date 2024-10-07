@@ -3,7 +3,7 @@ plugins {
     id 'jacoco'
     id 'maven-publish'
     id 'com.enonic.defaults' version '2.1.5'
-    id 'com.enonic.xp.base' version '3.5.0'
+    id 'com.enonic.xp.base' version '3.5.2'
 }
 
 repositories {
