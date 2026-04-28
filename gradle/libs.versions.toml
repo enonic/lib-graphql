@@ -1,0 +1,25 @@
+[versions]
+
+junit = "6.0.3"
+mockito = "5.23.0"
+enonicDefaults = "2.1.6"
+enonicXpGradle = "4.0.0-A2"
+graphQLJava = "26.0"
+graphQLJavaExtendedScalars = "24.0"
+rxJava = "2.2.21"
+jacksonAnnotations = "2.20"
+
+[libraries]
+
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+mockito-core = { module = "org.mockito:mockito-bom", version.ref = "mockito" }
+mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+graphql-java = { module = "com.graphql-java:graphql-java", version.ref = "graphQLJava" }
+graphql-java-extended-scalars = { module = "com.graphql-java:graphql-java-extended-scalars", version.ref = "graphQLJavaExtendedScalars" }
+rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxJava" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jacksonAnnotations" }
+
+[plugins]
+enonic-defaults = { id = "com.enonic.defaults", version.ref = "enonicDefaults" }
+enonic-xp-base = { id = "com.enonic.xp.base", version.ref = "enonicXpGradle" }
