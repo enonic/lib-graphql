@@ -2,46 +2,50 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'maven-publish'
-    id 'com.enonic.defaults' version '2.1.6'
-    id 'com.enonic.xp.base' version '3.6.2'
+    alias( libs.plugins.enonic.defaults )
+    alias( libs.plugins.enonic.xp.base )
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of( 25 )
     }
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    xp.enonicRepo('dev')
+    xp.enonicRepo( 'dev' )
 }
 
 dependencies {
     compileOnly "com.enonic.xp:script-api:${xpVersion}"
-    implementation 'com.graphql-java:graphql-java:25.0'
-    implementation 'com.graphql-java:graphql-java-extended-scalars:24.0'
-    implementation "io.reactivex.rxjava2:rxjava:2.2.21"
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.20'
 
-    testImplementation(platform("org.junit:junit-bom:6.0.1"))
-    testImplementation(platform("org.mockito:mockito-bom:5.21.0"))
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation 'org.mockito:mockito-junit-jupiter'
+    implementation libs.graphql.java;
+    implementation libs.graphql.java.extended.scalars;
+    implementation libs.rxjava;
+    implementation libs.jackson.annotations;
+
+    testImplementation platform( libs.mockito.core )
+    testImplementation libs.junit.jupiter
+    testImplementation libs.mockito.jupiter
+    testRuntimeOnly libs.junit.launcher
     testImplementation "com.enonic.xp:testing:${xpVersion}"
 }
 
-tasks.named('test', Test) {
+tasks.named( 'test', Test ) {
     useJUnitPlatform()
 }
 
 jacocoTestReport {
     reports {
-        xml.required= true
+        xml.required = true
         html.required = true
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 check.dependsOn jacocoTestReport
