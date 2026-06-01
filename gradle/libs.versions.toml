@@ -7,7 +7,7 @@ enonicXpGradle = "4.0.0-A3"
 graphQLJava = "26.0"
 graphQLJavaExtendedScalars = "24.0"
 rxJava = "2.2.21"
-jacksonAnnotations = "2.21"
+jacksonAnnotations = "2.22"
 
 [libraries]
 
