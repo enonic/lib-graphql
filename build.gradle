@@ -24,7 +24,7 @@ dependencies {
     implementation libs.graphql.java;
     implementation libs.graphql.java.extended.scalars;
     implementation libs.rxjava;
-    implementation libs.jackson.annotations;
+    compileOnly libs.jackson.annotations;
 
     testImplementation platform( libs.mockito.core )
     testImplementation libs.junit.jupiter
