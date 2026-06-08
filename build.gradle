@@ -14,8 +14,8 @@ java {
 
 repositories {
     mavenLocal()
-    mavenCentral()
     xp.enonicRepo( 'dev' )
+    mavenCentral()
 }
 
 dependencies {
