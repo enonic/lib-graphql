@@ -1,54 +1,48 @@
 package com.enonic.lib.graphql.rx;
 
-import org.reactivestreams.Processor;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import java.util.concurrent.Flow;
+import java.util.concurrent.SubmissionPublisher;
+import java.util.function.Predicate;
 
-import io.reactivex.FlowableSubscriber;
-import io.reactivex.functions.Predicate;
+import org.reactivestreams.FlowAdapters;
+import org.reactivestreams.Subscriber;
 
 public class PublishProcessor<T>
-    implements org.reactivestreams.Publisher<T>, Processor<T, T>, FlowableSubscriber<T>
+    implements org.reactivestreams.Publisher<T>
 {
-    private final io.reactivex.processors.PublishProcessor<T> publishProcessor;
+    private final SubmissionPublisher<T> submissionPublisher;
 
-    public PublishProcessor( final io.reactivex.processors.PublishProcessor<T> publishProcessor )
+    public PublishProcessor()
     {
-        this.publishProcessor = publishProcessor;
+        // Deliver synchronously on the thread that calls onNext, so the downstream subscriber
+        // (which invokes JavaScript) runs in the caller's XP execution context rather than on a
+        // pooled thread.
+        this.submissionPublisher = new SubmissionPublisher<>( Runnable::run, Flow.defaultBufferSize() );
     }
 
     @Override
     public void subscribe( final Subscriber<? super T> subscriber )
     {
-        publishProcessor.subscribe( subscriber );
+        submissionPublisher.subscribe( FlowAdapters.toFlowSubscriber( subscriber ) );
     }
 
-    @Override
-    public void onSubscribe( final Subscription subscription )
+    public void onNext( final T item )
     {
-        publishProcessor.onSubscribe( subscription );
+        submissionPublisher.submit( item );
     }
 
-    @Override
-    public void onNext( final T t )
-    {
-        publishProcessor.onNext( t );
-    }
-
-    @Override
     public void onError( final Throwable throwable )
     {
-        publishProcessor.onError( throwable );
+        submissionPublisher.closeExceptionally( throwable );
     }
 
-    @Override
     public void onComplete()
     {
-        publishProcessor.onComplete();
+        submissionPublisher.close();
     }
 
-    public final Flowable<T> filter( Predicate<? super T> predicate )
+    public final Flowable<T> filter( final Predicate<? super T> predicate )
     {
-        return new Flowable<>( publishProcessor.filter( predicate ) );
+        return new Flowable<>( this ).filter( predicate );
     }
 }

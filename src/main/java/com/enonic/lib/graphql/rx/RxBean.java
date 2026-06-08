@@ -10,7 +10,7 @@ public class RxBean
 {
     public PublishProcessor<Object> createPublishProcessor()
     {
-        return new PublishProcessor<>( io.reactivex.processors.PublishProcessor.create() );
+        return new PublishProcessor<>();
     }
 
     public Subscriber<ExecutionResult> createSubscriber( final ScriptValue onNext )
