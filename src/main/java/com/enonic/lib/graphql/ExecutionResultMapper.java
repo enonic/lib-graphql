@@ -9,7 +9,6 @@ import graphql.language.SourceLocation;
 import graphql.validation.ValidationError;
 import graphql.validation.ValidationErrorClassification;
 
-import com.enonic.lib.graphql.reactive.Publisher;
 import com.enonic.xp.script.serializer.MapGenerator;
 import com.enonic.xp.script.serializer.MapSerializable;
 
@@ -41,8 +40,7 @@ public class ExecutionResultMapper
         }
         else if ( executionResult.getData() instanceof org.reactivestreams.Publisher )
         {
-            final Publisher publisherSerializable = new Publisher( executionResult.getData() );
-            gen.rawValue( "data", publisherSerializable );
+            gen.rawValue( "data", executionResult.getData() );
         }
     }
 
