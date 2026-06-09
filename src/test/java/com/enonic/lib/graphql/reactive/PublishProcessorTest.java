@@ -1,4 +1,4 @@
-package com.enonic.lib.graphql.rx;
+package com.enonic.lib.graphql.reactive;
 
 import java.util.ArrayList;
 import java.util.List;
