@@ -6,7 +6,6 @@ enonicDefaults = "2.1.7"
 enonicXpGradle = "4.0.0-A3"
 graphQLJava = "26.0"
 graphQLJavaExtendedScalars = "24.0"
-jacksonAnnotations = "2.22"
 
 [libraries]
 
@@ -16,7 +15,6 @@ mockito-core = { module = "org.mockito:mockito-bom", version.ref = "mockito" }
 mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 graphql-java = { module = "com.graphql-java:graphql-java", version.ref = "graphQLJava" }
 graphql-java-extended-scalars = { module = "com.graphql-java:graphql-java-extended-scalars", version.ref = "graphQLJavaExtendedScalars" }
-jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jacksonAnnotations" }
 
 [plugins]
 enonic-defaults = { id = "com.enonic.defaults", version.ref = "enonicDefaults" }
