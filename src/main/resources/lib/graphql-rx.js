@@ -1,4 +1,4 @@
-const rxBean = __.newBean('com.enonic.lib.graphql.rx.RxBean');
+const rxBean = __.newBean('com.enonic.lib.graphql.reactive.RxBean');
 
 exports.createPublishProcessor = function () {
     return rxBean.createPublishProcessor();

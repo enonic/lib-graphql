@@ -21,7 +21,6 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.GraphQLTypeReference;
 import graphql.schema.GraphQLUnionType;
 
-import com.enonic.lib.graphql.rx.PublishProcessor;
 import com.enonic.xp.script.ScriptValue;
 
 public class GraphQlBean
@@ -286,7 +285,7 @@ public class GraphQlBean
             }
             else if ( data.isObject() )
             {
-                if ( data.getValue() instanceof PublishProcessor )
+                if ( data.getValue() instanceof org.reactivestreams.Publisher )
                 {
                     return data.getValue();
                 }
