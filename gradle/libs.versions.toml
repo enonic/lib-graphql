@@ -2,8 +2,6 @@
 
 junit = "6.1.1"
 mockito = "5.23.0"
-enonicDefaults = "2.1.7"
-enonicXpGradle = "4.1.0"
 graphQLJava = "26.0"
 graphQLJavaExtendedScalars = "24.0"
 
@@ -15,7 +13,3 @@ mockito-core = { module = "org.mockito:mockito-bom", version.ref = "mockito" }
 mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 graphql-java = { module = "com.graphql-java:graphql-java", version.ref = "graphQLJava" }
 graphql-java-extended-scalars = { module = "com.graphql-java:graphql-java-extended-scalars", version.ref = "graphQLJavaExtendedScalars" }
-
-[plugins]
-enonic-defaults = { id = "com.enonic.defaults", version.ref = "enonicDefaults" }
-enonic-xp-base = { id = "com.enonic.xp.base", version.ref = "enonicXpGradle" }
