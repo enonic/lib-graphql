@@ -3,7 +3,7 @@
 junit = "6.1.1"
 mockito = "5.23.0"
 enonicDefaults = "2.1.7"
-enonicXpGradle = "4.0.0"
+enonicXpGradle = "4.1.0"
 graphQLJava = "26.0"
 graphQLJavaExtendedScalars = "24.0"
 
