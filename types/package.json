@@ -1,0 +1,32 @@
+{
+  "name": "@enonic-types/lib-graphql",
+  "version": "0.0.0",
+  "description": "Type definitions for the Enonic XP GraphQL library",
+  "types": "index.d.ts",
+  "files": [
+    "*"
+  ],
+  "keywords": [
+    "enonic",
+    "enonic-xp",
+    "lib-graphql",
+    "graphql",
+    "types",
+    "typescript"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/enonic/lib-graphql#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enonic/lib-graphql.git"
+  },
+  "bugs": {
+    "url": "https://github.com/enonic/lib-graphql/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@enonic-types/core": "^8.0.0"
+  }
+}
