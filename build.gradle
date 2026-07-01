@@ -47,3 +47,16 @@ test {
 }
 
 check.dependsOn jacocoTestReport
+
+// Assemble the @enonic-types/lib-graphql npm package (published on release by the CI npmPublish step).
+tasks.register('assembleTypes', Copy) {
+    from 'types'
+    into layout.buildDirectory.dir('types')
+    exclude 'tsconfig.json', 'test/**'
+    filesMatching('package.json') {
+        filter { line ->
+            line.replaceAll(/"version":\s*"[^"]*"/, "\"version\": \"${project.version}\"")
+        }
+    }
+}
+jar.dependsOn assembleTypes
