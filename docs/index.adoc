@@ -1,0 +1,43 @@
+= GraphQL Library
+:toc: right
+
+GraphQL Library enables Enonic XP applications to define custom GraphQL schemas and execute queries against them.
+
+Use this library when an application needs to expose its own GraphQL API, with application-specific types, resolvers, mutations, or subscriptions.
+It is different from https://developer.enonic.com/docs/guillotine[Guillotine], which provides a ready-made GraphQL API for querying CMS content.
+
+== Compatibility
+
+GraphQL Library 3 requires Enonic XP 8.0 or newer.
+
+For applications running on XP 7, use GraphQL Library 2.x.
+
+== Installation
+
+Add the Enonic repository and the library dependency to your application's `build.gradle`:
+
+[source,groovy]
+----
+repositories {
+    mavenLocal()
+    mavenCentral()
+    xp.enonicRepo()
+}
+
+dependencies {
+    include 'com.enonic.lib:lib-graphql:3.0.0'
+}
+----
+
+Use the latest available 3.x version in place of `3.0.0`.
+
+The library provides three server-side JavaScript modules:
+
+`/lib/graphql`:: Defines schemas, types, scalar constants, type wrappers, and query execution.
+`/lib/graphql-connection`:: Adds cursor encoding and Relay-style connection types.
+`/lib/graphql-rx`:: Provides publishers and subscribers for GraphQL subscriptions.
+
+== Next steps
+
+Start with the <<usage#,usage guide>> to create and execute a small schema.
+See the <<api#,API reference>> for every exported constant and function, and <<release#,release notes>> for version-specific changes.

@@ -1,0 +1,10 @@
+{
+  "versions": [
+    {
+      "label": "stable",
+      "checkout": "3.x",
+      "displayName": "3.x",
+      "latest": true
+    }
+  ]
+}

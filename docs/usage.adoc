@@ -1,0 +1,150 @@
+= Usage
+:toc: right
+
+This guide creates a small schema and executes a query against it.
+
+Before using the JavaScript API, add GraphQL Library to the application's Gradle dependencies as described on the <<index#,overview page>>.
+
+== Define a schema
+
+Import `/lib/graphql` and create a schema generator:
+
+[source,js]
+----
+const graphQlLib = require('/lib/graphql');
+
+const schemaGenerator = graphQlLib.newSchemaGenerator();
+----
+
+Define the object type returned by the API.
+Each field needs a GraphQL type and may provide a resolver function:
+
+[source,js]
+----
+const greetingType = schemaGenerator.createObjectType({
+    name: 'Greeting',
+    fields: {
+        message: {
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString)
+        },
+        generatedAt: {
+            type: graphQlLib.nonNull(graphQlLib.DateTime),
+            resolve: function () {
+                return new Date().toISOString();
+            }
+        }
+    }
+});
+----
+
+When a field has no resolver, GraphQL uses the property with the same name from the source object.
+The `message` field above therefore reads `source.message`.
+
+Every schema requires a root query type:
+
+[source,js]
+----
+const queryType = schemaGenerator.createObjectType({
+    name: 'Query',
+    fields: {
+        greeting: {
+            type: greetingType,
+            args: {
+                name: graphQlLib.nonNull(graphQlLib.GraphQLString)
+            },
+            resolve: function (env) {
+                return {
+                    message: `Hello, ${env.args.name}!`
+                };
+            }
+        }
+    }
+});
+
+const schema = schemaGenerator.createSchema({
+    query: queryType
+});
+----
+
+A resolver receives an environment object containing:
+
+`source`:: The value returned by the parent field.
+`args`:: Arguments supplied for the current field.
+`context`:: Application-specific context passed to `execute()`.
+
+Mutation and subscription roots are optional and are passed to `createSchema()` as `mutation` and `subscription`.
+
+== Execute a query
+
+Call `execute()` with the schema, query, and optional variables and context:
+
+[source,js]
+----
+const result = graphQlLib.execute(
+    schema,
+    'query SayHello($name: String!) { greeting(name: $name) { message generatedAt } }',
+    {name: 'Ada'},
+    {requestId: 'example-request'}
+);
+----
+
+A successful execution returns a JavaScript object with a `data` property:
+
+[source,json]
+----
+{
+  "data": {
+    "greeting": {
+      "message": "Hello, Ada!",
+      "generatedAt": "2026-08-10T12:00:00Z"
+    }
+  }
+}
+----
+
+Validation or resolver failures add an `errors` array.
+Depending on the error and field nullability, a response can contain both `data` and `errors`.
+
+== Expose the schema through an XP API
+
+GraphQL Library builds and executes the schema; it does not prescribe the HTTP endpoint.
+An XP API implementation can parse a GraphQL request and return the execution result:
+
+[source,js]
+----
+exports.post = function (req) {
+    const body = JSON.parse(req.body);
+    const result = graphQlLib.execute(
+        schema,
+        body.query,
+        body.variables,
+        {request: req}
+    );
+
+    return {
+        contentType: 'application/json',
+        body: result
+    };
+};
+----
+
+Validate access to the XP API separately.
+The library does not authenticate requests or authorize access to resolver data.
+
+== Related types
+
+Use `list()` to create a list type and `nonNull()` to make a type mandatory:
+
+[source,js]
+----
+const requiredStringList = graphQlLib.nonNull(
+    graphQlLib.list(
+        graphQlLib.nonNull(graphQlLib.GraphQLString)
+    )
+);
+----
+
+Use `reference()` when two types refer to each other or a type refers to itself before its concrete type is available.
+Referenced types must be reachable from the schema or included in the schema's `dictionary`.
+
+See <<api#,API reference>> for object, input, interface, union, enum, connection, and subscription APIs.
