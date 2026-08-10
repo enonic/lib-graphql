@@ -2,7 +2,7 @@
   "versions": [
     {
       "label": "stable",
-      "checkout": "3.x",
+      "checkout": "master",
       "displayName": "3.x",
       "latest": true
     }

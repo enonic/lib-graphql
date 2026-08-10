@@ -1,0 +1,20 @@
+{
+  "menuItems": [
+    {
+      "title": "Overview",
+      "document": "index"
+    },
+    {
+      "title": "Usage",
+      "document": "usage"
+    },
+    {
+      "title": "API reference",
+      "document": "api"
+    },
+    {
+      "title": "Release notes",
+      "document": "release"
+    }
+  ]
+}
