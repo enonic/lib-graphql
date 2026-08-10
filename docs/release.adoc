@@ -1,0 +1,44 @@
+= GraphQL Library 3 Release Notes
+:toc: right
+
+Release notes for GraphQL Library 3.
+
+IMPORTANT: GraphQL Library 3 requires Enonic XP 8.0 or newer.
+
+////
+Template for future releases.
+Add the newest release directly below this comment.
+
+== GraphQL Library 3.x.x
+
+=== Features
+
+* <feature>
+
+=== Improvements
+
+* <improvement>
+
+=== Bug fixes
+
+* <fix>
+
+=== Breaking changes
+
+* <change>
+////
+
+== GraphQL Library 3.0.0
+
+GraphQL Library 3.0.0 was released in June 2026 as the XP 8-compatible major release.
+
+=== Improvements
+
+* Added compatibility with Enonic XP 8.
+* Updated the underlying GraphQL Java libraries used to build and execute schemas.
+* Replaced the end-of-life RxJava dependency with a JDK Flow-based subscription implementation while retaining the `/lib/graphql-rx` JavaScript helpers.
+* Subscription publishers preserve the XP execution context by delivering events on the publishing thread.
+
+=== Breaking changes
+
+* The minimum required Enonic XP version is 8.0. Applications running on XP 7 must continue using GraphQL Library 2.x.
