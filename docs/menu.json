@@ -9,8 +9,22 @@
       "document": "usage"
     },
     {
-      "title": "API reference",
-      "document": "api"
+      "title": "Reference",
+      "document": "reference",
+      "menuItems": [
+        {
+          "title": "/lib/graphql",
+          "document": "reference/graphql"
+        },
+        {
+          "title": "/lib/graphql-connection",
+          "document": "reference/graphql-connection"
+        },
+        {
+          "title": "/lib/graphql-rx",
+          "document": "reference/graphql-rx"
+        }
+      ]
     },
     {
       "title": "Release notes",

@@ -1,0 +1,86 @@
+= /lib/graphql-rx
+:toc: right
+
+This optional module provides the publisher and subscriber objects used by GraphQL subscriptions.
+
+== Usage
+
+[source,js]
+----
+const graphQlRxLib = require('/lib/graphql-rx');
+----
+
+== Functions
+
+=== createPublishProcessor
+
+Creates a <<publish-processor,PublishProcessor>> that can be returned by a subscription field resolver.
+
+[.lead]
+Returns
+
+<<publish-processor,`PublishProcessor`>> — a reactive event source.
+
+=== createSubscriber
+
+Creates a subscriber for the publisher returned as `data` by a subscription execution.
+Takes a single `params` object with these properties:
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `onNext` | function | *Optional.* Called with each mapped <<graphql#execution-result,ExecutionResult>> produced by a subscription.
+|===
+
+[.lead]
+Returns
+
+<<subscription-subscriber,`SubscriptionSubscriber`>>.
+
+== Classes
+
+[#publish-processor]
+=== PublishProcessor
+
+A reactive event source returned by `createPublishProcessor()`.
+
+==== onNext
+
+Publishes a value to active subscribers.
+
+==== onError
+
+Terminates the stream with an error.
+
+==== onComplete
+
+Completes the stream.
+
+==== filter
+
+Returns a publisher that forwards only values for which `predicate(value)` is truthy.
+
+==== subscribe
+
+Subscribes a compatible reactive-streams subscriber.
+
+[#subscription-subscriber]
+=== SubscriptionSubscriber
+
+A subscriber returned by `createSubscriber()`.
+
+==== cancelSubscription
+
+Cancels its active subscription.
+Calling it before subscription or more than once has no effect.
+
+== Type definitions
+
+This module defines no type definitions of its own.
+Subscription callbacks receive an <<graphql#execution-result,ExecutionResult>>.
+
+== Constants
+
+This module exports no constants.

@@ -3,7 +3,7 @@
 
 This guide creates a small schema and executes a query against it.
 
-Before using the JavaScript API, add GraphQL Library to the application's Gradle dependencies as described on the <<index#,overview page>>.
+Before using the library, add GraphQL Library to the application's Gradle dependencies as described on the <<index#,overview page>>.
 
 == Define a schema
 
@@ -147,4 +147,4 @@ const requiredStringList = graphQlLib.nonNull(
 Use `reference()` when two types refer to each other or a type refers to itself before its concrete type is available.
 Referenced types must be reachable from the schema or included in the schema's `dictionary`.
 
-See <<api#,API reference>> for object, input, interface, union, enum, connection, and subscription APIs.
+See the <<reference#,reference>> for object, input, interface, union, enum, connection, and subscription types.

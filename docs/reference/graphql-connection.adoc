@@ -1,0 +1,108 @@
+= /lib/graphql-connection
+:toc: right
+
+This optional module creates Relay-style connection types and the opaque cursors they expose.
+
+== Usage
+
+[source,js]
+----
+const connectionLib = require('/lib/graphql-connection');
+----
+
+== Functions
+
+[#create-connection-type]
+=== createConnectionType
+
+Creates a connection object type for a GraphQL object type.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `schemaGenerator` | <<graphql#schema-generator,SchemaGenerator>> | Generator used to create the schema's related types.
+| `type` | GraphQL object type | Type returned in each connection edge.
+|===
+
+[.lead]
+Returns
+
+A GraphQL object type named `<TypeName>Connection` with these fields:
+
+`totalCount`:: Total number of available items.
+`edges`:: List containing each `node` and its encoded `cursor`.
+`pageInfo`:: `startCursor`, `endCursor`, and `hasNext` for the current page.
+
+The resolver for a field of this type must return a <<connection-source,ConnectionSource>>.
+
+=== encodeCursor
+
+Converts `value` to a string and returns its Base64 encoding.
+The encoding is opaque to GraphQL clients, but it is not encryption and must not contain secrets.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `value` | any | Value to encode. Converted with `String()` before encoding.
+|===
+
+[.lead]
+Returns
+
+`string` — Base64-encoded cursor.
+
+=== decodeCursor
+
+Decodes a Base64 cursor.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `value` | any | Cursor to decode. Converted with `String()` before decoding.
+|===
+
+[.lead]
+Returns
+
+`string` — decoded cursor value.
+
+== Classes
+
+This module exports no classes.
+
+== Type definitions
+
+[#connection-source]
+=== ConnectionSource
+
+The value a resolver must return for a field whose type was created by <<create-connection-type,createConnectionType()>>.
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `total` | number | Total number of available items.
+| `start` | number | Zero-based index of the first item in `hits`.
+| `hits` | object[] | Items in the current page.
+|===
+
+== Constants
+
+This module exports no constants.
+Scalar constants are available from <<graphql#,`/lib/graphql`>>.
