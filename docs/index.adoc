@@ -33,11 +33,11 @@ Use the latest available 3.x version in place of `3.0.0`.
 
 The library provides three server-side JavaScript modules:
 
-`/lib/graphql`:: Defines schemas, types, scalar constants, type wrappers, and query execution.
-`/lib/graphql-connection`:: Adds cursor encoding and Relay-style connection types.
-`/lib/graphql-rx`:: Provides publishers and subscribers for GraphQL subscriptions.
+<<reference/graphql#,`/lib/graphql`>>:: Defines schemas, types, scalar constants, type wrappers, and query execution.
+<<reference/graphql-connection#,`/lib/graphql-connection`>>:: Adds cursor encoding and Relay-style connection types.
+<<reference/graphql-rx#,`/lib/graphql-rx`>>:: Provides publishers and subscribers for GraphQL subscriptions.
 
 == Next steps
 
 Start with the <<usage#,usage guide>> to create and execute a small schema.
-See the <<api#,API reference>> for every exported constant and function, and <<release#,release notes>> for version-specific changes.
+See the <<reference#,reference>> for every exported constant and function, and <<release#,release notes>> for version-specific changes.
