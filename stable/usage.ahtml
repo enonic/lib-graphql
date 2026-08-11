@@ -455,7 +455,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>This guide creates a small schema and executes a query against it.</p>
 </div>
 <div class="paragraph">
-<p>Before using the JavaScript API, add GraphQL Library to the application&#8217;s Gradle dependencies as described on the <a href="index.ahtml">overview page</a>.</p>
+<p>Before using the library, add GraphQL Library to the application&#8217;s Gradle dependencies as described on the <a href="index.ahtml">overview page</a>.</p>
 </div>
 </div>
 </div>
@@ -637,14 +637,14 @@ The library does not authenticate requests or authorize access to resolver data.
 Referenced types must be reachable from the schema or included in the schema&#8217;s <code>dictionary</code>.</p>
 </div>
 <div class="paragraph">
-<p>See <a href="api.ahtml">API reference</a> for object, input, interface, union, enum, connection, and subscription APIs.</p>
+<p>See the <a href="reference.ahtml">reference</a> for object, input, interface, union, enum, connection, and subscription types.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-10 14:21:54 UTC
+Last updated 2026-08-11 07:39:52 UTC
 </div>
 </div>
 </body>

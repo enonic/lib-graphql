@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.26">
-<title>API Reference</title>
+<title>/lib/graphql</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,30 +437,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>API Reference</h1>
+<h1>/lib/graphql</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#libgraphql"><code>/lib/graphql</code></a>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#functions">Functions</a>
 <ul class="sectlevel2">
-<li><a href="#scalar_constants">Scalar constants</a></li>
-<li><a href="#functions">Functions</a></li>
+<li><a href="#newschemagenerator">newSchemaGenerator</a></li>
+<li><a href="#list">list</a></li>
+<li><a href="#nonnull">nonNull</a></li>
+<li><a href="#reference">reference</a></li>
+<li><a href="#execute">execute</a></li>
+</ul>
+</li>
+<li><a href="#classes">Classes</a>
+<ul class="sectlevel2">
 <li><a href="#schema-generator">SchemaGenerator</a></li>
 </ul>
 </li>
-<li><a href="#libgraphql_connection"><code>/lib/graphql-connection</code></a>
-<ul class="sectlevel2">
-<li><a href="#functions_2">Functions</a></li>
-</ul>
-</li>
-<li><a href="#libgraphql_rx"><code>/lib/graphql-rx</code></a>
-<ul class="sectlevel2">
-<li><a href="#functions_3">Functions</a></li>
-<li><a href="#publish-processor">PublishProcessor</a></li>
-<li><a href="#subscription-subscriber">SubscriptionSubscriber</a></li>
-</ul>
-</li>
-<li><a href="#type-definitions">Type definitions</a>
+<li><a href="#type_definitions">Type definitions</a>
 <ul class="sectlevel2">
 <li><a href="#output-field">OutputField</a></li>
 <li><a href="#interface-field">InterfaceField</a></li>
@@ -469,6 +465,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#execution-result">ExecutionResult</a></li>
 </ul>
 </li>
+<li><a href="#constants">Constants</a></li>
 </ul>
 </div>
 </div>
@@ -476,34 +473,785 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>This reference covers the public server-side JavaScript modules shipped by GraphQL Library.</p>
+<p>The main module defines GraphQL types, assembles them into a schema, and executes operations against that schema.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="libgraphql"><a class="link" href="#libgraphql"><code>/lib/graphql</code></a></h2>
+<h2 id="usage"><a class="link" href="#usage">Usage</a></h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Import the main module with:</p>
-</div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">const graphQlLib = require('/lib/graphql');</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="functions"><a class="link" href="#functions">Functions</a></h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="scalar_constants"><a class="link" href="#scalar_constants">Scalar constants</a></h3>
+<h3 id="newschemagenerator"><a class="link" href="#newschemagenerator">newSchemaGenerator</a></h3>
 <div class="paragraph">
-<p>The module exports scalar type objects that can be assigned directly to a field or argument&#8217;s <code>type</code> property.</p>
+<p>Creates an independent <a href="#schema-generator">SchemaGenerator</a>.
+Use the same generator for the related types and the schema, because it also collects resolver registrations.</p>
+</div>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p><a href="#schema-generator"><code>SchemaGenerator</code></a> — functions for constructing GraphQL types and a schema.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="list"><a class="link" href="#list">list</a></h3>
+<div class="paragraph">
+<p>Wraps a type as a GraphQL list.
+The list and its items remain nullable unless separately wrapped with <code>nonNull()</code>.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
 </div>
 <table class="tableblock frame-none grid-none stretch">
 <colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Type of each list item.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL list type.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="nonnull"><a class="link" href="#nonnull">nonNull</a></h3>
+<div class="paragraph">
+<p>Wraps a type as non-null.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Type that must not resolve to <code>null</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL non-null type.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="reference"><a class="link" href="#reference">reference</a></h3>
+<div class="paragraph">
+<p>Creates a type reference by name.
+References allow self-referencing or mutually dependent types to be declared before the referenced concrete type exists.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>typeKey</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Exact GraphQL name of the referenced type.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL type reference.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="execute"><a class="link" href="#execute">execute</a></h3>
+<div class="paragraph">
+<p>Executes a GraphQL operation against a schema.
+The arguments are positional.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>schema</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL schema</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Schema created with <code>SchemaGenerator.createSchema()</code>.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>GraphQL query, mutation, or subscription document.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>variables</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Values for variables declared by the operation.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>context</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Application-specific value exposed to resolvers as <code>env.context</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p><a href="#execution-result"><code>ExecutionResult</code></a> — query and mutation results contain <code>data</code> and, when applicable, <code>errors</code>.
+For a subscription, <code>data</code> is a publisher whose <code>subscribe()</code> method accepts a subscriber from <a href="graphql-rx.ahtml"><code>/lib/graphql-rx</code></a>.</p>
+</div>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const result = graphQlLib.execute(
+    schema,
+    'query SayHello($name: String!) { greeting(name: $name) { message } }',
+    {name: 'Ada'},
+    {requestId: 'example-request'}
+);</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="classes"><a class="link" href="#classes">Classes</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="schema-generator"><a class="link" href="#schema-generator">SchemaGenerator</a></h3>
+<div class="paragraph">
+<p>Type and schema factory returned by <code>newSchemaGenerator()</code>.
+Except for <code>createPageInfoObjectType()</code>, each type-creation method creates a new named GraphQL type.</p>
+</div>
+<div class="sect3">
+<h4 id="createschema"><a class="link" href="#createschema">createSchema</a></h4>
+<div class="paragraph">
+<p>Assembles the schema from its root types.
+Takes a single <code>params</code> object with these properties:</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Root query type. Every schema requires one.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mutation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Root mutation type.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>subscription</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Root subscription type.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dictionary</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type[]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Additional concrete types that are not otherwise reachable when the schema is assembled, including types addressed only through <code>reference()</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL schema.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="createobjecttype"><a class="link" href="#createobjecttype">createObjectType</a></h4>
+<div class="paragraph">
+<p>Creates an object type.
+Takes a single <code>params</code> object with these properties:</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unique GraphQL type name.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fields</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Map of field names to <a href="#output-field">OutputField</a> definitions.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>interfaces</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL interface type[]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Interfaces implemented by the object. Entries may be concrete interface types or type references.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL object type.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="createpageinfoobjecttype"><a class="link" href="#createpageinfoobjecttype">createPageInfoObjectType</a></h4>
+<div class="paragraph">
+<p>Creates the cached page-info object type used by <a href="graphql-connection.ahtml"><code>/lib/graphql-connection</code></a>.
+The first invocation on a schema generator creates the type; later invocations return that same type.
+Application code normally uses <code>createConnectionType()</code> instead of calling this directly.</p>
+</div>
+<div class="paragraph">
+<p>Its <code>params</code> properties and return value are the same as <code>createObjectType()</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="createinputobjecttype"><a class="link" href="#createinputobjecttype">createInputObjectType</a></h4>
+<div class="paragraph">
+<p>Creates an input object type for use in field arguments.
+Takes a single <code>params</code> object with these properties:</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unique GraphQL input type name.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fields</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Map of field names to <a href="#input-field">InputField</a> definitions.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL input object type.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="createinterfacetype"><a class="link" href="#createinterfacetype">createInterfaceType</a></h4>
+<div class="paragraph">
+<p>Creates an interface type.
+Takes a single <code>params</code> object with these properties:</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unique GraphQL interface name.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fields</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Map of field names to <a href="#interface-field">InterfaceField</a> definitions.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>typeResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Receives the source value and returns the concrete GraphQL object type for that value.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL interface type.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="createuniontype"><a class="link" href="#createuniontype">createUnionType</a></h4>
+<div class="paragraph">
+<p>Creates a union type.
+Takes a single <code>params</code> object with these properties:</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unique GraphQL union name.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>types</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type[]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Non-empty array of possible concrete types. Entries may be object types or type references.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>typeResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Receives the source value and returns its concrete GraphQL object type.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL union type.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="createenumtype"><a class="link" href="#createenumtype">createEnumType</a></h4>
+<div class="paragraph">
+<p>Creates an enum type.
+Takes a single <code>params</code> object with these properties:</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unique GraphQL enum name.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>values</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string[] or object</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Enum names as an array, or an object mapping GraphQL enum names to their runtime values.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>GraphQL enum type.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="type_definitions"><a class="link" href="#type_definitions">Type definitions</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="output-field"><a class="link" href="#output-field">OutputField</a></h3>
+<div class="paragraph">
+<p>Defines a field on an object type.</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL output type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Field result type.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>args</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Map of argument names to GraphQL input types.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>resolve</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">function or value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Resolver invoked with a <a href="#resolver-environment">ResolverEnvironment</a>, or a fixed value. When omitted, GraphQL reads a property with the field&#8217;s name from <code>env.source</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="interface-field"><a class="link" href="#interface-field">InterfaceField</a></h3>
+<div class="paragraph">
+<p>Defines a field on an interface.</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL output type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Field result type.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>args</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Map of argument names to GraphQL input types.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="input-field"><a class="link" href="#input-field">InputField</a></h3>
+<div class="paragraph">
+<p>Defines a field on an input object.</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL input type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Input field type.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="resolver-environment"><a class="link" href="#resolver-environment">ResolverEnvironment</a></h3>
+<div class="paragraph">
+<p>The object passed to an output-field resolver.</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>source</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Value returned by the parent field.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>args</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Arguments supplied for the current field.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>context</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Context passed to <code>execute()</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="execution-result"><a class="link" href="#execution-result">ExecutionResult</a></h3>
+<div class="paragraph">
+<p>The mapped result returned by <code>execute()</code> and delivered to subscription callbacks.</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object or publisher</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Resolved operation data. A subscription returns a publisher instead of an object.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>errors</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object[]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Validation or data-fetching errors. Each error includes <code>errorType</code> and <code>message</code>, and may include <code>locations</code>, <code>validationErrorType</code>, or <code>exception</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="constants"><a class="link" href="#constants">Constants</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The module exports scalar type objects that can be assigned directly to a field or argument&#8217;s <code>type</code> property.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Export</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
@@ -555,953 +1303,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="functions"><a class="link" href="#functions">Functions</a></h3>
-<div class="sect3">
-<h4 id="newschemagenerator"><a class="link" href="#newschemagenerator"><code>newSchemaGenerator()</code></a></h4>
-<div class="paragraph">
-<p>Creates an independent <a href="#schema-generator">SchemaGenerator</a>.
-Use the same generator for the related types and schema because it also collects resolver registrations.</p>
-</div>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><a href="#schema-generator"><code>SchemaGenerator</code></a> : Functions for constructing GraphQL types and a schema.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="listtype"><a class="link" href="#listtype"><code>list(type)</code></a></h4>
-<div class="paragraph">
-<p>Wraps a type as a GraphQL list.
-The list and its items remain nullable unless separately wrapped with <code>nonNull()</code>.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Type of each list item.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL list type</strong></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="nonnulltype"><a class="link" href="#nonnulltype"><code>nonNull(type)</code></a></h4>
-<div class="paragraph">
-<p>Wraps a type as non-null.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Type that must not resolve to <code>null</code>.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL non-null type</strong></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="referencetypename"><a class="link" href="#referencetypename"><code>reference(typeName)</code></a></h4>
-<div class="paragraph">
-<p>Creates a type reference by name.
-References allow self-referencing or mutually dependent types to be declared before the referenced concrete type exists.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>typeName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Exact GraphQL name of the referenced type.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL type reference</strong></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="executeschema_query_variables_context"><a class="link" href="#executeschema_query_variables_context"><code>execute(schema, query, variables, context)</code></a></h4>
-<div class="paragraph">
-<p>Executes a GraphQL operation against a schema.
-The arguments are positional.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>schema</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL schema</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Schema created with <code>SchemaGenerator.createSchema()</code>.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>GraphQL query, mutation, or subscription document.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>variables</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Values for variables declared by the operation.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>context</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Application-specific value exposed to resolvers as <code>env.context</code>.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><a href="#execution-result"><code>ExecutionResult</code></a> : Query and mutation results contain <code>data</code> and, when applicable, <code>errors</code>.
-For a subscription, <code>data</code> is a publisher whose <code>subscribe()</code> method accepts a subscriber from <code>/lib/graphql-rx</code>.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="schema-generator"><a class="link" href="#schema-generator">SchemaGenerator</a></h3>
-<div class="paragraph">
-<p><code>newSchemaGenerator()</code> returns the functions in this section.
-Except for <code>createPageInfoObjectType()</code>, each type-creation call creates a new named GraphQL type.</p>
-</div>
-<div class="sect3">
-<h4 id="createschema"><a class="link" href="#createschema"><code>createSchema()</code></a></h4>
-<div class="paragraph">
-<p>Takes one <code>params</code> object:</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Root query type. Every schema requires one.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mutation</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Root mutation type.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>subscription</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Root subscription type.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dictionary</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type[]</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Additional concrete types that are not otherwise reachable when the schema is assembled, including types addressed only through <code>reference()</code>.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL schema</strong></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="createobjecttype"><a class="link" href="#createobjecttype"><code>createObjectType()</code></a></h4>
-<div class="paragraph">
-<p>Takes one <code>params</code> object:</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Unique GraphQL type name.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fields</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Map of field names to <a href="#output-field">OutputField</a> definitions.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>interfaces</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL interface type[]</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Interfaces implemented by the object. Entries may be concrete interface types or type references.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL object type</strong></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="createpageinfoobjecttype"><a class="link" href="#createpageinfoobjecttype"><code>createPageInfoObjectType()</code></a></h4>
-<div class="paragraph">
-<p>Creates the cached page-info object type used by <code>/lib/graphql-connection</code>.
-The first invocation on a schema generator creates the type; later invocations return that same type.
-Application code normally uses <code>createConnectionType()</code> instead of calling this directly.</p>
-</div>
-<div class="paragraph">
-<p>Its <code>params</code> properties and return value are the same as <code>createObjectType()</code>.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="createinputobjecttype"><a class="link" href="#createinputobjecttype"><code>createInputObjectType()</code></a></h4>
-<div class="paragraph">
-<p>Takes one <code>params</code> object:</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Unique GraphQL input type name.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fields</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Map of field names to <a href="#input-field">InputField</a> definitions.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL input object type</strong></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="createinterfacetype"><a class="link" href="#createinterfacetype"><code>createInterfaceType()</code></a></h4>
-<div class="paragraph">
-<p>Takes one <code>params</code> object:</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Unique GraphQL interface name.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fields</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Map of field names to <a href="#interface-field">InterfaceField</a> definitions.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>typeResolver</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Receives the source value and returns the concrete GraphQL object type for that value.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL interface type</strong></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="createuniontype"><a class="link" href="#createuniontype"><code>createUnionType()</code></a></h4>
-<div class="paragraph">
-<p>Takes one <code>params</code> object:</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Unique GraphQL union name.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>types</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type[]</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Non-empty array of possible concrete types. Entries may be object types or type references.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>typeResolver</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Receives the source value and returns its concrete GraphQL object type.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL union type</strong></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="createenumtype"><a class="link" href="#createenumtype"><code>createEnumType()</code></a></h4>
-<div class="paragraph">
-<p>Takes one <code>params</code> object:</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Unique GraphQL enum name.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>values</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string[] or object</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Enum names as an array, or an object mapping GraphQL enum names to their runtime values.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Description exposed through GraphQL introspection.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><strong>GraphQL enum type</strong></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="libgraphql_connection"><a class="link" href="#libgraphql_connection"><code>/lib/graphql-connection</code></a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This optional module creates Relay-style connection types and opaque cursors.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">const connectionLib = require('/lib/graphql-connection');</code></pre>
-</div>
-</div>
-<div class="sect2">
-<h3 id="functions_2"><a class="link" href="#functions_2">Functions</a></h3>
-<div class="sect3">
-<h4 id="createconnectiontypeschemagenerator_type"><a class="link" href="#createconnectiontypeschemagenerator_type"><code>createConnectionType(schemaGenerator, type)</code></a></h4>
-<div class="paragraph">
-<p>Creates a connection object for a GraphQL object type.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>schemaGenerator</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#schema-generator">SchemaGenerator</a></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Generator used to create the schema&#8217;s related types.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Type returned in each connection edge.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>The resolver for a field of the returned connection type must return:</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>total</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Total number of available items.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>start</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Zero-based index of the first item in <code>hits</code>.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hits</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object[]</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Items in the current page.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p>A GraphQL object type named <code>&lt;TypeName&gt;Connection</code> with these fields:</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><code>totalCount</code></dt>
-<dd>
-<p>Total number of available items.</p>
-</dd>
-<dt class="hdlist1"><code>edges</code></dt>
-<dd>
-<p>List containing each <code>node</code> and its encoded <code>cursor</code>.</p>
-</dd>
-<dt class="hdlist1"><code>pageInfo</code></dt>
-<dd>
-<p><code>startCursor</code>, <code>endCursor</code>, and <code>hasNext</code> for the current page.</p>
-</dd>
-</dl>
-</div>
-</div>
-<div class="sect3">
-<h4 id="encodecursorvalue"><a class="link" href="#encodecursorvalue"><code>encodeCursor(value)</code></a></h4>
-<div class="paragraph">
-<p>Converts <code>value</code> to a string and returns its Base64 encoding.
-The encoding is opaque to GraphQL clients, but it is not encryption and must not contain secrets.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="decodecursorvalue"><a class="link" href="#decodecursorvalue"><code>decodeCursor(value)</code></a></h4>
-<div class="paragraph">
-<p>Decodes a Base64 cursor and returns its string value.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="libgraphql_rx"><a class="link" href="#libgraphql_rx"><code>/lib/graphql-rx</code></a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This optional module provides the publisher and subscriber objects used by GraphQL subscriptions.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">const graphQlRxLib = require('/lib/graphql-rx');</code></pre>
-</div>
-</div>
-<div class="sect2">
-<h3 id="functions_3"><a class="link" href="#functions_3">Functions</a></h3>
-<div class="sect3">
-<h4 id="createpublishprocessor"><a class="link" href="#createpublishprocessor"><code>createPublishProcessor()</code></a></h4>
-<div class="paragraph">
-<p>Creates a <a href="#publish-processor">PublishProcessor</a> that can be returned by a subscription field resolver.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="createsubscriber"><a class="link" href="#createsubscriber"><code>createSubscriber()</code></a></h4>
-<div class="paragraph">
-<p>Takes one <code>params</code> object:</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>onNext</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Called with each mapped <a href="#execution-result">ExecutionResult</a> produced by a subscription.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph lead">
-<p>Returns</p>
-</div>
-<div class="paragraph">
-<p><a href="#subscription-subscriber"><code>SubscriptionSubscriber</code></a></p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="publish-processor"><a class="link" href="#publish-processor">PublishProcessor</a></h3>
-<div class="paragraph">
-<p>A reactive event source returned by <code>createPublishProcessor()</code>.</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><code>onNext(value)</code></dt>
-<dd>
-<p>Publishes a value to active subscribers.</p>
-</dd>
-<dt class="hdlist1"><code>onError(error)</code></dt>
-<dd>
-<p>Terminates the stream with an error.</p>
-</dd>
-<dt class="hdlist1"><code>onComplete()</code></dt>
-<dd>
-<p>Completes the stream.</p>
-</dd>
-<dt class="hdlist1"><code>filter(predicate)</code></dt>
-<dd>
-<p>Returns a publisher that forwards only values for which <code>predicate(value)</code> is truthy.</p>
-</dd>
-<dt class="hdlist1"><code>subscribe(subscriber)</code></dt>
-<dd>
-<p>Subscribes a compatible reactive-streams subscriber.</p>
-</dd>
-</dl>
-</div>
-</div>
-<div class="sect2">
-<h3 id="subscription-subscriber"><a class="link" href="#subscription-subscriber">SubscriptionSubscriber</a></h3>
-<div class="paragraph">
-<p>A subscriber returned by <code>createSubscriber()</code>.</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><code>cancelSubscription()</code></dt>
-<dd>
-<p>Cancels its active subscription. Calling it before subscription or more than once has no effect.</p>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="type-definitions"><a class="link" href="#type-definitions">Type definitions</a></h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="output-field"><a class="link" href="#output-field">OutputField</a></h3>
-<div class="paragraph">
-<p>Defines a field on an object type.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL output type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Field result type.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>args</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Map of argument names to GraphQL input types.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>resolve</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">function or value</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Resolver invoked with a <a href="#resolver-environment">ResolverEnvironment</a>, or a fixed value. When omitted, GraphQL reads a property with the field&#8217;s name from <code>env.source</code>.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="interface-field"><a class="link" href="#interface-field">InterfaceField</a></h3>
-<div class="paragraph">
-<p>Defines a field on an interface.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL output type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Field result type.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>args</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Map of argument names to GraphQL input types.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="input-field"><a class="link" href="#input-field">InputField</a></h3>
-<div class="paragraph">
-<p>Defines a field on an input object.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL input type</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Input field type.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="resolver-environment"><a class="link" href="#resolver-environment">ResolverEnvironment</a></h3>
-<div class="paragraph">
-<p>The object passed to an output-field resolver.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>source</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Value returned by the parent field.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>args</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Arguments supplied for the current field.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>context</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Context passed to <code>execute()</code>.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="execution-result"><a class="link" href="#execution-result">ExecutionResult</a></h3>
-<div class="paragraph">
-<p>The mapped result returned by <code>execute()</code> and delivered to subscription callbacks.</p>
-</div>
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 66.6668%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>data</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object or publisher</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Resolved operation data. A subscription returns a publisher instead of an object.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>errors</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object[]</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Validation or data-fetching errors. Each error includes <code>errorType</code> and <code>message</code>, and may include <code>locations</code>, <code>validationErrorType</code>, or <code>exception</code>.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-10 14:21:54 UTC
+Last updated 2026-08-11 07:39:52 UTC
 </div>
 </div>
 </body>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.26">
-<title>GraphQL Library 3 Release Notes</title>
+<title>/lib/graphql-connection</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,16 +437,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>GraphQL Library 3 Release Notes</h1>
+<h1>/lib/graphql-connection</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#functions">Functions</a>
 <ul class="sectlevel2">
-<li><a href="#improvements">Improvements</a></li>
-<li><a href="#breaking_changes">Breaking changes</a></li>
+<li><a href="#create-connection-type">createConnectionType</a></li>
+<li><a href="#encodecursor">encodeCursor</a></li>
+<li><a href="#decodecursor">decodeCursor</a></li>
 </ul>
 </li>
+<li><a href="#classes">Classes</a></li>
+<li><a href="#type_definitions">Type definitions</a>
+<ul class="sectlevel2">
+<li><a href="#connection-source">ConnectionSource</a></li>
+</ul>
+</li>
+<li><a href="#constants">Constants</a></li>
 </ul>
 </div>
 </div>
@@ -454,56 +463,228 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Release notes for GraphQL Library 3.</p>
+<p>This optional module creates Relay-style connection types and the opaque cursors they expose.</p>
 </div>
-<div class="admonitionblock important">
-<table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="usage"><a class="link" href="#usage">Usage</a></h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const connectionLib = require('/lib/graphql-connection');</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="functions"><a class="link" href="#functions">Functions</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="create-connection-type"><a class="link" href="#create-connection-type">createConnectionType</a></h3>
+<div class="paragraph">
+<p>Creates a connection object type for a GraphQL object type.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
 <tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-GraphQL Library 3 requires Enonic XP 8.0 or newer.
-</td>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
 </tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>schemaGenerator</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="graphql.ahtml#schema-generator">SchemaGenerator</a></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Generator used to create the schema&#8217;s related types.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL object type</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Type returned in each connection edge.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>A GraphQL object type named <code>&lt;TypeName&gt;Connection</code> with these fields:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>totalCount</code></dt>
+<dd>
+<p>Total number of available items.</p>
+</dd>
+<dt class="hdlist1"><code>edges</code></dt>
+<dd>
+<p>List containing each <code>node</code> and its encoded <code>cursor</code>.</p>
+</dd>
+<dt class="hdlist1"><code>pageInfo</code></dt>
+<dd>
+<p><code>startCursor</code>, <code>endCursor</code>, and <code>hasNext</code> for the current page.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The resolver for a field of this type must return a <a href="#connection-source">ConnectionSource</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="encodecursor"><a class="link" href="#encodecursor">encodeCursor</a></h3>
+<div class="paragraph">
+<p>Converts <code>value</code> to a string and returns its Base64 encoding.
+The encoding is opaque to GraphQL clients, but it is not encryption and must not contain secrets.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Value to encode. Converted with <code>String()</code> before encoding.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p><code>string</code> — Base64-encoded cursor.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="decodecursor"><a class="link" href="#decodecursor">decodeCursor</a></h3>
+<div class="paragraph">
+<p>Decodes a Base64 cursor.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Cursor to decode. Converted with <code>String()</code> before decoding.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p><code>string</code> — decoded cursor value.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="classes"><a class="link" href="#classes">Classes</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This module exports no classes.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="type_definitions"><a class="link" href="#type_definitions">Type definitions</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="connection-source"><a class="link" href="#connection-source">ConnectionSource</a></h3>
+<div class="paragraph">
+<p>The value a resolver must return for a field whose type was created by <a href="#create-connection-type">createConnectionType()</a>.</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>total</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Total number of available items.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>start</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Zero-based index of the first item in <code>hits</code>.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hits</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object[]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Items in the current page.</p>
+</div></div></td>
+</tr>
+</tbody>
 </table>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="graphql_library_3_0_0"><a class="link" href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a></h2>
+<h2 id="constants"><a class="link" href="#constants">Constants</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>GraphQL Library 3.0.0 was released in June 2026 as the XP 8-compatible major release.</p>
-</div>
-<div class="sect2">
-<h3 id="improvements"><a class="link" href="#improvements">Improvements</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Added compatibility with Enonic XP 8.</p>
-</li>
-<li>
-<p>Updated the underlying GraphQL Java libraries used to build and execute schemas.</p>
-</li>
-<li>
-<p>Replaced the end-of-life RxJava dependency with a JDK Flow-based subscription implementation while retaining the <code>/lib/graphql-rx</code> JavaScript helpers.</p>
-</li>
-<li>
-<p>Subscription publishers preserve the XP execution context by delivering events on the publishing thread.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="breaking_changes"><a class="link" href="#breaking_changes">Breaking changes</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>The minimum required Enonic XP version is 8.0. Applications running on XP 7 must continue using GraphQL Library 2.x.</p>
-</li>
-</ul>
-</div>
+<p>This module exports no constants.
+Scalar constants are available from <a href="graphql.ahtml"><code>/lib/graphql</code></a>.</p>
 </div>
 </div>
 </div>

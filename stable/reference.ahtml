@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.26">
-<title>GraphQL Library 3 Release Notes</title>
+<title>Reference</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,16 +437,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>GraphQL Library 3 Release Notes</h1>
+<h1>Reference</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a>
-<ul class="sectlevel2">
-<li><a href="#improvements">Improvements</a></li>
-<li><a href="#breaking_changes">Breaking changes</a></li>
-</ul>
-</li>
+<li><a href="#modules">Modules</a></li>
 </ul>
 </div>
 </div>
@@ -454,56 +449,42 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Release notes for GraphQL Library 3.</p>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-GraphQL Library 3 requires Enonic XP 8.0 or newer.
-</td>
-</tr>
-</table>
+<p>GraphQL Library ships three server-side JavaScript modules. Each is required independently and documented on its own page.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="graphql_library_3_0_0"><a class="link" href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a></h2>
+<h2 id="modules"><a class="link" href="#modules">Modules</a></h2>
 <div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Module</th>
+<th class="tableblock halign-left valign-top">Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="reference/graphql.ahtml"><code>/lib/graphql</code></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scalar constants, type wrappers, the schema generator, and query execution. Needed by every application using the library.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="reference/graphql-connection.ahtml"><code>/lib/graphql-connection</code></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Relay-style connection types and opaque cursors.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="reference/graphql-rx.ahtml"><code>/lib/graphql-rx</code></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Publishers and subscribers for GraphQL subscriptions.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
-<p>GraphQL Library 3.0.0 was released in June 2026 as the XP 8-compatible major release.</p>
-</div>
-<div class="sect2">
-<h3 id="improvements"><a class="link" href="#improvements">Improvements</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Added compatibility with Enonic XP 8.</p>
-</li>
-<li>
-<p>Updated the underlying GraphQL Java libraries used to build and execute schemas.</p>
-</li>
-<li>
-<p>Replaced the end-of-life RxJava dependency with a JDK Flow-based subscription implementation while retaining the <code>/lib/graphql-rx</code> JavaScript helpers.</p>
-</li>
-<li>
-<p>Subscription publishers preserve the XP execution context by delivering events on the publishing thread.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="breaking_changes"><a class="link" href="#breaking_changes">Breaking changes</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>The minimum required Enonic XP version is 8.0. Applications running on XP 7 must continue using GraphQL Library 2.x.</p>
-</li>
-</ul>
-</div>
+<p>Every module page documents its <code>Functions</code>, <code>Classes</code>, <code>Type definitions</code>, and <code>Constants</code> in that order.
+Sections a module does not use are stated as empty rather than omitted.</p>
 </div>
 </div>
 </div>

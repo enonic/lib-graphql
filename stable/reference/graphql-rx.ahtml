@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.26">
-<title>GraphQL Library 3 Release Notes</title>
+<title>/lib/graphql-rx</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,16 +437,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>GraphQL Library 3 Release Notes</h1>
+<h1>/lib/graphql-rx</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#functions">Functions</a>
 <ul class="sectlevel2">
-<li><a href="#improvements">Improvements</a></li>
-<li><a href="#breaking_changes">Breaking changes</a></li>
+<li><a href="#createpublishprocessor">createPublishProcessor</a></li>
+<li><a href="#createsubscriber">createSubscriber</a></li>
 </ul>
 </li>
+<li><a href="#classes">Classes</a>
+<ul class="sectlevel2">
+<li><a href="#publish-processor">PublishProcessor</a></li>
+<li><a href="#subscription-subscriber">SubscriptionSubscriber</a></li>
+</ul>
+</li>
+<li><a href="#type_definitions">Type definitions</a></li>
+<li><a href="#constants">Constants</a></li>
 </ul>
 </div>
 </div>
@@ -454,56 +463,141 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Release notes for GraphQL Library 3.</p>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-GraphQL Library 3 requires Enonic XP 8.0 or newer.
-</td>
-</tr>
-</table>
+<p>This optional module provides the publisher and subscriber objects used by GraphQL subscriptions.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="graphql_library_3_0_0"><a class="link" href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a></h2>
+<h2 id="usage"><a class="link" href="#usage">Usage</a></h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const graphQlRxLib = require('/lib/graphql-rx');</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="functions"><a class="link" href="#functions">Functions</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="createpublishprocessor"><a class="link" href="#createpublishprocessor">createPublishProcessor</a></h3>
+<div class="paragraph">
+<p>Creates a <a href="#publish-processor">PublishProcessor</a> that can be returned by a subscription field resolver.</p>
+</div>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p><a href="#publish-processor"><code>PublishProcessor</code></a> — a reactive event source.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="createsubscriber"><a class="link" href="#createsubscriber">createSubscriber</a></h3>
+<div class="paragraph">
+<p>Creates a subscriber for the publisher returned as <code>data</code> by a subscription execution.
+Takes a single <code>params</code> object with these properties:</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>onNext</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Called with each mapped <a href="graphql.ahtml#execution-result">ExecutionResult</a> produced by a subscription.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p><a href="#subscription-subscriber"><code>SubscriptionSubscriber</code></a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="classes"><a class="link" href="#classes">Classes</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="publish-processor"><a class="link" href="#publish-processor">PublishProcessor</a></h3>
+<div class="paragraph">
+<p>A reactive event source returned by <code>createPublishProcessor()</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="onnext"><a class="link" href="#onnext">onNext</a></h4>
+<div class="paragraph">
+<p>Publishes a value to active subscribers.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="onerror"><a class="link" href="#onerror">onError</a></h4>
+<div class="paragraph">
+<p>Terminates the stream with an error.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="oncomplete"><a class="link" href="#oncomplete">onComplete</a></h4>
+<div class="paragraph">
+<p>Completes the stream.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="filter"><a class="link" href="#filter">filter</a></h4>
+<div class="paragraph">
+<p>Returns a publisher that forwards only values for which <code>predicate(value)</code> is truthy.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="subscribe"><a class="link" href="#subscribe">subscribe</a></h4>
+<div class="paragraph">
+<p>Subscribes a compatible reactive-streams subscriber.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="subscription-subscriber"><a class="link" href="#subscription-subscriber">SubscriptionSubscriber</a></h3>
+<div class="paragraph">
+<p>A subscriber returned by <code>createSubscriber()</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="cancelsubscription"><a class="link" href="#cancelsubscription">cancelSubscription</a></h4>
+<div class="paragraph">
+<p>Cancels its active subscription.
+Calling it before subscription or more than once has no effect.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="type_definitions"><a class="link" href="#type_definitions">Type definitions</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>GraphQL Library 3.0.0 was released in June 2026 as the XP 8-compatible major release.</p>
-</div>
-<div class="sect2">
-<h3 id="improvements"><a class="link" href="#improvements">Improvements</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Added compatibility with Enonic XP 8.</p>
-</li>
-<li>
-<p>Updated the underlying GraphQL Java libraries used to build and execute schemas.</p>
-</li>
-<li>
-<p>Replaced the end-of-life RxJava dependency with a JDK Flow-based subscription implementation while retaining the <code>/lib/graphql-rx</code> JavaScript helpers.</p>
-</li>
-<li>
-<p>Subscription publishers preserve the XP execution context by delivering events on the publishing thread.</p>
-</li>
-</ul>
+<p>This module defines no type definitions of its own.
+Subscription callbacks receive an <a href="graphql.ahtml#execution-result">ExecutionResult</a>.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="breaking_changes"><a class="link" href="#breaking_changes">Breaking changes</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>The minimum required Enonic XP version is 8.0. Applications running on XP 7 must continue using GraphQL Library 2.x.</p>
-</li>
-</ul>
 </div>
+<div class="sect1">
+<h2 id="constants"><a class="link" href="#constants">Constants</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This module exports no constants.</p>
 </div>
 </div>
 </div>
