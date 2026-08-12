@@ -3,13 +3,6 @@
 
 This optional module creates Relay-style connection types and the opaque cursors they expose.
 
-== Usage
-
-[source,js]
-----
-const connectionLib = require('/lib/graphql-connection');
-----
-
 == Functions
 
 [#create-connection-type]
@@ -19,6 +12,8 @@ Creates a connection object type for a GraphQL object type.
 
 [.lead]
 Parameters
+
+`createConnectionType()` takes two positional arguments:
 
 [%header,cols="1%,1%,98%a"]
 [frame="none"]
@@ -39,6 +34,47 @@ A GraphQL object type named `<TypeName>Connection` with these fields:
 `pageInfo`:: `startCursor`, `endCursor`, and `hasNext` for the current page.
 
 The resolver for a field of this type must return a <<connection-source,ConnectionSource>>.
+
+[.lead]
+Example
+
+The connection type is created from an existing object type, then used as the type of a field that returns a page of results.
+The resolver maps the query result onto the three <<connection-source,ConnectionSource>> properties.
+
+.Creates `PersonConnection` and pages through results with it:
+[source,js]
+----
+const graphQlLib = require('/lib/graphql');
+const connectionLib = require('/lib/graphql-connection');
+const peopleLib = require('/lib/people');
+
+const personConnectionType = connectionLib.createConnectionType(schemaGenerator, personType);
+
+const rootQueryType = schemaGenerator.createObjectType({
+    name: 'Query',
+    fields: {
+        people: {
+            type: personConnectionType,
+            args: {
+                start: graphQlLib.GraphQLInt,
+                count: graphQlLib.GraphQLInt
+            },
+            resolve: (env) => {
+                const result = peopleLib.find({
+                    start: env.args.start,
+                    count: env.args.count
+                });
+
+                return {
+                    total: result.total,
+                    start: env.args.start,
+                    hits: result.hits
+                };
+            }
+        }
+    }
+});
+----
 
 === encodeCursor
 
@@ -61,6 +97,24 @@ Returns
 
 `string` — Base64-encoded cursor.
 
+[.lead]
+Example
+
+Types created by `createConnectionType()` encode their own cursors.
+Call `encodeCursor()` directly only when building a connection-shaped type by hand.
+
+.Encodes an offset as a cursor:
+[source,js]
+----
+const cursor = connectionLib.encodeCursor(20);
+----
+
+.Return value:
+[source,js]
+----
+const expected = 'MjA=';
+----
+
 === decodeCursor
 
 Decodes a Base64 cursor.
@@ -81,11 +135,26 @@ Returns
 
 `string` — decoded cursor value.
 
-== Classes
+[.lead]
+Example
 
-This module exports no classes.
+The decoded value is always a string, so parse it before using it as a number.
 
-== Type definitions
+.Turns a client-supplied cursor back into a start offset:
+[source,js]
+----
+const value = connectionLib.decodeCursor('MjA=');
+
+const start = parseInt(value, 10);
+----
+
+.Return value:
+[source,js]
+----
+const expected = '20';
+----
+
+== Type Definitions
 
 [#connection-source]
 === ConnectionSource
@@ -101,8 +170,3 @@ The value a resolver must return for a field whose type was created by <<create-
 | `start` | number | Zero-based index of the first item in `hits`.
 | `hits` | object[] | Items in the current page.
 |===
-
-== Constants
-
-This module exports no constants.
-Scalar constants are available from <<graphql#,`/lib/graphql`>>.

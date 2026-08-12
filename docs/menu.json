@@ -9,20 +9,20 @@
       "document": "usage"
     },
     {
-      "title": "Reference",
-      "document": "reference",
+      "title": "Modules",
+      "document": "modules",
       "menuItems": [
         {
           "title": "/lib/graphql",
-          "document": "reference/graphql"
+          "document": "modules/graphql"
         },
         {
           "title": "/lib/graphql-connection",
-          "document": "reference/graphql-connection"
+          "document": "modules/graphql-connection"
         },
         {
           "title": "/lib/graphql-rx",
-          "document": "reference/graphql-rx"
+          "document": "modules/graphql-rx"
         }
       ]
     },

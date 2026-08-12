@@ -1,0 +1,311 @@
+= /lib/graphql-rx
+:toc: right
+
+This optional module provides the publisher and subscriber objects used by GraphQL subscriptions.
+
+Subscription events need a transport that stays open, and the library does not provide one.
+A https://developer.enonic.com/docs/code/stable/web/apis[universal API] can serve either a WebSocket channel or an https://developer.enonic.com/docs/code/stable/web/sse[SSE] stream, and each event is an <<graphql#execution-result,ExecutionResult>> either way.
+The examples below use SSE.
+
+== Functions
+
+[#create-publish-processor]
+=== createPublishProcessor
+
+Creates a <<publish-processor,PublishProcessor>> that can be returned by a subscription field resolver.
+
+[.lead]
+Returns
+
+<<publish-processor,`PublishProcessor`>> — a reactive event source.
+
+[.lead]
+Example
+
+Create the processor outside the resolver, so the same instance survives across requests and can be published to from anywhere in the application.
+
+.Returns a processor from a subscription field:
+[source,js]
+----
+const graphQlRxLib = require('/lib/graphql-rx');
+
+const personProcessor = graphQlRxLib.createPublishProcessor();
+
+const rootSubscriptionType = schemaGenerator.createObjectType({
+    name: 'Subscription',
+    fields: {
+        personAdded: {
+            type: personType,
+            resolve: () => personProcessor
+        }
+    }
+});
+----
+
+[#create-subscriber]
+=== createSubscriber
+
+Creates a subscriber for the publisher returned as `data` by a subscription execution.
+
+[.lead]
+Parameters
+
+`createSubscriber()` takes a single `params` object with these properties:
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `onNext` | function | *Optional.* Called with each mapped <<graphql#execution-result,ExecutionResult>> produced by a subscription.
+|===
+
+[.lead]
+Returns
+
+<<subscription-subscriber,`SubscriptionSubscriber`>>.
+
+[.lead]
+Example
+
+Executing a subscription returns a publisher as `data` rather than a result object.
+Subscribing to it starts delivery, and each event arriving in `onNext` is a full <<graphql#execution-result,ExecutionResult>>.
+
+Send to a named group rather than to a single `clientId`.
+Connection ids must not be collected in module-scope state, a group name is a constant, and group membership is cleaned up automatically when a client disconnects.
+
+.An API that streams to everyone in a group:
+[source,js]
+----
+const sseLib = require('/lib/xp/sse');
+
+exports.GET = () => ({
+    sse: {
+        retry: 5000
+    }
+});
+
+exports.sseEvent = (event) => {
+    if (event.type === 'open') {
+        sseLib.addToGroup({group: 'people', clientId: event.clientId});
+    }
+};
+----
+
+.Forwards each subscription event to that group:
+[source,js]
+----
+const graphQlLib = require('/lib/graphql');
+const graphQlRxLib = require('/lib/graphql-rx');
+const sseLib = require('/lib/xp/sse');
+
+const result = graphQlLib.execute(
+    schema,
+    'subscription { personAdded { name } }'
+);
+
+const subscriber = graphQlRxLib.createSubscriber({
+    onNext: (event) => sseLib.sendToGroup({
+        group: 'people',
+        message: {
+            event: 'personAdded',
+            data: JSON.stringify(event)
+        }
+    })
+});
+
+result.data.subscribe(subscriber);
+----
+
+== Classes
+
+[#publish-processor]
+=== PublishProcessor
+
+A reactive event source returned by `createPublishProcessor()`.
+It has no constructor.
+
+All the examples below use a processor created with <<create-publish-processor,createPublishProcessor()>>:
+
+.Creating a publish processor:
+[source,js]
+----
+const graphQlRxLib = require('/lib/graphql-rx');
+
+const personProcessor = graphQlRxLib.createPublishProcessor();
+----
+
+==== onNext
+
+Publishes a value to active subscribers.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `value` | any | Value delivered to every active subscriber. Becomes the `source` of the subscription field's resolver.
+|===
+
+[.lead]
+Example
+
+The published value becomes the `source` of the subscription field's resolver, so it is the application's own data, not an execution result.
+
+.Publishes a person when one is added:
+[source,js]
+----
+const peopleLib = require('/lib/people');
+
+personProcessor.onNext(peopleLib.getPerson(name));
+----
+
+==== onError
+
+Terminates the stream with an error.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `error` | Java `Throwable` | Error that terminates the stream. Construct it with `Java.type()`; a string or a JavaScript `Error` is not accepted.
+|===
+
+[.lead]
+Example
+
+The argument is a Java `Throwable`, so construct one with `Java.type()` rather than passing a string or a JavaScript `Error`.
+
+.Ends the stream when the event source fails:
+[source,js]
+----
+const IllegalStateException = Java.type('java.lang.IllegalStateException');
+
+personProcessor.onError(new IllegalStateException('Person event source became unavailable'));
+----
+
+==== onComplete
+
+Completes the stream.
+
+[.lead]
+Example
+
+Subscribers receive no further events after this call.
+
+.Ends the stream normally:
+[source,js]
+----
+personProcessor.onComplete();
+----
+
+==== filter
+
+Forwards only the values a predicate accepts.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `predicate` | function | Called with each published value. The value is forwarded when the return value is truthy.
+|===
+
+[.lead]
+Returns
+
+A publisher carrying only the values the predicate accepted.
+It exposes `subscribe()` and `filter()`, so filters can be chained.
+
+[.lead]
+Example
+
+Filtering returns a new publisher and leaves the processor untouched, so one processor can back several subscription fields with different predicates.
+
+.Publishes only adults to this subscription field:
+[source,js]
+----
+const rootSubscriptionType = schemaGenerator.createObjectType({
+    name: 'Subscription',
+    fields: {
+        personAdded: {
+            type: personType,
+            resolve: () => personProcessor.filter(
+                (person) => person.age >= 18
+            )
+        }
+    }
+});
+----
+
+==== subscribe
+
+Subscribes a compatible reactive-streams subscriber.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `subscriber` | <<subscription-subscriber,SubscriptionSubscriber>> | Subscriber that receives the published values, created with <<create-subscriber,createSubscriber()>>.
+|===
+
+[.lead]
+Example
+
+Application code normally reaches the publisher as `result.data` after executing a subscription, and calls `subscribe()` on that.
+Calling it on the processor directly is equivalent when the resolver returns the processor unfiltered.
+
+.Subscribes a subscriber to the processor:
+[source,js]
+----
+const subscriber = graphQlRxLib.createSubscriber({
+    onNext: (event) => sseLib.sendToGroup({
+        group: 'people',
+        message: {data: JSON.stringify(event)}
+    })
+});
+
+personProcessor.subscribe(subscriber);
+----
+
+[#subscription-subscriber]
+=== SubscriptionSubscriber
+
+A subscriber returned by `createSubscriber()`.
+It has no constructor.
+
+==== cancelSubscription
+
+Cancels its active subscription.
+Calling it before subscription or more than once has no effect.
+
+[.lead]
+Example
+
+Cancel from wherever the subscriber is held, so the processor stops delivering to a client that has gone away.
+For a subscription serving one client, the SSE `close` event is the reliable trigger: it is terminal, firing after `timeout` and after `error` as well.
+A subscription feeding a broadcast group outlives any single client and is not cancelled here.
+
+.Cancels the subscription when the client's stream closes:
+[source,js]
+----
+exports.sseEvent = (event) => {
+    if (event.type === 'close') {
+        subscriber.cancelSubscription();
+    }
+};
+----
