@@ -441,6 +441,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#when_to_use_it">When to use it</a></li>
+<li><a href="#how_it_works">How it works</a></li>
+<li><a href="#modules">Modules</a></li>
 <li><a href="#compatibility">Compatibility</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#next_steps">Next steps</a></li>
@@ -453,14 +456,49 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>GraphQL Library enables Enonic XP applications to define custom GraphQL schemas and execute queries against them.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="when_to_use_it"><a class="link" href="#when_to_use_it">When to use it</a></h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Use this library when an application needs to expose its own GraphQL API, with application-specific types, resolvers, mutations, or subscriptions.
 It is different from <a href="https://developer.enonic.com/docs/guillotine">Guillotine</a>, which provides a ready-made GraphQL API for querying CMS content.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="how_it_works"><a class="link" href="#how_it_works">How it works</a></h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The library builds on XP&#8217;s <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal API</a> framework.
-GraphQL Library defines the schema and executes operations against it, and a universal API serves that schema over HTTP: it decides where the endpoint is mounted and who is allowed to reach it.
+GraphQL Library defines the schema and executes operations against it.
+A universal API serves that schema over HTTP, deciding where the endpoint is mounted and who is allowed to reach it.
 Subscriptions use the same framework, streaming their events over SSE or a WebSocket.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="modules"><a class="link" href="#modules">Modules</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The library provides three server-side JavaScript modules:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a href="modules/graphql.ahtml"><code>/lib/graphql</code></a></dt>
+<dd>
+<p>Defines schemas, types, scalar constants, type wrappers, and query execution.</p>
+</dd>
+<dt class="hdlist1"><a href="modules/graphql-connection.ahtml"><code>/lib/graphql-connection</code></a></dt>
+<dd>
+<p>Adds cursor encoding and Relay-style connection types.</p>
+</dd>
+<dt class="hdlist1"><a href="modules/graphql-rx.ahtml"><code>/lib/graphql-rx</code></a></dt>
+<dd>
+<p>Provides publishers and subscribers for GraphQL subscriptions.</p>
+</dd>
+</dl>
 </div>
 </div>
 </div>
@@ -497,25 +535,6 @@ dependencies {
 <div class="paragraph">
 <p>Use the latest available 3.x version in place of <code>3.0.0</code>.</p>
 </div>
-<div class="paragraph">
-<p>The library provides three server-side JavaScript modules:</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><a href="modules/graphql.ahtml"><code>/lib/graphql</code></a></dt>
-<dd>
-<p>Defines schemas, types, scalar constants, type wrappers, and query execution.</p>
-</dd>
-<dt class="hdlist1"><a href="modules/graphql-connection.ahtml"><code>/lib/graphql-connection</code></a></dt>
-<dd>
-<p>Adds cursor encoding and Relay-style connection types.</p>
-</dd>
-<dt class="hdlist1"><a href="modules/graphql-rx.ahtml"><code>/lib/graphql-rx</code></a></dt>
-<dd>
-<p>Provides publishers and subscribers for GraphQL subscriptions.</p>
-</dd>
-</dl>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -530,7 +549,7 @@ See the <a href="modules.ahtml">modules</a> for every exported constant and func
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-12 11:11:47 UTC
+Last updated 2026-08-12 11:39:02 UTC
 </div>
 </div>
 </body>

@@ -441,7 +441,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>GraphQL Library ships three server-side JavaScript modules. Each is required independently and documented on its own page.</p>
+<p>GraphQL Library ships three server-side JavaScript modules.
+Each is required independently and documented on its own page.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -476,7 +477,7 @@ Sections a module does not use are omitted.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-12 11:11:47 UTC
+Last updated 2026-08-12 11:39:02 UTC
 </div>
 </div>
 </body>

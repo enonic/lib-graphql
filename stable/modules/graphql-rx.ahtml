@@ -464,8 +464,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="paragraph">
 <p>Subscription events need a transport that stays open, and the library does not provide one.
-A <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal API</a> can serve either a WebSocket channel or an <a href="https://developer.enonic.com/docs/code/stable/web/sse">SSE</a> stream, and each event is an <a href="graphql.ahtml#execution-result">ExecutionResult</a> either way.
-The examples below use SSE.</p>
+A <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal API</a> can serve either a WebSocket channel or an <a href="https://developer.enonic.com/docs/code/stable/web/sse">SSE</a> stream, and each event is an <a href="graphql.ahtml#execution-result">ExecutionResult</a> either way.</p>
+</div>
+<div class="paragraph">
+<p>The examples below use SSE, the shorter of the two: it needs no handshake, and a browser consumes it with <code>EventSource</code>.</p>
+</div>
+<div class="paragraph">
+<p>Choose a <a href="https://developer.enonic.com/docs/code/stable/web/websocket">WebSocket</a> instead when the consumer is a standard GraphQL client.
+GraphiQL, Apollo Client and similar tools speak the <code>graphql-transport-ws</code> protocol, which expects the server to answer <code>connection_init</code> with <code>connection_ack</code> and to wrap each event in a <code>next</code> message carrying the operation&#8217;s id.
+An API serves that from a <code>webSocketEvent</code> handler, the counterpart to the <code>sseEvent</code> handler used below.
+The publisher and subscriber on this page behave identically under either transport.</p>
 </div>
 </div>
 </div>
@@ -886,7 +894,7 @@ A subscription feeding a broadcast group outlives any single client and is not c
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-12 11:11:47 UTC
+Last updated 2026-08-12 11:39:02 UTC
 </div>
 </div>
 </body>
