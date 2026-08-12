@@ -1,0 +1,669 @@
+= /lib/graphql
+:toc: right
+
+The main module defines GraphQL types, assembles them into a schema, and executes operations against that schema.
+
+== Constants
+
+The module exports scalar type objects that can be assigned directly to a field or argument's `type` property.
+
+[%header,cols="1,3"]
+|===
+| Export | Description
+
+| `GraphQLInt`
+| Signed 32-bit integer.
+
+| `GraphQLFloat`
+| Double-precision floating-point value.
+
+| `GraphQLString`
+| UTF-8 character sequence.
+
+| `GraphQLBoolean`
+| `true` or `false`.
+
+| `GraphQLID`
+| Identifier serialized as a string.
+
+| `Json`
+| Arbitrary JSON-compatible value.
+
+| `Date`
+| ISO-8601 calendar date.
+
+| `Time`
+| ISO-8601 time with an offset.
+
+| `DateTime`
+| ISO-8601 date and time with an offset.
+
+| `LocalDateTime`
+| ISO-8601 date and time without a time-zone offset.
+
+| `LocalTime`
+| ISO-8601 time without a time-zone offset.
+|===
+
+== Functions
+
+[#new-schema-generator]
+=== newSchemaGenerator
+
+Creates an independent <<schema-generator,SchemaGenerator>>.
+Use the same generator for the related types and the schema, because it also collects resolver registrations.
+
+[.lead]
+Returns
+
+<<schema-generator,`SchemaGenerator`>> — functions for constructing GraphQL types and a schema.
+
+[.lead]
+Example
+
+Create the generator once per schema, in the module that builds it.
+
+.Creates a schema generator:
+[source,js]
+----
+const graphQlLib = require('/lib/graphql');
+
+const schemaGenerator = graphQlLib.newSchemaGenerator();
+----
+
+=== list
+
+Wraps a type as a GraphQL list.
+The list and its items remain nullable unless separately wrapped with `nonNull()`.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `type` | GraphQL type | Type of each list item.
+|===
+
+[.lead]
+Returns
+
+GraphQL list type.
+
+[.lead]
+Example
+
+.Types a field as a list of strings:
+[source,js]
+----
+const tagsField = {
+    type: graphQlLib.list(graphQlLib.GraphQLString),
+    resolve: (env) => env.source.tags
+};
+----
+
+=== nonNull
+
+Wraps a type as non-null.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `type` | GraphQL type | Type that must not resolve to `null`.
+|===
+
+[.lead]
+Returns
+
+GraphQL non-null type.
+
+[.lead]
+Example
+
+`nonNull()` and `list()` apply to whatever they wrap, so wrapping in both directions makes the list itself mandatory as well as each of its items.
+
+.Makes a field mandatory:
+[source,js]
+----
+const requiredString = graphQlLib.nonNull(graphQlLib.GraphQLString);
+----
+
+.Makes a list and its items mandatory:
+[source,js]
+----
+const requiredStrings = graphQlLib.nonNull(
+    graphQlLib.list(graphQlLib.nonNull(graphQlLib.GraphQLString))
+);
+----
+
+=== reference
+
+Creates a type reference by name.
+References allow self-referencing or mutually dependent types to be declared before the referenced concrete type exists.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `typeKey` | string | Exact GraphQL name of the referenced type.
+|===
+
+[.lead]
+Returns
+
+GraphQL type reference.
+
+[.lead]
+Example
+
+The name must match the referenced type exactly, and that type must be reachable from the schema or listed in the schema's `dictionary`.
+
+.Refers to a type that does not exist yet:
+[source,js]
+----
+const personReference = graphQlLib.reference('Person');
+----
+
+=== execute
+
+Executes a GraphQL operation against a schema.
+The arguments are positional.
+
+[.lead]
+Parameters
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `schema` | GraphQL schema | Schema created with `SchemaGenerator.createSchema()`.
+| `query` | string | GraphQL query, mutation, or subscription document.
+| `variables` | object | *Optional.* Values for variables declared by the operation.
+| `context` | any | *Optional.* Application-specific value exposed to resolvers as `env.context`.
+|===
+
+[.lead]
+Returns
+
+<<execution-result,`ExecutionResult`>> — query and mutation results contain `data` and, when applicable, `errors`.
+For a subscription, `data` is a publisher whose `subscribe()` method accepts a subscriber from <<graphql-rx#,`/lib/graphql-rx`>>.
+
+[.lead]
+Example
+
+A https://developer.enonic.com/docs/code/stable/web/apis[universal API] that accepts a query and its variables in the request body, and passes a context value that every resolver can read as `env.context`.
+
+.Executes a query from an HTTP request:
+[source,js]
+----
+exports.POST = (req) => {
+    const body = JSON.parse(req.body);
+
+    const result = graphQlLib.execute(schema, body.query, body.variables, {
+        request: req
+    });
+
+    return {
+        contentType: 'application/json',
+        body: JSON.stringify(result)
+    };
+};
+----
+
+.Return value:
+[source,js]
+----
+const expected = {
+    data: {
+        person: {
+            name: 'James'
+        }
+    }
+};
+----
+
+== Classes
+
+[#schema-generator]
+=== SchemaGenerator
+
+A schema generator creates GraphQL types and assembles them into a schema.
+Each generator is independent and accumulates the resolvers for the types it creates, so the types belonging to one schema must all come from the same generator.
+Except for `createPageInfoObjectType()`, each type-creation method creates a new named GraphQL type.
+
+The generator has no constructor.
+All the examples below use one created with <<new-schema-generator,newSchemaGenerator()>>:
+
+.Creating a schema generator:
+[source,js]
+----
+const graphQlLib = require('/lib/graphql');
+
+const schemaGenerator = graphQlLib.newSchemaGenerator();
+----
+
+==== createSchema
+
+Assembles the schema from its root types.
+
+[.lead]
+Parameters
+
+`createSchema()` takes a single `params` object with these properties:
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `query` | GraphQL object type | Root query type. Every schema requires one.
+| `mutation` | GraphQL object type | *Optional.* Root mutation type.
+| `subscription` | GraphQL object type | *Optional.* Root subscription type.
+| `dictionary` | GraphQL object type[] | *Optional.* Additional concrete types that are not otherwise reachable when the schema is assembled, including types addressed only through `reference()`.
+|===
+
+[.lead]
+Returns
+
+GraphQL schema.
+
+[.lead]
+Example
+
+Types reached only through `reference()` are listed in `dictionary`, because the generator cannot find them by walking the root types.
+
+.Assembles a schema from its root types:
+[source,js]
+----
+const schema = schemaGenerator.createSchema({
+    query: rootQueryType,
+    mutation: rootMutationType,
+    dictionary: [personType]
+});
+----
+
+==== createObjectType
+
+Creates an object type.
+
+[.lead]
+Parameters
+
+`createObjectType()` takes a single `params` object with these properties:
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `name` | string | Unique GraphQL type name.
+| `fields` | object | Map of field names to <<output-field,OutputField>> definitions.
+| `interfaces` | GraphQL interface type[] | *Optional.* Interfaces implemented by the object. Entries may be concrete interface types or type references.
+| `description` | string | *Optional.* Description exposed through GraphQL introspection.
+|===
+
+[.lead]
+Returns
+
+GraphQL object type.
+
+[.lead]
+Example
+
+A field without a `resolve` function reads the property of the same name from the source, so `name` needs none.
+The `children` field refers to `Person` by name, because the type is not assigned to a variable until the call returns.
+
+Throughout these examples `/lib/people` stands for the application's own data module.
+The library places no requirements on where a resolver gets its values.
+
+.Creates a `Person` type over the application's own data:
+[source,js]
+----
+const peopleLib = require('/lib/people');
+
+const personType = schemaGenerator.createObjectType({
+    name: 'Person',
+    description: 'A person.',
+    fields: {
+        name: {
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString)
+        },
+        age: {
+            type: graphQlLib.GraphQLInt
+        },
+        children: {
+            type: graphQlLib.list(graphQlLib.reference('Person')),
+            resolve: (env) => peopleLib.getChildren(env.source.name)
+        }
+    }
+});
+----
+
+==== createPageInfoObjectType
+
+Creates the cached page-info object type used by <<graphql-connection#,`/lib/graphql-connection`>>.
+The first invocation on a schema generator creates the type; later invocations return that same type.
+Application code normally uses `createConnectionType()` instead of calling this directly.
+
+Its `params` properties and return value are the same as `createObjectType()`.
+
+[.lead]
+Example
+
+Because the type is cached per generator, calling this twice on the same generator yields the same type rather than a duplicate-name error.
+
+.Creates the page-info type used by a hand-built connection type:
+[source,js]
+----
+const pageInfoType = schemaGenerator.createPageInfoObjectType({
+    name: 'PageInfo',
+    fields: {
+        startCursor: {
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString)
+        },
+        endCursor: {
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString)
+        },
+        hasNext: {
+            type: graphQlLib.nonNull(graphQlLib.GraphQLBoolean)
+        }
+    }
+});
+----
+
+==== createInputObjectType
+
+Creates an input object type for use in field arguments.
+
+[.lead]
+Parameters
+
+`createInputObjectType()` takes a single `params` object with these properties:
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `name` | string | Unique GraphQL input type name.
+| `fields` | object | Map of field names to <<input-field,InputField>> definitions.
+| `description` | string | *Optional.* Description exposed through GraphQL introspection.
+|===
+
+[.lead]
+Returns
+
+GraphQL input object type.
+
+[.lead]
+Example
+
+Input types group related arguments.
+Assign the created type to an entry in a field's `args`, and read it from `env.args` in the resolver.
+
+.Creates an input type and uses it as an argument:
+[source,js]
+----
+const personFilterType = schemaGenerator.createInputObjectType({
+    name: 'PersonFilter',
+    fields: {
+        namePrefix: {
+            type: graphQlLib.GraphQLString
+        },
+        count: {
+            type: graphQlLib.GraphQLInt
+        }
+    }
+});
+
+const rootQueryType = schemaGenerator.createObjectType({
+    name: 'Query',
+    fields: {
+        people: {
+            type: graphQlLib.list(personType),
+            args: {
+                filter: personFilterType
+            },
+            resolve: (env) => peopleLib.find({
+                namePrefix: env.args.filter.namePrefix,
+                count: env.args.filter.count
+            }).hits
+        }
+    }
+});
+----
+
+==== createInterfaceType
+
+Creates an interface type.
+
+[.lead]
+Parameters
+
+`createInterfaceType()` takes a single `params` object with these properties:
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `name` | string | Unique GraphQL interface name.
+| `fields` | object | Map of field names to <<interface-field,InterfaceField>> definitions.
+| `typeResolver` | function | Receives the source value and returns the concrete GraphQL object type for that value.
+| `description` | string | *Optional.* Description exposed through GraphQL introspection.
+|===
+
+[.lead]
+Returns
+
+GraphQL interface type.
+
+[.lead]
+Example
+
+An object type declares the interfaces it implements through its own `interfaces` property.
+Every type the `typeResolver` can return must be reachable from the schema or listed in the schema's `dictionary`.
+
+.Creates an interface and the type that implements it:
+[source,js]
+----
+const partyType = schemaGenerator.createInterfaceType({
+    name: 'Party',
+    fields: {
+        name: {
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString)
+        }
+    },
+    typeResolver: (party) => party.orgNumber ? organizationType : personType
+});
+
+const organizationType = schemaGenerator.createObjectType({
+    name: 'Organization',
+    interfaces: [partyType],
+    fields: {
+        name: {
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString)
+        },
+        orgNumber: {
+            type: graphQlLib.nonNull(graphQlLib.GraphQLString)
+        }
+    }
+});
+----
+
+==== createUnionType
+
+Creates a union type.
+
+[.lead]
+Parameters
+
+`createUnionType()` takes a single `params` object with these properties:
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `name` | string | Unique GraphQL union name.
+| `types` | GraphQL object type[] | Non-empty array of possible concrete types. Entries may be object types or type references.
+| `typeResolver` | function | Receives the source value and returns its concrete GraphQL object type.
+| `description` | string | *Optional.* Description exposed through GraphQL introspection.
+|===
+
+[.lead]
+Returns
+
+GraphQL union type.
+
+[.lead]
+Example
+
+A union combines unrelated types without requiring them to share any fields, so clients select fields per type with inline fragments.
+
+.Creates a union of two unrelated types:
+[source,js]
+----
+const searchResultType = schemaGenerator.createUnionType({
+    name: 'SearchResult',
+    types: [personType, organizationType],
+    typeResolver: (hit) => hit.orgNumber ? organizationType : personType
+});
+----
+
+==== createEnumType
+
+Creates an enum type.
+
+[.lead]
+Parameters
+
+`createEnumType()` takes a single `params` object with these properties:
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `name` | string | Unique GraphQL enum name.
+| `values` | string[] or object | Enum names as an array, or an object mapping GraphQL enum names to their runtime values.
+| `description` | string | *Optional.* Description exposed through GraphQL introspection.
+|===
+
+[.lead]
+Returns
+
+GraphQL enum type.
+
+[.lead]
+Example
+
+Passing an array uses each name as its own value.
+Passing an object keeps the GraphQL names uppercase while resolvers receive the mapped value.
+
+.Creates an enum from a list of names:
+[source,js]
+----
+const sortDirectionType = schemaGenerator.createEnumType({
+    name: 'SortDirection',
+    values: ['ASC', 'DESC']
+});
+----
+
+.Maps enum names to non-string runtime values:
+[source,js]
+----
+const priorityType = schemaGenerator.createEnumType({
+    name: 'Priority',
+    values: {
+        LOW: 1,
+        NORMAL: 2,
+        HIGH: 3
+    }
+});
+----
+
+== Type Definitions
+
+[#output-field]
+=== OutputField
+
+Defines a field on an object type.
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `type` | GraphQL output type | Field result type.
+| `args` | object | *Optional.* Map of argument names to GraphQL input types.
+| `resolve` | function or value | *Optional.* Resolver invoked with a <<resolver-environment,ResolverEnvironment>>, or a fixed value. When omitted, GraphQL reads a property with the field's name from `env.source`.
+|===
+
+[#interface-field]
+=== InterfaceField
+
+Defines a field on an interface.
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `type` | GraphQL output type | Field result type.
+| `args` | object | *Optional.* Map of argument names to GraphQL input types.
+|===
+
+[#input-field]
+=== InputField
+
+Defines a field on an input object.
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `type` | GraphQL input type | Input field type.
+|===
+
+[#resolver-environment]
+=== ResolverEnvironment
+
+The object passed to an output-field resolver.
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `source` | any | Value returned by the parent field.
+| `args` | object | Arguments supplied for the current field.
+| `context` | any | Context passed to `execute()`.
+|===
+
+[#execution-result]
+=== ExecutionResult
+
+The mapped result returned by `execute()` and delivered to subscription callbacks.
+
+[%header,cols="1%,1%,98%a"]
+[frame="none"]
+[grid="none"]
+|===
+| Name | Type | Description
+| `data` | object or publisher | Resolved operation data. A subscription returns a publisher instead of an object.
+| `errors` | object[] | *Optional.* Validation or data-fetching errors. Each error includes `errorType` and `message`, and may include `locations`, `validationErrorType`, or `exception`.
+|===

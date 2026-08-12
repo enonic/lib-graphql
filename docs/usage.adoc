@@ -105,14 +105,15 @@ A successful execution returns a JavaScript object with a `data` property:
 Validation or resolver failures add an `errors` array.
 Depending on the error and field nullability, a response can contain both `data` and `errors`.
 
-== Expose the schema through an XP API
+== Expose the schema through a universal API
 
 GraphQL Library builds and executes the schema; it does not prescribe the HTTP endpoint.
-An XP API implementation can parse a GraphQL request and return the execution result:
+An application exposes its own endpoints as https://developer.enonic.com/docs/code/stable/web/apis[universal APIs], so the schema is served from an API implementation that parses the request and returns the execution result.
 
+.src/main/resources/apis/graphql/graphql.js
 [source,js]
 ----
-exports.post = function (req) {
+exports.POST = function (req) {
     const body = JSON.parse(req.body);
     const result = graphQlLib.execute(
         schema,
@@ -123,13 +124,29 @@ exports.post = function (req) {
 
     return {
         contentType: 'application/json',
-        body: result
+        body: JSON.stringify(result)
     };
 };
 ----
 
-Validate access to the XP API separately.
-The library does not authenticate requests or authorize access to resolver data.
+A descriptor next to the implementation is required.
+APIs are not mounted anywhere by default, so until the descriptor mounts one, a request to it returns `404`:
+
+.src/main/resources/apis/graphql/graphql.yaml
+[source,yaml]
+----
+kind: "API"
+title: "GraphQL API"
+mount: ["web"]
+allow:
+  - "role:system.authenticated"
+----
+
+Adding `web` to `mount` makes the API reachable at `+/api/<app>:graphql+`.
+The `allow` list must name at least one principal; use `role:system.everyone` to make the API public.
+
+`allow` gates access to the API itself, and nothing else.
+The library does not authenticate requests or authorize access to resolver data, so restrict what individual resolvers return separately.
 
 == Related types
 
@@ -147,4 +164,4 @@ const requiredStringList = graphQlLib.nonNull(
 Use `reference()` when two types refer to each other or a type refers to itself before its concrete type is available.
 Referenced types must be reachable from the schema or included in the schema's `dictionary`.
 
-See the <<reference#,reference>> for object, input, interface, union, enum, connection, and subscription types.
+See the <<modules#,modules>> for object, input, interface, union, enum, connection, and subscription types.

@@ -14,7 +14,7 @@ Published at [developer.enonic.com/docs/graphql-library](https://developer.enoni
 
 * [Overview and installation](./docs/index.adoc)
 * [Usage](./docs/usage.adoc)
-* [Reference](./docs/reference.adoc)
+* [Modules](./docs/modules.adoc)
 * [Release notes](./docs/release.adoc)
 
 

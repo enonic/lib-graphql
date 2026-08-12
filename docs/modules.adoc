@@ -1,23 +1,21 @@
-= Reference
+= Modules
 :toc: right
 
 GraphQL Library ships three server-side JavaScript modules. Each is required independently and documented on its own page.
-
-== Modules
 
 [%header,cols="2,3"]
 |===
 | Module | Use
 
-| <<reference/graphql#,`/lib/graphql`>>
+| <<modules/graphql#,`/lib/graphql`>>
 | Scalar constants, type wrappers, the schema generator, and query execution. Needed by every application using the library.
 
-| <<reference/graphql-connection#,`/lib/graphql-connection`>>
+| <<modules/graphql-connection#,`/lib/graphql-connection`>>
 | Relay-style connection types and opaque cursors.
 
-| <<reference/graphql-rx#,`/lib/graphql-rx`>>
+| <<modules/graphql-rx#,`/lib/graphql-rx`>>
 | Publishers and subscribers for GraphQL subscriptions.
 |===
 
-Every module page documents its `Functions`, `Classes`, `Type definitions`, and `Constants` in that order.
-Sections a module does not use are stated as empty rather than omitted.
+Each module page documents its `Constants`, `Functions`, `Classes`, and `Type Definitions` in that order.
+Sections a module does not use are omitted.
