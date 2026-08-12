@@ -457,6 +457,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Use this library when an application needs to expose its own GraphQL API, with application-specific types, resolvers, mutations, or subscriptions.
 It is different from <a href="https://developer.enonic.com/docs/guillotine">Guillotine</a>, which provides a ready-made GraphQL API for querying CMS content.</p>
 </div>
+<div class="paragraph">
+<p>The library builds on XP&#8217;s <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal API</a> framework.
+GraphQL Library defines the schema and executes operations against it, and a universal API serves that schema over HTTP: it decides where the endpoint is mounted and who is allowed to reach it.
+Subscriptions use the same framework, streaming their events over SSE or a WebSocket.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -497,15 +502,15 @@ dependencies {
 </div>
 <div class="dlist">
 <dl>
-<dt class="hdlist1"><a href="reference/graphql.ahtml"><code>/lib/graphql</code></a></dt>
+<dt class="hdlist1"><a href="modules/graphql.ahtml"><code>/lib/graphql</code></a></dt>
 <dd>
 <p>Defines schemas, types, scalar constants, type wrappers, and query execution.</p>
 </dd>
-<dt class="hdlist1"><a href="reference/graphql-connection.ahtml"><code>/lib/graphql-connection</code></a></dt>
+<dt class="hdlist1"><a href="modules/graphql-connection.ahtml"><code>/lib/graphql-connection</code></a></dt>
 <dd>
 <p>Adds cursor encoding and Relay-style connection types.</p>
 </dd>
-<dt class="hdlist1"><a href="reference/graphql-rx.ahtml"><code>/lib/graphql-rx</code></a></dt>
+<dt class="hdlist1"><a href="modules/graphql-rx.ahtml"><code>/lib/graphql-rx</code></a></dt>
 <dd>
 <p>Provides publishers and subscribers for GraphQL subscriptions.</p>
 </dd>
@@ -518,14 +523,14 @@ dependencies {
 <div class="sectionbody">
 <div class="paragraph">
 <p>Start with the <a href="usage.ahtml">usage guide</a> to create and execute a small schema.
-See the <a href="reference.ahtml">reference</a> for every exported constant and function, and <a href="release.ahtml">release notes</a> for version-specific changes.</p>
+See the <a href="modules.ahtml">modules</a> for every exported constant and function, and <a href="release.ahtml">release notes</a> for version-specific changes.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-11 07:39:52 UTC
+Last updated 2026-08-12 11:11:47 UTC
 </div>
 </div>
 </body>

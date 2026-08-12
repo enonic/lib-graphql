@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.26">
-<title>Reference</title>
+<title>/lib/graphql-rx</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,11 +437,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>Reference</h1>
+<h1>/lib/graphql-rx</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#modules">Modules</a></li>
+<li><a href="#functions">Functions</a>
+<ul class="sectlevel2">
+<li><a href="#create-publish-processor">createPublishProcessor</a></li>
+<li><a href="#create-subscriber">createSubscriber</a></li>
+</ul>
+</li>
+<li><a href="#classes">Classes</a>
+<ul class="sectlevel2">
+<li><a href="#publish-processor">PublishProcessor</a></li>
+<li><a href="#subscription-subscriber">SubscriptionSubscriber</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -449,49 +460,433 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>GraphQL Library ships three server-side JavaScript modules. Each is required independently and documented on its own page.</p>
+<p>This optional module provides the publisher and subscriber objects used by GraphQL subscriptions.</p>
+</div>
+<div class="paragraph">
+<p>Subscription events need a transport that stays open, and the library does not provide one.
+A <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal API</a> can serve either a WebSocket channel or an <a href="https://developer.enonic.com/docs/code/stable/web/sse">SSE</a> stream, and each event is an <a href="graphql.ahtml#execution-result">ExecutionResult</a> either way.
+The examples below use SSE.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="modules"><a class="link" href="#modules">Modules</a></h2>
+<h2 id="functions"><a class="link" href="#functions">Functions</a></h2>
 <div class="sectionbody">
-<table class="tableblock frame-all grid-all stretch">
+<div class="sect2">
+<h3 id="create-publish-processor"><a class="link" href="#create-publish-processor">createPublishProcessor</a></h3>
+<div class="paragraph">
+<p>Creates a <a href="#publish-processor">PublishProcessor</a> that can be returned by a subscription field resolver.</p>
+</div>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p><a href="#publish-processor"><code>PublishProcessor</code></a> — a reactive event source.</p>
+</div>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="paragraph">
+<p>Create the processor outside the resolver, so the same instance survives across requests and can be published to from anywhere in the application.</p>
+</div>
+<div class="listingblock">
+<div class="title">Returns a processor from a subscription field:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const graphQlRxLib = require('/lib/graphql-rx');
+
+const personProcessor = graphQlRxLib.createPublishProcessor();
+
+const rootSubscriptionType = schemaGenerator.createObjectType({
+    name: 'Subscription',
+    fields: {
+        personAdded: {
+            type: personType,
+            resolve: () =&gt; personProcessor
+        }
+    }
+});</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="create-subscriber"><a class="link" href="#create-subscriber">createSubscriber</a></h3>
+<div class="paragraph">
+<p>Creates a subscriber for the publisher returned as <code>data</code> by a subscription execution.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<div class="paragraph">
+<p><code>createSubscriber()</code> takes a single <code>params</code> object with these properties:</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
 <colgroup>
-<col style="width: 40%;">
-<col style="width: 60%;">
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Module</th>
-<th class="tableblock halign-left valign-top">Use</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="reference/graphql.ahtml"><code>/lib/graphql</code></a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Scalar constants, type wrappers, the schema generator, and query execution. Needed by every application using the library.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="reference/graphql-connection.ahtml"><code>/lib/graphql-connection</code></a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Relay-style connection types and opaque cursors.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="reference/graphql-rx.ahtml"><code>/lib/graphql-rx</code></a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Publishers and subscribers for GraphQL subscriptions.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>onNext</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Called with each mapped <a href="graphql.ahtml#execution-result">ExecutionResult</a> produced by a subscription.</p>
+</div></div></td>
 </tr>
 </tbody>
 </table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
 <div class="paragraph">
-<p>Every module page documents its <code>Functions</code>, <code>Classes</code>, <code>Type definitions</code>, and <code>Constants</code> in that order.
-Sections a module does not use are stated as empty rather than omitted.</p>
+<p><a href="#subscription-subscriber"><code>SubscriptionSubscriber</code></a>.</p>
+</div>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="paragraph">
+<p>Executing a subscription returns a publisher as <code>data</code> rather than a result object.
+Subscribing to it starts delivery, and each event arriving in <code>onNext</code> is a full <a href="graphql.ahtml#execution-result">ExecutionResult</a>.</p>
+</div>
+<div class="paragraph">
+<p>Send to a named group rather than to a single <code>clientId</code>.
+Connection ids must not be collected in module-scope state, a group name is a constant, and group membership is cleaned up automatically when a client disconnects.</p>
+</div>
+<div class="listingblock">
+<div class="title">An API that streams to everyone in a group:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const sseLib = require('/lib/xp/sse');
+
+exports.GET = () =&gt; ({
+    sse: {
+        retry: 5000
+    }
+});
+
+exports.sseEvent = (event) =&gt; {
+    if (event.type === 'open') {
+        sseLib.addToGroup({group: 'people', clientId: event.clientId});
+    }
+};</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Forwards each subscription event to that group:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const graphQlLib = require('/lib/graphql');
+const graphQlRxLib = require('/lib/graphql-rx');
+const sseLib = require('/lib/xp/sse');
+
+const result = graphQlLib.execute(
+    schema,
+    'subscription { personAdded { name } }'
+);
+
+const subscriber = graphQlRxLib.createSubscriber({
+    onNext: (event) =&gt; sseLib.sendToGroup({
+        group: 'people',
+        message: {
+            event: 'personAdded',
+            data: JSON.stringify(event)
+        }
+    })
+});
+
+result.data.subscribe(subscriber);</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="classes"><a class="link" href="#classes">Classes</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="publish-processor"><a class="link" href="#publish-processor">PublishProcessor</a></h3>
+<div class="paragraph">
+<p>A reactive event source returned by <code>createPublishProcessor()</code>.
+It has no constructor.</p>
+</div>
+<div class="paragraph">
+<p>All the examples below use a processor created with <a href="#create-publish-processor">createPublishProcessor()</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Creating a publish processor:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const graphQlRxLib = require('/lib/graphql-rx');
+
+const personProcessor = graphQlRxLib.createPublishProcessor();</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="onnext"><a class="link" href="#onnext">onNext</a></h4>
+<div class="paragraph">
+<p>Publishes a value to active subscribers.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Value delivered to every active subscriber. Becomes the <code>source</code> of the subscription field&#8217;s resolver.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="paragraph">
+<p>The published value becomes the <code>source</code> of the subscription field&#8217;s resolver, so it is the application&#8217;s own data, not an execution result.</p>
+</div>
+<div class="listingblock">
+<div class="title">Publishes a person when one is added:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const peopleLib = require('/lib/people');
+
+personProcessor.onNext(peopleLib.getPerson(name));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="onerror"><a class="link" href="#onerror">onError</a></h4>
+<div class="paragraph">
+<p>Terminates the stream with an error.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java <code>Throwable</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Error that terminates the stream. Construct it with <code>Java.type()</code>; a string or a JavaScript <code>Error</code> is not accepted.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="paragraph">
+<p>The argument is a Java <code>Throwable</code>, so construct one with <code>Java.type()</code> rather than passing a string or a JavaScript <code>Error</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Ends the stream when the event source fails:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const IllegalStateException = Java.type('java.lang.IllegalStateException');
+
+personProcessor.onError(new IllegalStateException('Person event source became unavailable'));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="oncomplete"><a class="link" href="#oncomplete">onComplete</a></h4>
+<div class="paragraph">
+<p>Completes the stream.</p>
+</div>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="paragraph">
+<p>Subscribers receive no further events after this call.</p>
+</div>
+<div class="listingblock">
+<div class="title">Ends the stream normally:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">personProcessor.onComplete();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="filter"><a class="link" href="#filter">filter</a></h4>
+<div class="paragraph">
+<p>Forwards only the values a predicate accepts.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>predicate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Called with each published value. The value is forwarded when the return value is truthy.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Returns</p>
+</div>
+<div class="paragraph">
+<p>A publisher carrying only the values the predicate accepted.
+It exposes <code>subscribe()</code> and <code>filter()</code>, so filters can be chained.</p>
+</div>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="paragraph">
+<p>Filtering returns a new publisher and leaves the processor untouched, so one processor can back several subscription fields with different predicates.</p>
+</div>
+<div class="listingblock">
+<div class="title">Publishes only adults to this subscription field:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const rootSubscriptionType = schemaGenerator.createObjectType({
+    name: 'Subscription',
+    fields: {
+        personAdded: {
+            type: personType,
+            resolve: () =&gt; personProcessor.filter(
+                (person) =&gt; person.age &gt;= 18
+            )
+        }
+    }
+});</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="subscribe"><a class="link" href="#subscribe">subscribe</a></h4>
+<div class="paragraph">
+<p>Subscribes a compatible reactive-streams subscriber.</p>
+</div>
+<div class="paragraph lead">
+<p>Parameters</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 1%;">
+<col style="width: 1%;">
+<col style="width: 98%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>subscriber</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#subscription-subscriber">SubscriptionSubscriber</a></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Subscriber that receives the published values, created with <a href="#create-subscriber">createSubscriber()</a>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="paragraph">
+<p>Application code normally reaches the publisher as <code>result.data</code> after executing a subscription, and calls <code>subscribe()</code> on that.
+Calling it on the processor directly is equivalent when the resolver returns the processor unfiltered.</p>
+</div>
+<div class="listingblock">
+<div class="title">Subscribes a subscriber to the processor:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const subscriber = graphQlRxLib.createSubscriber({
+    onNext: (event) =&gt; sseLib.sendToGroup({
+        group: 'people',
+        message: {data: JSON.stringify(event)}
+    })
+});
+
+personProcessor.subscribe(subscriber);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="subscription-subscriber"><a class="link" href="#subscription-subscriber">SubscriptionSubscriber</a></h3>
+<div class="paragraph">
+<p>A subscriber returned by <code>createSubscriber()</code>.
+It has no constructor.</p>
+</div>
+<div class="sect3">
+<h4 id="cancelsubscription"><a class="link" href="#cancelsubscription">cancelSubscription</a></h4>
+<div class="paragraph">
+<p>Cancels its active subscription.
+Calling it before subscription or more than once has no effect.</p>
+</div>
+<div class="paragraph lead">
+<p>Example</p>
+</div>
+<div class="paragraph">
+<p>Cancel from wherever the subscriber is held, so the processor stops delivering to a client that has gone away.
+For a subscription serving one client, the SSE <code>close</code> event is the reliable trigger: it is terminal, firing after <code>timeout</code> and after <code>error</code> as well.
+A subscription feeding a broadcast group outlives any single client and is not cancelled here.</p>
+</div>
+<div class="listingblock">
+<div class="title">Cancels the subscription when the client&#8217;s stream closes:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">exports.sseEvent = (event) =&gt; {
+    if (event.type === 'close') {
+        subscriber.cancelSubscription();
+    }
+};</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-11 07:39:52 UTC
+Last updated 2026-08-12 11:11:47 UTC
 </div>
 </div>
 </body>

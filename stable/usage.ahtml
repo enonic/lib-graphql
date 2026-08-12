@@ -443,7 +443,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#define_a_schema">Define a schema</a></li>
 <li><a href="#execute_a_query">Execute a query</a></li>
-<li><a href="#expose_the_schema_through_an_xp_api">Expose the schema through an XP API</a></li>
+<li><a href="#expose_the_schema_through_a_universal_api">Expose the schema through a universal API</a></li>
 <li><a href="#related_types">Related types</a></li>
 </ul>
 </div>
@@ -587,15 +587,16 @@ Depending on the error and field nullability, a response can contain both <code>
 </div>
 </div>
 <div class="sect1">
-<h2 id="expose_the_schema_through_an_xp_api"><a class="link" href="#expose_the_schema_through_an_xp_api">Expose the schema through an XP API</a></h2>
+<h2 id="expose_the_schema_through_a_universal_api"><a class="link" href="#expose_the_schema_through_a_universal_api">Expose the schema through a universal API</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>GraphQL Library builds and executes the schema; it does not prescribe the HTTP endpoint.
-An XP API implementation can parse a GraphQL request and return the execution result:</p>
+An application exposes its own endpoints as <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal APIs</a>, so the schema is served from an API implementation that parses the request and returns the execution result.</p>
 </div>
 <div class="listingblock">
+<div class="title">src/main/resources/apis/graphql/graphql.js</div>
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">exports.post = function (req) {
+<pre class="highlight"><code class="language-js" data-lang="js">exports.POST = function (req) {
     const body = JSON.parse(req.body);
     const result = graphQlLib.execute(
         schema,
@@ -606,14 +607,32 @@ An XP API implementation can parse a GraphQL request and return the execution re
 
     return {
         contentType: 'application/json',
-        body: result
+        body: JSON.stringify(result)
     };
 };</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Validate access to the XP API separately.
-The library does not authenticate requests or authorize access to resolver data.</p>
+<p>A descriptor next to the implementation is required.
+APIs are not mounted anywhere by default, so until the descriptor mounts one, a request to it returns <code>404</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/apis/graphql/graphql.yaml</div>
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">kind: "API"
+title: "GraphQL API"
+mount: ["web"]
+allow:
+  - "role:system.authenticated"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Adding <code>web</code> to <code>mount</code> makes the API reachable at <code>/api/&lt;app&gt;:graphql</code>.
+The <code>allow</code> list must name at least one principal; use <code>role:system.everyone</code> to make the API public.</p>
+</div>
+<div class="paragraph">
+<p><code>allow</code> gates access to the API itself, and nothing else.
+The library does not authenticate requests or authorize access to resolver data, so restrict what individual resolvers return separately.</p>
 </div>
 </div>
 </div>
@@ -637,14 +656,14 @@ The library does not authenticate requests or authorize access to resolver data.
 Referenced types must be reachable from the schema or included in the schema&#8217;s <code>dictionary</code>.</p>
 </div>
 <div class="paragraph">
-<p>See the <a href="reference.ahtml">reference</a> for object, input, interface, union, enum, connection, and subscription types.</p>
+<p>See the <a href="modules.ahtml">modules</a> for object, input, interface, union, enum, connection, and subscription types.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-11 07:39:52 UTC
+Last updated 2026-08-12 11:11:47 UTC
 </div>
 </div>
 </body>
