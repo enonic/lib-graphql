@@ -5,7 +5,13 @@ This optional module provides the publisher and subscriber objects used by Graph
 
 Subscription events need a transport that stays open, and the library does not provide one.
 A https://developer.enonic.com/docs/code/stable/web/apis[universal API] can serve either a WebSocket channel or an https://developer.enonic.com/docs/code/stable/web/sse[SSE] stream, and each event is an <<graphql#execution-result,ExecutionResult>> either way.
-The examples below use SSE.
+
+The examples below use SSE, the shorter of the two: it needs no handshake, and a browser consumes it with `EventSource`.
+
+Choose a https://developer.enonic.com/docs/code/stable/web/websocket[WebSocket] instead when the consumer is a standard GraphQL client.
+GraphiQL, Apollo Client and similar tools speak the `graphql-transport-ws` protocol, which expects the server to answer `+connection_init+` with `+connection_ack+` and to wrap each event in a `next` message carrying the operation's id.
+An API serves that from a `webSocketEvent` handler, the counterpart to the `sseEvent` handler used below.
+The publisher and subscriber on this page behave identically under either transport.
 
 == Functions
 

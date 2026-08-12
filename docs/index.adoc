@@ -3,12 +3,25 @@
 
 GraphQL Library enables Enonic XP applications to define custom GraphQL schemas and execute queries against them.
 
+== When to use it
+
 Use this library when an application needs to expose its own GraphQL API, with application-specific types, resolvers, mutations, or subscriptions.
 It is different from https://developer.enonic.com/docs/guillotine[Guillotine], which provides a ready-made GraphQL API for querying CMS content.
 
+== How it works
+
 The library builds on XP's https://developer.enonic.com/docs/code/stable/web/apis[universal API] framework.
-GraphQL Library defines the schema and executes operations against it, and a universal API serves that schema over HTTP: it decides where the endpoint is mounted and who is allowed to reach it.
+GraphQL Library defines the schema and executes operations against it.
+A universal API serves that schema over HTTP, deciding where the endpoint is mounted and who is allowed to reach it.
 Subscriptions use the same framework, streaming their events over SSE or a WebSocket.
+
+== Modules
+
+The library provides three server-side JavaScript modules:
+
+<<modules/graphql#,`/lib/graphql`>>:: Defines schemas, types, scalar constants, type wrappers, and query execution.
+<<modules/graphql-connection#,`/lib/graphql-connection`>>:: Adds cursor encoding and Relay-style connection types.
+<<modules/graphql-rx#,`/lib/graphql-rx`>>:: Provides publishers and subscribers for GraphQL subscriptions.
 
 == Compatibility
 
@@ -34,12 +47,6 @@ dependencies {
 ----
 
 Use the latest available 3.x version in place of `3.0.0`.
-
-The library provides three server-side JavaScript modules:
-
-<<modules/graphql#,`/lib/graphql`>>:: Defines schemas, types, scalar constants, type wrappers, and query execution.
-<<modules/graphql-connection#,`/lib/graphql-connection`>>:: Adds cursor encoding and Relay-style connection types.
-<<modules/graphql-rx#,`/lib/graphql-rx`>>:: Provides publishers and subscribers for GraphQL subscriptions.
 
 == Next steps
 
