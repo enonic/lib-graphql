@@ -1,7 +1,8 @@
 = Modules
 :toc: right
 
-GraphQL Library ships three server-side JavaScript modules. Each is required independently and documented on its own page.
+GraphQL Library ships three server-side JavaScript modules.
+Each is required independently and documented on its own page.
 
 [%header,cols="2,3"]
 |===
