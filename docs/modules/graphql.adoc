@@ -188,7 +188,7 @@ Parameters
 [grid="none"]
 |===
 | Name | Type | Description
-| `schema` | GraphQL schema | Schema created with `SchemaGenerator.createSchema()`.
+| `schema` | GraphQL schema | Schema created with `schemaGenerator.createSchema()`.
 | `query` | string | GraphQL query, mutation, or subscription document.
 | `variables` | object | *Optional.* Values for variables declared by the operation.
 | `context` | any | *Optional.* Application-specific value exposed to resolvers as `env.context`.
