@@ -780,7 +780,7 @@ The arguments are positional.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>context</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Optional.</strong> Application-specific value exposed to resolvers as <code>env.context</code>.</p>
+<p><strong>Optional.</strong> Application-specific value exposed to resolvers as <code>env.context</code>. Only value types supported by the XP JavaScript framework (such as strings, numbers, booleans, arrays, and plain objects) can be passed.</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -805,7 +805,8 @@ For a subscription, <code>data</code> is a publisher whose <code>subscribe()</co
     const body = JSON.parse(req.body);
 
     const result = graphQlLib.execute(schema, body.query, body.variables, {
-        request: req
+        path: req.path,
+        remoteAddress: req.remoteAddress
     });
 
     return {
@@ -1612,7 +1613,7 @@ Passing an object keeps the GraphQL names uppercase while resolvers receive the 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-13 08:10:24 UTC
+Last updated 2026-08-13 14:30:13 UTC
 </div>
 </div>
 </body>

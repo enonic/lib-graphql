@@ -602,7 +602,10 @@ An application exposes its own endpoints as <a href="https://developer.enonic.co
         schema,
         body.query,
         body.variables,
-        {request: req}
+        {
+            path: req.path,
+            remoteAddress: req.remoteAddress
+        }
     );
 
     return {
@@ -663,7 +666,7 @@ Referenced types must be reachable from the schema or included in the schema&#82
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-13 08:10:24 UTC
+Last updated 2026-08-13 14:30:13 UTC
 </div>
 </div>
 </body>
