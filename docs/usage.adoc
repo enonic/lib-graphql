@@ -119,7 +119,10 @@ exports.POST = function (req) {
         schema,
         body.query,
         body.variables,
-        {request: req}
+        {
+            path: req.path,
+            remoteAddress: req.remoteAddress
+        }
     );
 
     return {
