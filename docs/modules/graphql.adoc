@@ -191,7 +191,7 @@ Parameters
 | `schema` | GraphQL schema | Schema created with `schemaGenerator.createSchema()`.
 | `query` | string | GraphQL query, mutation, or subscription document.
 | `variables` | object | *Optional.* Values for variables declared by the operation.
-| `context` | any | *Optional.* Application-specific value exposed to resolvers as `env.context`.
+| `context` | any | *Optional.* Application-specific value exposed to resolvers as `env.context`. Only value types supported by the XP JavaScript framework (such as strings, numbers, booleans, arrays, and plain objects) can be passed.
 |===
 
 [.lead]
@@ -212,7 +212,8 @@ exports.POST = (req) => {
     const body = JSON.parse(req.body);
 
     const result = graphQlLib.execute(schema, body.query, body.variables, {
-        request: req
+        path: req.path,
+        remoteAddress: req.remoteAddress
     });
 
     return {
