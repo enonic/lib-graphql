@@ -759,7 +759,7 @@ The arguments are positional.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>schema</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GraphQL schema</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Schema created with <code>SchemaGenerator.createSchema()</code>.</p>
+<p>Schema created with <code>schemaGenerator.createSchema()</code>.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -1612,7 +1612,7 @@ Passing an object keeps the GraphQL names uppercase while resolvers receive the 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-12 11:39:02 UTC
+Last updated 2026-08-13 08:10:24 UTC
 </div>
 </div>
 </body>
