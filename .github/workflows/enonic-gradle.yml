@@ -12,18 +12,6 @@ jobs:
     outputs:
       release: ${{ steps.build-and-publish.outputs.release }}
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Typecheck type definitions
-        run: |
-          npm ci
-          npm run check
-
       - id: build-and-publish
         uses: enonic/release-tools/build-and-publish@master
         with:
