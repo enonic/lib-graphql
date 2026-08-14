@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "/lib/graphql": ["./index.d.ts"],
+      "/lib/graphql-connection": ["./index.d.ts"],
+      "/lib/graphql-rx": ["./index.d.ts"]
+    },
+    "types": []
+  },
+  "include": [
+    "index.d.ts",
+    "test/*.ts"
+  ]
+}

@@ -2,17 +2,34 @@ name: Gradle Build
 
 on: [ push, workflow_dispatch ]
 
+permissions:
+  id-token: write  # Required for npm OIDC / trusted publishing
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
       release: ${{ steps.build-and-publish.outputs.release }}
     steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Typecheck type definitions
+        run: |
+          npm ci
+          npm run check
+
       - id: build-and-publish
         uses: enonic/release-tools/build-and-publish@master
         with:
           repoUser: ci
           repoPassword: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          npmPublish: true
           releaseBranch: |
             3.x
             master
