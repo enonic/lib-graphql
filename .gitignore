@@ -25,6 +25,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+### Node ###
+node_modules/
+
 ### Gradle ###
 .gradle
 build/
