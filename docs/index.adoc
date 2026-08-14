@@ -48,6 +48,32 @@ dependencies {
 
 Use the latest available 3.x version in place of `3.0.0`.
 
+== TypeScript
+
+TypeScript applications can install type definitions for all three modules from npm:
+
+[source,bash]
+----
+npm install --save-dev @enonic-types/lib-graphql
+----
+
+Versions of the https://www.npmjs.com/package/@enonic-types/lib-graphql[`@enonic-types/lib-graphql`] package track the library itself — install the same version as the `com.enonic.lib:lib-graphql` dependency in `build.gradle`.
+
+The declarations are ambient, so no `paths` mapping is needed — add the package to `types` in `tsconfig.json`:
+
+[source,json]
+----
+{
+  "compilerOptions": {
+    "types": ["@enonic-types/global", "@enonic-types/lib-graphql"]
+  }
+}
+----
+
+NOTE: Setting `types` disables automatic inclusion of other `@types`/`@enonic-types` packages, so list everything your project uses.
+
+The package's exported interfaces follow the shapes documented in each module page's "Type Definitions" section — for example <<modules/graphql#output-field,OutputField>>, <<modules/graphql#resolver-environment,ResolverEnvironment>>, <<modules/graphql#execution-result,ExecutionResult>>, and <<modules/graphql-connection#connection-source,ConnectionSource>>.
+
 == Next steps
 
 Start with the <<usage#,usage guide>> to create and execute a small schema.

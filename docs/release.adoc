@@ -28,6 +28,12 @@ Add the newest release directly below this comment.
 * <change>
 ////
 
+== GraphQL Library 3.1.0
+
+=== Features
+
+* TypeScript type definitions for all three modules are published as https://www.npmjs.com/package/@enonic-types/lib-graphql[`@enonic-types/lib-graphql`] on npm, versioned in step with the library. See <<index#_typescript,TypeScript>> for setup.
+
 == GraphQL Library 3.0.0
 
 GraphQL Library 3.0.0 was released in June 2026 as the XP 8-compatible major release.

@@ -1,0 +1,10 @@
+{
+  "name": "lib-graphql",
+  "private": true,
+  "scripts": {
+    "check": "tsc -p types/tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
