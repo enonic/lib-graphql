@@ -441,6 +441,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#graphql_library_3_1_0">GraphQL Library 3.1.0</a>
+<ul class="sectlevel2">
+<li><a href="#features">Features</a></li>
+</ul>
+</li>
 <li><a href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a>
 <ul class="sectlevel2">
 <li><a href="#improvements">Improvements</a></li>
@@ -467,6 +472,21 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="graphql_library_3_1_0"><a class="link" href="#graphql_library_3_1_0">GraphQL Library 3.1.0</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="features"><a class="link" href="#features">Features</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>TypeScript type definitions for all three modules are published as <a href="https://www.npmjs.com/package/@enonic-types/lib-graphql"><code>@enonic-types/lib-graphql</code></a> on npm, versioned in step with the library. See <a href="index.ahtml#_typescript">TypeScript</a> for setup.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -510,7 +530,7 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-13 14:30:13 UTC
+Last updated 2026-09-01 09:08:50 UTC
 </div>
 </div>
 </body>

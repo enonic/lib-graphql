@@ -446,6 +446,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#modules">Modules</a></li>
 <li><a href="#compatibility">Compatibility</a></li>
 <li><a href="#installation">Installation</a></li>
+<li><a href="#typescript">TypeScript</a></li>
 <li><a href="#next_steps">Next steps</a></li>
 </ul>
 </div>
@@ -538,6 +539,49 @@ dependencies {
 </div>
 </div>
 <div class="sect1">
+<h2 id="typescript"><a class="link" href="#typescript">TypeScript</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>TypeScript applications can install type definitions for all three modules from npm:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">npm install --save-dev @enonic-types/lib-graphql</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Versions of the <a href="https://www.npmjs.com/package/@enonic-types/lib-graphql"><code>@enonic-types/lib-graphql</code></a> package track the library itself — install the same version as the <code>com.enonic.lib:lib-graphql</code> dependency in <code>build.gradle</code>.</p>
+</div>
+<div class="paragraph">
+<p>The declarations are ambient, so no <code>paths</code> mapping is needed — add the package to <code>types</code> in <code>tsconfig.json</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">{
+  "compilerOptions": {
+    "types": ["@enonic-types/global", "@enonic-types/lib-graphql"]
+  }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Setting <code>types</code> disables automatic inclusion of other <code>@types</code>/<code>@enonic-types</code> packages, so list everything your project uses.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The package&#8217;s exported interfaces follow the shapes documented in each module page&#8217;s "Type Definitions" section — for example <a href="modules/graphql.ahtml#output-field">OutputField</a>, <a href="modules/graphql.ahtml#resolver-environment">ResolverEnvironment</a>, <a href="modules/graphql.ahtml#execution-result">ExecutionResult</a>, and <a href="modules/graphql-connection.ahtml#connection-source">ConnectionSource</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="next_steps"><a class="link" href="#next_steps">Next steps</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -549,7 +593,7 @@ See the <a href="modules.ahtml">modules</a> for every exported constant and func
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-13 14:30:13 UTC
+Last updated 2026-09-01 09:08:50 UTC
 </div>
 </div>
 </body>
