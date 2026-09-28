@@ -175,10 +175,19 @@ The name must match the referenced type exactly, and that type must be reachable
 const personReference = graphQlLib.reference('Person');
 ----
 
+[#execute]
 === execute
 
 Executes a GraphQL operation against a schema.
-The arguments are positional.
+The arguments are supplied through a single `params` object.
+
+Use `maxDepth` and `maxFieldsCount` to reject queries that are too deep or too large.
+A rejected query does not run: the result has no `data`, only an error with `validationErrorType` set to `MaxQueryDepthExceeded` or `MaxQueryFieldsExceeded`.
+An introspection query (`+__schema+`, `+__type+`) that goes over a limit gets the `BadFaithIntrospection` error type instead.
+Introspection queries are never allowed more than a depth of 20 or 500 fields.
+
+WARNING: The positional form `execute(schema, query, variables, context)` is deprecated and will be removed in the next major version.
+It takes the first four parameters in order and does not accept limits.
 
 [.lead]
 Parameters
@@ -192,6 +201,8 @@ Parameters
 | `query` | string | GraphQL query, mutation, or subscription document.
 | `variables` | object | *Optional.* Values for variables declared by the operation.
 | `context` | any | *Optional.* Application-specific value exposed to resolvers as `env.context`. Only value types supported by the XP JavaScript framework (such as strings, numbers, booleans, arrays, and plain objects) can be passed.
+| `maxDepth` | number | *Optional.* Maximum nesting depth, as a positive integer. A top-level field has depth 1. Defaults to 100.
+| `maxFieldsCount` | number | *Optional.* Maximum number of fields, as a positive integer. A fragment's fields count every time the fragment is used. Defaults to 100000.
 |===
 
 [.lead]
@@ -203,7 +214,9 @@ For a subscription, `data` is a publisher whose `subscribe()` method accepts a s
 [.lead]
 Example
 
-A https://developer.enonic.com/docs/code/stable/web/apis[universal API] that accepts a query and its variables in the request body, and passes a context value that every resolver can read as `env.context`.
+A https://developer.enonic.com/docs/code/stable/web/apis[universal API] that accepts a query and its variables in the request body, passes a context value that every resolver can read as `env.context`, and limits how large a query can be.
+The defaults are generous, so set your own limits on a public endpoint.
+Keep `maxDepth` at 13 or more if tools such as GraphiQL need to load the schema.
 
 .Executes a query from an HTTP request:
 [source,js]
@@ -211,9 +224,16 @@ A https://developer.enonic.com/docs/code/stable/web/apis[universal API] that acc
 exports.POST = (req) => {
     const body = JSON.parse(req.body);
 
-    const result = graphQlLib.execute(schema, body.query, body.variables, {
-        path: req.path,
-        remoteAddress: req.remoteAddress
+    const result = graphQlLib.execute({
+        schema,
+        query: body.query,
+        variables: body.variables,
+        context: {
+            path: req.path,
+            remoteAddress: req.remoteAddress
+        },
+        maxDepth: 15,
+        maxFieldsCount: 500
     });
 
     return {
@@ -233,6 +253,30 @@ const expected = {
         }
     }
 };
+----
+
+.Return value for a query deeper than `maxDepth`:
+[source,js]
+----
+const expected = {
+    errors: [
+        {
+            errorType: 'ValidationError',
+            message: 'Query depth 16 exceeds maximum allowed depth 15',
+            locations: [],
+            validationErrorType: 'MaxQueryDepthExceeded'
+        }
+    ]
+};
+----
+
+To migrate from the deprecated positional form, move the same values into the `params` object.
+
+.Replaces a deprecated positional call:
+[source,js]
+----
+graphQlLib.execute(schema, query, variables, context); // deprecated
+graphQlLib.execute({schema, query, variables, context});
 ----
 
 == Classes

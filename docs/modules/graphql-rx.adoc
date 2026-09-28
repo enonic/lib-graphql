@@ -105,10 +105,10 @@ const graphQlLib = require('/lib/graphql');
 const graphQlRxLib = require('/lib/graphql-rx');
 const sseLib = require('/lib/xp/sse');
 
-const result = graphQlLib.execute(
+const result = graphQlLib.execute({
     schema,
-    'subscription { personAdded { name } }'
-);
+    query: 'subscription { personAdded { name } }'
+});
 
 const subscriber = graphQlRxLib.createSubscriber({
     onNext: (event) => sseLib.sendToGroup({

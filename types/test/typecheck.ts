@@ -7,6 +7,7 @@
 //   - a Relay-style connection built from graphql-connection, with a
 //     ConnectionSource-returning resolver and cursor round-tripping
 //   - createSchema() + execute() typed end-to-end, including the error shape
+//   - execute() params form with query limits, and the deprecated positional form
 //   - graphql-rx publish processor (filter chaining, subscribe), subscriber
 //     (ExecutionResult delivery, cancelSubscription) and the subscription flow
 
@@ -156,12 +157,14 @@ const schema: GraphQLSchema = schemaGenerator.createSchema({
     dictionary: [personType],
 });
 
-const result: ExecutionResult<{ getPersonByName: Person | null }> = graphQlLib.execute(
+const result: ExecutionResult<{ getPersonByName: Person | null }> = graphQlLib.execute({
     schema,
-    "query($name:String!){ getPersonByName(name:$name){ name age } }",
-    { name: "James" },
-    { userId: "42" } satisfies AppContext,
-);
+    query: "query($name:String!){ getPersonByName(name:$name){ name age } }",
+    variables: { name: "James" },
+    context: { userId: "42" } satisfies AppContext,
+    maxDepth: 10,
+    maxFieldsCount: 100,
+});
 
 void result.data?.getPersonByName?.age;
 
@@ -172,6 +175,16 @@ void result.errors?.[0]?.exception?.name;
 
 // @ts-expect-error — the runtime never emits `extensions`.
 void result.extensions;
+
+// The deprecated positional form still typechecks.
+const positionalResult: ExecutionResult = graphQlLib.execute(schema, "{ getPersonByName(name:\"James\"){ name } }");
+void positionalResult;
+
+// @ts-expect-error — `query` is required in the params form.
+graphQlLib.execute({ schema });
+
+// @ts-expect-error — limits are numbers.
+graphQlLib.execute({ schema, query: "{ __typename }", maxDepth: "10" });
 
 // Cursor helpers — encodeCursor coerces any value with String().
 const cursor: string = graphQlConnectionLib.encodeCursor("42");
@@ -210,10 +223,10 @@ personProcessor.onError(new Error("boom"));
 personProcessor.onComplete();
 
 // Subscription flow: execute() returns the publisher as `data`.
-const subscriptionResult = graphQlLib.execute<Flowable<{ personAdded: Person }>>(
+const subscriptionResult = graphQlLib.execute<Flowable<{ personAdded: Person }>>({
     schema,
-    "subscription { personAdded { name } }",
-);
+    query: "subscription { personAdded { name } }",
+});
 subscriptionResult.data?.subscribe(subscriber);
 
 subscriber.cancelSubscription();

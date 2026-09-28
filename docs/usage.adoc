@@ -80,12 +80,12 @@ Call `execute()` with the schema, query, and optional variables and context:
 
 [source,js]
 ----
-const result = graphQlLib.execute(
+const result = graphQlLib.execute({
     schema,
-    'query SayHello($name: String!) { greeting(name: $name) { message generatedAt } }',
-    {name: 'Ada'},
-    {requestId: 'example-request'}
-);
+    query: 'query SayHello($name: String!) { greeting(name: $name) { message generatedAt } }',
+    variables: {name: 'Ada'},
+    context: {requestId: 'example-request'}
+});
 ----
 
 A successful execution returns a JavaScript object with a `data` property:
@@ -105,6 +105,9 @@ A successful execution returns a JavaScript object with a `data` property:
 Validation or resolver failures add an `errors` array.
 Depending on the error and field nullability, a response can contain both `data` and `errors`.
 
+To reject queries that are too deep or too large, pass `maxDepth` and `maxFieldsCount` to `execute()`.
+See <<modules/graphql#execute,`execute`>> for details.
+
 == Expose the schema through a universal API
 
 GraphQL Library builds and executes the schema; it does not prescribe the HTTP endpoint.
@@ -115,15 +118,15 @@ An application exposes its own endpoints as https://developer.enonic.com/docs/co
 ----
 exports.POST = function (req) {
     const body = JSON.parse(req.body);
-    const result = graphQlLib.execute(
+    const result = graphQlLib.execute({
         schema,
-        body.query,
-        body.variables,
-        {
+        query: body.query,
+        variables: body.variables,
+        context: {
             path: req.path,
             remoteAddress: req.remoteAddress
         }
-    );
+    });
 
     return {
         contentType: 'application/json',

@@ -279,9 +279,39 @@ declare module "/lib/graphql" {
         errors?: ExecutionError[];
     }
 
+    /** Parameters of `execute()`. */
+    export interface ExecuteParams {
+        /** Schema created with `schemaGenerator.createSchema()`. */
+        schema: GraphQLSchema;
+        /** GraphQL query, mutation, or subscription document. */
+        query: string;
+        /** Values for variables declared by the operation. */
+        variables?: Record<string, unknown>;
+        /** Application-specific value exposed to resolvers as `env.context`. */
+        context?: unknown;
+        /**
+         * Maximum nesting depth, as a positive integer. Deeper queries are rejected
+         * with `MaxQueryDepthExceeded`. Defaults to 100.
+         */
+        maxDepth?: number;
+        /**
+         * Maximum number of fields, as a positive integer. A fragment's fields count
+         * every time the fragment is used. Larger queries are rejected with
+         * `MaxQueryFieldsExceeded`. Defaults to 100000.
+         */
+        maxFieldsCount?: number;
+    }
+
+    /** Runs a GraphQL operation against a schema. */
+    export function execute<Data = unknown>(params: ExecuteParams): ExecutionResult<Data>;
+
     /**
-     * Runs a query against a schema. Arguments are positional; `variables` and
-     * `context` are optional.
+     * Runs a GraphQL operation against a schema. Arguments are positional;
+     * `variables` and `context` are optional. Query limits are only available in
+     * the params form.
+     *
+     * @deprecated Use `execute({schema, query, variables, context})`. The positional
+     * form will be removed in the next major version.
      */
     export function execute<Data = unknown>(
         schema: GraphQLSchema,
