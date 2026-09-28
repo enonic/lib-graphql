@@ -32,7 +32,13 @@ Add the newest release directly below this comment.
 
 === Features
 
+* `execute()` accepts a single `params` object with `schema`, `query`, `variables`, and `context`.
+* `maxDepth` and `maxFieldsCount` in the `params` object reject queries that are too deep or too large. See <<modules/graphql#execute,`execute`>>.
 * TypeScript type definitions for all three modules are published as https://www.npmjs.com/package/@enonic-types/lib-graphql[`@enonic-types/lib-graphql`] on npm, versioned in step with the library. See <<index#_typescript,TypeScript>> for setup.
+
+=== Deprecations
+
+* The positional form `execute(schema, query, variables, context)` is deprecated and will be removed in the next major version. Use `execute({schema, query, variables, context})` instead.
 
 == GraphQL Library 3.0.0
 
@@ -42,6 +48,7 @@ GraphQL Library 3.0.0 was released in June 2026 as the XP 8-compatible major rel
 
 * Added compatibility with Enonic XP 8.
 * Updated the underlying GraphQL Java libraries used to build and execute schemas.
+* Queries deeper than 100 levels or with more than 100000 fields are rejected.
 * Replaced the end-of-life RxJava dependency with a JDK Flow-based subscription implementation while retaining the `/lib/graphql-rx` JavaScript helpers.
 * Subscription publishers preserve the XP execution context by delivering events on the publishing thread.
 

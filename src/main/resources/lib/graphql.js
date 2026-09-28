@@ -107,9 +107,38 @@ exports.reference = function (typeKey) {
 };
 
 //Query execution
-exports.execute = function (schema, query, variables, context) {
-    return __.toNativeObject(graphQLHelper.execute(schema, query, __.toScriptValue(variables), context));
+var GraphQLSchema = Java.type('graphql.schema.GraphQLSchema');
+var MAX_INTEGER = Java.type('java.lang.Integer').MAX_VALUE;
+
+exports.execute = function (params, query, variables, context) {
+    if (params instanceof GraphQLSchema) {
+        return executeOperation(params, query, variables, context, null, null);
+    }
+    return executeWithParams(params);
 };
+
+function executeWithParams(params) {
+    if (params == null || typeof params !== 'object') {
+        throw "Value 'params' must be an object or a schema created with createSchema()";
+    }
+    var schema = params.schema;
+    if (!(schema instanceof GraphQLSchema)) {
+        throw "Value 'schema' is required and must be a schema created with createSchema()";
+    }
+    var query = params.query;
+    if (typeof query !== 'string') {
+        throw "Value 'query' is required and must be a string";
+    }
+    var variables = optional(params, 'variables');
+    var context = optional(params, 'context');
+    var maxDepth = optionalPositiveInteger(params, 'maxDepth');
+    var maxFieldsCount = optionalPositiveInteger(params, 'maxFieldsCount');
+    return executeOperation(schema, query, variables, context, maxDepth, maxFieldsCount);
+}
+
+function executeOperation(schema, query, variables, context, maxDepth, maxFieldsCount) {
+    return __.toNativeObject(graphQLHelper.execute(schema, query, __.toScriptValue(variables), context, maxDepth, maxFieldsCount));
+}
 
 //Util functions
 function required(params, name) {
@@ -125,6 +154,17 @@ function optional(params, name) {
     var value = params[name];
     if (value === undefined) {
         return null;
+    }
+    return value;
+}
+
+function optionalPositiveInteger(params, name) {
+    var value = optional(params, name);
+    if (value === null) {
+        return null;
+    }
+    if (typeof value !== 'number' || Math.floor(value) !== value || value < 1 || value > MAX_INTEGER) {
+        throw "Value '" + name + "' must be a positive integer";
     }
     return value;
 }
