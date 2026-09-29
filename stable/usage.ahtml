@@ -557,12 +557,12 @@ const schema = schemaGenerator.createSchema({
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">const result = graphQlLib.execute(
+<pre class="highlight"><code class="language-js" data-lang="js">const result = graphQlLib.execute({
     schema,
-    'query SayHello($name: String!) { greeting(name: $name) { message generatedAt } }',
-    {name: 'Ada'},
-    {requestId: 'example-request'}
-);</code></pre>
+    query: 'query SayHello($name: String!) { greeting(name: $name) { message generatedAt } }',
+    variables: {name: 'Ada'},
+    context: {requestId: 'example-request'}
+});</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -584,6 +584,10 @@ const schema = schemaGenerator.createSchema({
 <p>Validation or resolver failures add an <code>errors</code> array.
 Depending on the error and field nullability, a response can contain both <code>data</code> and <code>errors</code>.</p>
 </div>
+<div class="paragraph">
+<p>To reject queries that are too deep or too large, pass <code>maxDepth</code> and <code>maxFieldsCount</code> to <code>execute()</code>.
+See <a href="modules/graphql.ahtml#execute"><code>execute</code></a> for details.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -598,15 +602,15 @@ An application exposes its own endpoints as <a href="https://developer.enonic.co
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">exports.POST = function (req) {
     const body = JSON.parse(req.body);
-    const result = graphQlLib.execute(
+    const result = graphQlLib.execute({
         schema,
-        body.query,
-        body.variables,
-        {
+        query: body.query,
+        variables: body.variables,
+        context: {
             path: req.path,
             remoteAddress: req.remoteAddress
         }
-    );
+    });
 
     return {
         contentType: 'application/json',
@@ -666,7 +670,7 @@ Referenced types must be reachable from the schema or included in the schema&#82
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-14 09:51:47 UTC
+Last updated 2026-09-29 08:46:23 UTC
 </div>
 </div>
 </body>

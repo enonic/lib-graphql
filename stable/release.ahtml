@@ -444,6 +444,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#graphql_library_3_1_0">GraphQL Library 3.1.0</a>
 <ul class="sectlevel2">
 <li><a href="#features">Features</a></li>
+<li><a href="#deprecations">Deprecations</a></li>
 </ul>
 </li>
 <li><a href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a>
@@ -483,7 +484,23 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 <div class="ulist">
 <ul>
 <li>
+<p><code>execute()</code> accepts a single <code>params</code> object with <code>schema</code>, <code>query</code>, <code>variables</code>, and <code>context</code>.</p>
+</li>
+<li>
+<p><code>maxDepth</code> and <code>maxFieldsCount</code> in the <code>params</code> object reject queries that are too deep or too large. See <a href="modules/graphql.ahtml#execute"><code>execute</code></a>.</p>
+</li>
+<li>
 <p>TypeScript type definitions for all three modules are published as <a href="https://www.npmjs.com/package/@enonic-types/lib-graphql"><code>@enonic-types/lib-graphql</code></a> on npm, versioned in step with the library. See <a href="index.ahtml#_typescript">TypeScript</a> for setup.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deprecations"><a class="link" href="#deprecations">Deprecations</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The positional form <code>execute(schema, query, variables, context)</code> is deprecated and will be removed in the next major version. Use <code>execute({schema, query, variables, context})</code> instead.</p>
 </li>
 </ul>
 </div>
@@ -505,6 +522,9 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 </li>
 <li>
 <p>Updated the underlying GraphQL Java libraries used to build and execute schemas.</p>
+</li>
+<li>
+<p>Queries deeper than 100 levels or with more than 100000 fields are rejected.</p>
 </li>
 <li>
 <p>Replaced the end-of-life RxJava dependency with a JDK Flow-based subscription implementation while retaining the <code>/lib/graphql-rx</code> JavaScript helpers.</p>
@@ -530,7 +550,7 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-14 09:51:47 UTC
+Last updated 2026-09-29 08:46:23 UTC
 </div>
 </div>
 </body>

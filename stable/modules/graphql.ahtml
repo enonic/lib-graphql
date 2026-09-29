@@ -736,7 +736,26 @@ References allow self-referencing or mutually dependent types to be declared bef
 <h3 id="execute"><a class="link" href="#execute">execute</a></h3>
 <div class="paragraph">
 <p>Executes a GraphQL operation against a schema.
-The arguments are positional.</p>
+The arguments are supplied through a single <code>params</code> object.</p>
+</div>
+<div class="paragraph">
+<p>Use <code>maxDepth</code> and <code>maxFieldsCount</code> to reject queries that are too deep or too large.
+A rejected query does not run: the result has no <code>data</code>, only an error with <code>validationErrorType</code> set to <code>MaxQueryDepthExceeded</code> or <code>MaxQueryFieldsExceeded</code>.
+An introspection query (<code>__schema</code>, <code>__type</code>) that goes over a limit gets the <code>BadFaithIntrospection</code> error type instead.
+Introspection queries are never allowed more than a depth of 20 or 500 fields.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The positional form <code>execute(schema, query, variables, context)</code> is deprecated and will be removed in the next major version.
+It takes the first four parameters in order and does not accept limits.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph lead">
 <p>Parameters</p>
@@ -783,6 +802,20 @@ The arguments are positional.</p>
 <p><strong>Optional.</strong> Application-specific value exposed to resolvers as <code>env.context</code>. Only value types supported by the XP JavaScript framework (such as strings, numbers, booleans, arrays, and plain objects) can be passed.</p>
 </div></div></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>maxDepth</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Maximum nesting depth, as a positive integer. A top-level field has depth 1. Defaults to 100.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>maxFieldsCount</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Optional.</strong> Maximum number of fields, as a positive integer. A fragment&#8217;s fields count every time the fragment is used. Defaults to 100000.</p>
+</div></div></td>
+</tr>
 </tbody>
 </table>
 <div class="paragraph lead">
@@ -796,7 +829,9 @@ For a subscription, <code>data</code> is a publisher whose <code>subscribe()</co
 <p>Example</p>
 </div>
 <div class="paragraph">
-<p>A <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal API</a> that accepts a query and its variables in the request body, and passes a context value that every resolver can read as <code>env.context</code>.</p>
+<p>A <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal API</a> that accepts a query and its variables in the request body, passes a context value that every resolver can read as <code>env.context</code>, and limits how large a query can be.
+The defaults are generous, so set your own limits on a public endpoint.
+Keep <code>maxDepth</code> at 13 or more if tools such as GraphiQL need to load the schema.</p>
 </div>
 <div class="listingblock">
 <div class="title">Executes a query from an HTTP request:</div>
@@ -804,9 +839,16 @@ For a subscription, <code>data</code> is a publisher whose <code>subscribe()</co
 <pre class="highlight"><code class="language-js" data-lang="js">exports.POST = (req) =&gt; {
     const body = JSON.parse(req.body);
 
-    const result = graphQlLib.execute(schema, body.query, body.variables, {
-        path: req.path,
-        remoteAddress: req.remoteAddress
+    const result = graphQlLib.execute({
+        schema,
+        query: body.query,
+        variables: body.variables,
+        context: {
+            path: req.path,
+            remoteAddress: req.remoteAddress
+        },
+        maxDepth: 15,
+        maxFieldsCount: 500
     });
 
     return {
@@ -826,6 +868,31 @@ For a subscription, <code>data</code> is a publisher whose <code>subscribe()</co
         }
     }
 };</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Return value for a query deeper than <code>maxDepth</code>:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const expected = {
+    errors: [
+        {
+            errorType: 'ValidationError',
+            message: 'Query depth 16 exceeds maximum allowed depth 15',
+            locations: [],
+            validationErrorType: 'MaxQueryDepthExceeded'
+        }
+    ]
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To migrate from the deprecated positional form, move the same values into the <code>params</code> object.</p>
+</div>
+<div class="listingblock">
+<div class="title">Replaces a deprecated positional call:</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">graphQlLib.execute(schema, query, variables, context); // deprecated
+graphQlLib.execute({schema, query, variables, context});</code></pre>
 </div>
 </div>
 </div>
@@ -1613,7 +1680,7 @@ Passing an object keeps the GraphQL names uppercase while resolvers receive the 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-14 09:51:47 UTC
+Last updated 2026-09-29 08:46:23 UTC
 </div>
 </div>
 </body>
