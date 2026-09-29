@@ -10,11 +10,12 @@ This is not Guillotine. Guillotine is Enonic's ready-made GraphQL API for CMS co
 
 ## Repository Structure
 
-* `src/main/resources/lib/graphql.js` exposes scalar constants, schema construction, type wrappers, and execution.
-* `src/main/resources/lib/graphql-connection.js` exposes cursor and connection helpers.
-* `src/main/resources/lib/graphql-rx.js` exposes subscription publishers and subscribers.
+* `src/main/resources/lib/graphql.ts` exposes scalar constants, schema construction, type wrappers, and execution.
+* `src/main/resources/lib/graphql-connection.ts` exposes cursor and connection helpers.
+* `src/main/resources/lib/graphql-rx.ts` exposes subscription publishers and subscribers.
 * `src/main/java/` implements the Java-backed behavior used by the server-side JavaScript modules.
-* `src/test/` contains Java and script-level tests.
+* `src/test/` contains Java and script-level tests. The scripts in `src/test/resources/lib/` stay JavaScript and run against the esbuild output.
+* `types/` assembles and verifies the generated `@enonic-types/lib-graphql` package.
 * `docs/` contains the AsciiDoc source published to the Enonic developer portal.
 
 ## Documentation Guidelines
@@ -62,10 +63,33 @@ The documentation is reference material with a compact usage guide. It should be
 * Preserve GraphQL response semantics: execution can return both partial `data` and `errors`.
 * Subscription changes must be tested through the JavaScript API, including publication, filtering, delivery, completion, and cancellation where applicable.
 
+### TypeScript and Nashorn
+
+The modules are written in TypeScript and bundled by esbuild into `lib/graphql.js`, `lib/graphql-connection.js`, and `lib/graphql-rx.js`; those paths are fixed, since consumers `require()` them.
+The output runs under the consuming app's script engine, which defaults to Nashorn in XP 8, so it must stay ES5-safe.
+`tsc` gates the built-ins through `lib: ES5`, esbuild gates the syntax through `target: es5`, and the Java tests run the bundle on Nashorn (`test`) and GraalJS (`testGraalJS`).
+Do not widen `lib` past `ES5`: esbuild passes built-ins through untouched, so the break would land on the consumer's engine rather than in this build.
+`target` is `ES2015` only because TypeScript 7 removed `ES5`; `noEmit` makes it irrelevant to the output.
+
+Each module ships as its own file, so a value import of a sibling (`./graphql`) must stay a runtime `require()`.
+The `external-siblings` plugin in `esbuild.config.js` keeps it that way, and `GraphqlBundleTest` fails if a sibling gets inlined.
+
+`Java` is not declared by `@enonic-types/global`; each module declares it locally.
+Never move that declaration into `declare global`, which would leak it into consumers' typings.
+
+### Types package
+
+`@enonic-types/lib-graphql` is generated, never hand-written.
+`tsconfig.types.json` emits one declaration file per module, and `types/build.mjs` assembles `build/types` with the version from `gradle.properties` and an `index.d.ts` entry that loads every module's `XpLibraries` augmentation.
+A type reaches the package only if it is `export`ed from a module.
+`types/verify.mjs` checks the npm packlist and type-checks an import-style consumer (`types/test/consumer.ts`) and a `require()`-only one (`types/test/require-only.ts`) against the built package.
+
 ## Build and Validation
 
-* `./gradlew build` compiles the library and runs the full verification lifecycle.
-* `./gradlew test` runs the Java and script-backed tests.
+* `./gradlew build` compiles the library and runs the full verification lifecycle: esbuild, type-check, lint, the types package, and the Java tests on both engines.
+* `./gradlew test` runs the Java and script-backed tests on Nashorn; `./gradlew testGraalJS` runs them on GraalJS.
+* `pnpm check` type-checks and lints; `pnpm fix` applies lint and formatting fixes.
+* `pnpm test:types` builds and verifies the types package.
 * CI build and publication are configured in `.github/workflows/enonic-gradle.yml`.
 * Developer-portal documentation publication is configured in `.github/workflows/enonic-docgen.yml`.
 

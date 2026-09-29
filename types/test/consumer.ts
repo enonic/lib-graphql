@@ -1,4 +1,7 @@
-// Compile-only smoke test for @enonic-types/lib-graphql.
+// Import-style consumer of the built package: tsconfig.json here resolves the three module paths to
+// build/types and checks the shipped .d.ts files themselves (skipLibCheck: false).
+// require()-only consumption is a separate program, require-only.ts.
+//
 // Exercises a realistic schema:
 //   - object type with a typed resolver reading source + args + context
 //   - a fixed-value resolver (resolve as a value, not a function)
@@ -11,18 +14,21 @@
 //   - graphql-rx publish processor (filter chaining, subscribe), subscriber
 //     (ExecutionResult delivery, cancelSubscription) and the subscription flow
 
-import * as graphQlLib from "/lib/graphql";
 import type {
     ExecutionResult,
+    GraphQLInputObjectType,
+    GraphQLInterfaceType,
     GraphQLObjectType,
     GraphQLSchema,
+    GraphQLUnionType,
     ResolverEnvironment,
     SchemaGenerator,
-} from "/lib/graphql";
-import * as graphQlConnectionLib from "/lib/graphql-connection";
-import type { ConnectionSource } from "/lib/graphql-connection";
-import * as graphQlRxLib from "/lib/graphql-rx";
-import type { Flowable, Throwable } from "/lib/graphql-rx";
+} from '/lib/graphql';
+import * as graphQlLib from '/lib/graphql';
+import type { ConnectionSource } from '/lib/graphql-connection';
+import * as graphQlConnectionLib from '/lib/graphql-connection';
+import type { Flowable, Throwable } from '/lib/graphql-rx';
+import * as graphQlRxLib from '/lib/graphql-rx';
 
 interface Person {
     name: string;
@@ -42,8 +48,8 @@ const schemaGenerator: SchemaGenerator = graphQlLib.newSchemaGenerator();
 
 // Object type with a typed resolver and a fixed-value resolver.
 const personType: GraphQLObjectType = schemaGenerator.createObjectType<Person, AppContext>({
-    name: "Person",
-    description: "A person",
+    name: 'Person',
+    description: 'A person',
     fields: {
         name: {
             type: graphQlLib.nonNull(graphQlLib.GraphQLString),
@@ -55,33 +61,41 @@ const personType: GraphQLObjectType = schemaGenerator.createObjectType<Person, A
             type: graphQlLib.nonNull(graphQlLib.GraphQLInt),
         },
         children: {
-            type: graphQlLib.list(graphQlLib.reference("Person")),
+            type: graphQlLib.list(graphQlLib.reference('Person')),
             resolve: (env): string[] => env.source.children,
         },
         species: {
             type: graphQlLib.GraphQLString,
-            resolve: "homo sapiens",
+            resolve: 'homo sapiens',
         },
     },
 });
 
 // @ts-expect-error — `type` is required on every field.
-schemaGenerator.createObjectType({ name: "Broken", fields: { oops: { resolve: () => 1 } } });
+schemaGenerator.createObjectType({ name: 'Broken', fields: { oops: { resolve: () => 1 } } });
+
+schemaGenerator.createObjectType<Person>({
+    name: 'Contextual',
+    fields: {
+        // @ts-expect-error — a contextually typed `env.source` is the declared Source, not `any`.
+        nope: { type: graphQlLib.GraphQLString, resolve: (env) => env.source.nope },
+    },
+});
 
 // Enum + input + interface + union — ensures each create* returns a distinct branded type.
 const roleEnum = schemaGenerator.createEnumType({
-    name: "Role",
-    values: ["ADMIN", "USER"],
+    name: 'Role',
+    values: ['ADMIN', 'USER'],
 });
 
 const priorityEnum = schemaGenerator.createEnumType({
-    name: "Priority",
+    name: 'Priority',
     values: { LOW: 1, NORMAL: 2, HIGH: 3 },
 });
 void priorityEnum;
 
 const filterInput = schemaGenerator.createInputObjectType({
-    name: "PersonFilter",
+    name: 'PersonFilter',
     fields: {
         minAge: { type: graphQlLib.GraphQLInt },
         role: { type: roleEnum },
@@ -89,7 +103,7 @@ const filterInput = schemaGenerator.createInputObjectType({
 });
 
 const namedInterface = schemaGenerator.createInterfaceType<Person>({
-    name: "Named",
+    name: 'Named',
     fields: {
         name: { type: graphQlLib.nonNull(graphQlLib.GraphQLString) },
     },
@@ -98,11 +112,20 @@ const namedInterface = schemaGenerator.createInterfaceType<Person>({
 void namedInterface;
 
 const nodeUnion = schemaGenerator.createUnionType<Person>({
-    name: "Node",
-    types: [personType, graphQlLib.reference("Person")],
+    name: 'Node',
+    types: [personType, graphQlLib.reference('Person')],
     typeResolver: (): GraphQLObjectType => personType,
 });
 void nodeUnion;
+
+// @ts-expect-error — an enum type is not an input object type.
+export const enumAsInput: GraphQLInputObjectType = roleEnum;
+// @ts-expect-error — an input object type is not an interface type.
+export const inputAsInterface: GraphQLInterfaceType = filterInput;
+// @ts-expect-error — an interface type is not a union type.
+export const interfaceAsUnion: GraphQLUnionType = namedInterface;
+// @ts-expect-error — a union type is not an interface type.
+export const unionAsInterface: GraphQLInterfaceType = nodeUnion;
 
 // Relay connection helper.
 const personConnection: GraphQLObjectType = graphQlConnectionLib.createConnectionType(schemaGenerator, personType);
@@ -114,7 +137,7 @@ void _connectionName;
 // Root query with typed args + context, and a connection field whose resolver
 // returns a ConnectionSource.
 const queryType = schemaGenerator.createObjectType<undefined, AppContext>({
-    name: "Query",
+    name: 'Query',
     fields: {
         getPersonByName: {
             type: personType,
@@ -132,7 +155,7 @@ const queryType = schemaGenerator.createObjectType<undefined, AppContext>({
             resolve: (): ConnectionSource<Person> => ({
                 total: 1,
                 start: 0,
-                hits: [{ name: "James", age: 42, children: [] }],
+                hits: [{ name: 'James', age: 42, children: [] }],
             }),
         },
     },
@@ -142,7 +165,7 @@ const queryType = schemaGenerator.createObjectType<undefined, AppContext>({
 const personProcessor = graphQlRxLib.createPublishProcessor<Person>();
 
 const subscriptionType = schemaGenerator.createObjectType({
-    name: "Subscription",
+    name: 'Subscription',
     fields: {
         personAdded: {
             type: personType,
@@ -159,9 +182,9 @@ const schema: GraphQLSchema = schemaGenerator.createSchema({
 
 const result: ExecutionResult<{ getPersonByName: Person | null }> = graphQlLib.execute({
     schema,
-    query: "query($name:String!){ getPersonByName(name:$name){ name age } }",
-    variables: { name: "James" },
-    context: { userId: "42" } satisfies AppContext,
+    query: 'query($name:String!){ getPersonByName(name:$name){ name age } }',
+    variables: { name: 'James' },
+    context: { userId: '42' } satisfies AppContext,
     maxDepth: 10,
     maxFieldsCount: 100,
 });
@@ -177,27 +200,38 @@ void result.errors?.[0]?.exception?.name;
 void result.extensions;
 
 // The deprecated positional form still typechecks.
-const positionalResult: ExecutionResult = graphQlLib.execute(schema, "{ getPersonByName(name:\"James\"){ name } }");
+const positionalResult: ExecutionResult = graphQlLib.execute(schema, '{ getPersonByName(name:"James"){ name } }');
 void positionalResult;
 
 // @ts-expect-error — `query` is required in the params form.
 graphQlLib.execute({ schema });
 
 // @ts-expect-error — limits are numbers.
-graphQlLib.execute({ schema, query: "{ __typename }", maxDepth: "10" });
+graphQlLib.execute({ schema, query: '{ __typename }', maxDepth: '10' });
 
 // Cursor helpers — encodeCursor coerces any value with String().
-const cursor: string = graphQlConnectionLib.encodeCursor("42");
+const cursor: string = graphQlConnectionLib.encodeCursor('42');
 const numericCursor: string = graphQlConnectionLib.encodeCursor(20);
 void numericCursor;
 const decoded: number = parseInt(graphQlConnectionLib.decodeCursor(cursor), 10);
 void decoded;
+
+// @ts-expect-error — the value is required.
+graphQlConnectionLib.encodeCursor();
+
+// @ts-expect-error — a connection is an object type, not a union type.
+export const connectionAsUnion: GraphQLUnionType = graphQlConnectionLib.createConnectionType(
+    schemaGenerator,
+    personType,
+);
 
 // Reactive: subscriber receives full ExecutionResults, not raw values.
 const subscriber = graphQlRxLib.createSubscriber<{ personAdded: Person }>({
     onNext: (event): void => {
         void event.data?.personAdded.name;
         void event.errors?.[0]?.errorType;
+        // @ts-expect-error — `data` carries the subscriber's Data type, not `any`.
+        void event.data?.personAdded.nope;
     },
 });
 
@@ -208,25 +242,28 @@ personProcessor
     .subscribe(subscriber);
 personProcessor.subscribe(subscriber);
 
-personProcessor.onNext({ name: "James", age: 42, children: [] });
+personProcessor.onNext({ name: 'James', age: 42, children: [] });
 
 // onError takes a Java Throwable (constructed with Java.type() at runtime).
 declare const throwable: Throwable;
 personProcessor.onError(throwable);
 
 // @ts-expect-error — a string is not a Throwable.
-personProcessor.onError("boom");
+personProcessor.onError('boom');
 
 // @ts-expect-error — a JavaScript Error is not a Throwable.
-personProcessor.onError(new Error("boom"));
+personProcessor.onError(new Error('boom'));
 
 personProcessor.onComplete();
 
 // Subscription flow: execute() returns the publisher as `data`.
 const subscriptionResult = graphQlLib.execute<Flowable<{ personAdded: Person }>>({
     schema,
-    query: "subscription { personAdded { name } }",
+    query: 'subscription { personAdded { name } }',
 });
 subscriptionResult.data?.subscribe(subscriber);
+
+// @ts-expect-error — the publisher's values carry the declared event type.
+subscriptionResult.data?.filter((event) => event.nope);
 
 subscriber.cancelSubscription();

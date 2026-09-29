@@ -1,0 +1,9 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "skipLibCheck": false,
+        "typeRoots": ["../../node_modules", "../../build"],
+        "types": ["@enonic-types/global", "types"]
+    },
+    "include": ["require-only.ts"]
+}

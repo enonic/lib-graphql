@@ -3,6 +3,9 @@
 
 The main module defines GraphQL types, assembles them into a schema, and executes operations against that schema.
 
+NOTE: The module's exports are read-only, and it has no default export.
+Load it with `require('/lib/graphql')`, a namespace import, or named imports, and replace the whole module rather than assigning to an export.
+
 == Constants
 
 The module exports scalar type objects that can be assigned directly to a field or argument's `type` property.

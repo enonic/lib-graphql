@@ -59,16 +59,24 @@ npm install --save-dev @enonic-types/lib-graphql
 
 Versions of the https://www.npmjs.com/package/@enonic-types/lib-graphql[`@enonic-types/lib-graphql`] package track the library itself — install the same version as the `com.enonic.lib:lib-graphql` dependency in `build.gradle`.
 
-The declarations are ambient, so no `paths` mapping is needed — add the package to `types` in `tsconfig.json`:
+Add the package to both `types` and `paths` in `tsconfig.json`:
 
 [source,json]
 ----
 {
   "compilerOptions": {
-    "types": ["@enonic-types/global", "@enonic-types/lib-graphql"]
+    "types": ["@enonic-types/global", "@enonic-types/lib-graphql"],
+    "paths": {
+      "/lib/graphql": ["./node_modules/@enonic-types/lib-graphql/graphql.d.ts"],
+      "/lib/graphql-connection": ["./node_modules/@enonic-types/lib-graphql/graphql-connection.d.ts"],
+      "/lib/graphql-rx": ["./node_modules/@enonic-types/lib-graphql/graphql-rx.d.ts"]
+    }
   }
 }
 ----
+
+The `types` entry types `require('/lib/graphql')` and its siblings.
+The `paths` entries resolve `import ... from '/lib/graphql'`; TypeScript treats a module name starting with `/` as a path, so they cannot be left out.
 
 NOTE: Setting `types` disables automatic inclusion of other `@types`/`@enonic-types` packages, so list everything your project uses.
 

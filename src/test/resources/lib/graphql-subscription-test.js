@@ -67,7 +67,51 @@ function newSubscriber(received) {
 exports.test = function () {
     testDeliversEventsToSubscriber();
     testFilterDropsNonMatchingEvents();
+    testCancelStopsDelivery();
+    testCancelBeforeSubscribeAndTwiceIsNoOp();
 };
+
+function testCancelStopsDelivery() {
+    var processor = graphQlRxLib.createPublishProcessor();
+    eventSource = processor;
+
+    var result = graphQlLib.execute(schema, 'subscription { onMessage { text } }');
+
+    var received = [];
+    var subscriber = newSubscriber(received);
+    result.data.subscribe(subscriber);
+
+    processor.onNext({text: 'before'});
+    subscriber.cancelSubscription();
+    processor.onNext({text: 'after'});
+    processor.onComplete();
+
+    assert.assertJsonEquals([
+        {data: {onMessage: {text: 'before'}}}
+    ], received);
+}
+
+function testCancelBeforeSubscribeAndTwiceIsNoOp() {
+    var processor = graphQlRxLib.createPublishProcessor();
+    eventSource = processor;
+
+    var result = graphQlLib.execute(schema, 'subscription { onMessage { text } }');
+
+    var received = [];
+    var subscriber = newSubscriber(received);
+    subscriber.cancelSubscription();
+    result.data.subscribe(subscriber);
+
+    processor.onNext({text: 'delivered'});
+    subscriber.cancelSubscription();
+    subscriber.cancelSubscription();
+    processor.onNext({text: 'dropped'});
+    processor.onComplete();
+
+    assert.assertJsonEquals([
+        {data: {onMessage: {text: 'delivered'}}}
+    ], received);
+}
 
 function testDeliversEventsToSubscriber() {
     var processor = graphQlRxLib.createPublishProcessor();

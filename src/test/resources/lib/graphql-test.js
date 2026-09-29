@@ -24,6 +24,26 @@ exports.test = function () {
     testReadValueFromContext(schema);
 };
 
+exports.testRequiredParams = function () {
+    var generator = graphQlLib.newSchemaGenerator();
+    var resolveType = function () {
+        return null;
+    };
+
+    assert.assertEquals("Value 'name' is required", assert.assertThrows(function () {
+        generator.createObjectType({fields: {id: {type: graphQlLib.GraphQLID}}});
+    }));
+    assert.assertEquals("Value 'type' is required", assert.assertThrows(function () {
+        generator.createObjectType({name: 'Broken', fields: {id: {}}});
+    }));
+    assert.assertEquals("Value 'types' is required", assert.assertThrows(function () {
+        generator.createUnionType({name: 'Missing', typeResolver: resolveType});
+    }));
+    assert.assertEquals("Value 'types' is required and cannot be empty", assert.assertThrows(function () {
+        generator.createUnionType({name: 'Empty', types: [], typeResolver: resolveType});
+    }));
+};
+
 function testShortQuery(schema) {
     var query = '{getObject(id:"0000-0000-0000-0001"){id}}';
     var result = graphQlLib.execute(schema, query);

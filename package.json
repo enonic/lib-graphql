@@ -1,10 +1,32 @@
 {
-  "name": "lib-graphql",
-  "private": true,
-  "scripts": {
-    "check": "tsc -p types/tsconfig.json"
-  },
-  "devDependencies": {
-    "typescript": "^5.9.2"
-  }
+    "name": "lib-graphql",
+    "private": true,
+    "type": "module",
+    "packageManager": "pnpm@11.23.0",
+    "scripts": {
+        "build": "pnpm build:dev",
+        "build:prod": "cross-env NODE_ENV=production node esbuild.config.js",
+        "build:dev": "node esbuild.config.js",
+        "build:types": "tsc -p tsconfig.types.json && node types/build.mjs",
+        "check": "pnpm check:types && pnpm check:lint",
+        "check:types": "tsc --noEmit",
+        "check:lint": "biome check .",
+        "test:types": "pnpm build:types && pnpm verify:types",
+        "verify:types": "node types/verify.mjs",
+        "fix": "biome check . --fix",
+        "prepare": "husky"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "~2.5.14",
+        "@enonic-types/core": "~8.1.0-RC2",
+        "@enonic-types/global": "~8.1.0-RC2",
+        "cross-env": "~10.1.0",
+        "esbuild": "~0.28.2",
+        "husky": "~9.1.7",
+        "typescript": "~7.0.2"
+    },
+    "engines": {
+        "node": ">= 24.19.0",
+        "pnpm": ">= 11.23.0"
+    }
 }
