@@ -1,0 +1,148 @@
+{
+    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "includes": ["src/main/resources/**/*.ts", "types/**/*.{ts,mjs}", "*.{ts,js,mjs}"]
+    },
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "preset": "recommended",
+            "a11y": {
+                "preset": "none"
+            },
+            "complexity": {
+                "noUselessTypeConstraint": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "noUselessLabel": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "noUselessLoneBlockStatements": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "noUselessRename": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "noUselessTernary": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useLiteralKeys": "off",
+                "useOptionalChain": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useSimplifiedLogicExpression": {
+                    "level": "error",
+                    "fix": "safe"
+                }
+            },
+            "correctness": {
+                "noInnerDeclarations": "off",
+                "noUnusedVariables": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "noUnusedImports": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useValidTypeof": {
+                    "level": "error",
+                    "fix": "safe"
+                }
+            },
+            "style": {
+                "noNamespace": "error",
+                "noCommonJs": "off",
+                "useArrayLiterals": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useAsConstAssertion": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useConst": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useConsistentArrayType": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useDefaultParameterLast": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useExportType": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useImportType": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useNamingConvention": "off",
+                "useShorthandAssign": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useTemplate": {
+                    "level": "error",
+                    "fix": "safe"
+                }
+            },
+            "suspicious": {
+                "noExplicitAny": "error",
+                "noExtraNonNullAssertion": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "noMisleadingInstantiator": "error",
+                "noUnsafeDeclarationMerging": "error",
+                "noVar": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "useNamespaceKeyword": {
+                    "level": "error",
+                    "fix": "safe"
+                },
+                "noDoubleEquals": "off",
+                "noRedeclare": "error",
+                "useIsArray": {
+                    "level": "error",
+                    "fix": "safe"
+                }
+            }
+        }
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 120
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single"
+        }
+    }
+}

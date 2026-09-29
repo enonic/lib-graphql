@@ -1,0 +1,11 @@
+allowBuilds:
+  esbuild: false
+
+strictPeerDependencies: true
+savePrefix: "~"
+preferOffline: true
+
+minimumReleaseAge: 4320
+
+minimumReleaseAgeExclude:
+  - "@enonic-types/*"

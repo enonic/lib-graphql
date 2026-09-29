@@ -13,11 +13,22 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 3
+      exclude:
+        - "@enonic-types/*"
     open-pull-requests-limit: 10
     assignees:
       - "alansemenov"
     reviewers:
       - "alansemenov"
+    groups:
+      enonic-types:
+        patterns:
+          - "@enonic-types/*"
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

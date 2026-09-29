@@ -1,0 +1,16 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noEmit": false,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "rootDir": "src/main/resources/lib",
+        "outDir": "build/types-dts"
+    },
+    "include": [],
+    "files": [
+        "src/main/resources/lib/graphql.ts",
+        "src/main/resources/lib/graphql-connection.ts",
+        "src/main/resources/lib/graphql-rx.ts"
+    ]
+}

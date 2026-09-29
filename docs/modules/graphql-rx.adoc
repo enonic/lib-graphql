@@ -3,6 +3,9 @@
 
 This optional module provides the publisher and subscriber objects used by GraphQL subscriptions.
 
+NOTE: The module's exports are read-only, and it has no default export.
+Load it with `require('/lib/graphql-rx')`, a namespace import, or named imports.
+
 Subscription events need a transport that stays open, and the library does not provide one.
 A https://developer.enonic.com/docs/code/stable/web/apis[universal API] can serve either a WebSocket channel or an https://developer.enonic.com/docs/code/stable/web/sse[SSE] stream, and each event is an <<graphql#execution-result,ExecutionResult>> either way.
 

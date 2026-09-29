@@ -3,6 +3,10 @@
 
 This optional module creates Relay-style connection types and the opaque cursors they expose.
 
+NOTE: The module's exports are read-only, and it has no default export.
+Load it with `require('/lib/graphql-connection')`, a namespace import, or named imports.
+Connection types always encode their cursors with the module's own `encodeCursor`.
+
 == Functions
 
 [#create-connection-type]

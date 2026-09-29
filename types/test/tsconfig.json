@@ -1,0 +1,12 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "skipLibCheck": false,
+        "paths": {
+            "/lib/graphql": ["../../build/types/graphql.d.ts"],
+            "/lib/graphql-connection": ["../../build/types/graphql-connection.d.ts"],
+            "/lib/graphql-rx": ["../../build/types/graphql-rx.d.ts"]
+        }
+    },
+    "include": ["consumer.ts"]
+}
