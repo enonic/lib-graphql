@@ -444,13 +444,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#graphql_library_3_1_0">GraphQL Library 3.1.0</a>
 <ul class="sectlevel2">
 <li><a href="#features">Features</a></li>
+<li><a href="#improvements">Improvements</a></li>
+<li><a href="#bug_fixes">Bug fixes</a></li>
+<li><a href="#breaking_changes">Breaking changes</a></li>
 <li><a href="#deprecations">Deprecations</a></li>
 </ul>
 </li>
 <li><a href="#graphql_library_3_0_0">GraphQL Library 3.0.0</a>
 <ul class="sectlevel2">
-<li><a href="#improvements">Improvements</a></li>
-<li><a href="#breaking_changes">Breaking changes</a></li>
+<li><a href="#improvements_2">Improvements</a></li>
+<li><a href="#breaking_changes_2">Breaking changes</a></li>
 </ul>
 </li>
 </ul>
@@ -496,6 +499,39 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 </div>
 </div>
 <div class="sect2">
+<h3 id="improvements"><a class="link" href="#improvements">Improvements</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The type definitions are generated from the library&#8217;s TypeScript source, so they cannot drift from the shipped modules.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="bug_fixes"><a class="link" href="#bug_fixes">Bug fixes</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>@enonic-types/lib-graphql</code> 3.0.0 setup that listed the package only in <code>types</code> could not resolve <code>/lib/graphql</code> imports. The package now needs <code>paths</code> entries as well; see <a href="index.ahtml#_typescript">TypeScript</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="breaking_changes"><a class="link" href="#breaking_changes">Breaking changes</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The modules are compiled from TypeScript, and their exports are read-only. Assigning to an export, for example to mock <code>execute</code> in a test, throws; replace the whole module instead. Overriding <code>encodeCursor</code> no longer changes the cursors of types created by <code>createConnectionType</code>.</p>
+</li>
+<li>
+<p>A bundler or compiler default import such as <code>import graphQlLib from '/lib/graphql'</code> no longer resolves to the module. Use <code>require()</code>, a namespace import (<code>import * as graphQlLib from '/lib/graphql'</code>), or named imports.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
 <h3 id="deprecations"><a class="link" href="#deprecations">Deprecations</a></h3>
 <div class="ulist">
 <ul>
@@ -514,7 +550,7 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 <p>GraphQL Library 3.0.0 was released in June 2026 as the XP 8-compatible major release.</p>
 </div>
 <div class="sect2">
-<h3 id="improvements"><a class="link" href="#improvements">Improvements</a></h3>
+<h3 id="improvements_2"><a class="link" href="#improvements_2">Improvements</a></h3>
 <div class="ulist">
 <ul>
 <li>
@@ -536,7 +572,7 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 </div>
 </div>
 <div class="sect2">
-<h3 id="breaking_changes"><a class="link" href="#breaking_changes">Breaking changes</a></h3>
+<h3 id="breaking_changes_2"><a class="link" href="#breaking_changes_2">Breaking changes</a></h3>
 <div class="ulist">
 <ul>
 <li>
@@ -550,7 +586,7 @@ GraphQL Library 3 requires Enonic XP 8.0 or newer.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-29 08:46:23 UTC
+Last updated 2026-09-29 11:28:57 UTC
 </div>
 </div>
 </body>

@@ -553,16 +553,25 @@ dependencies {
 <p>Versions of the <a href="https://www.npmjs.com/package/@enonic-types/lib-graphql"><code>@enonic-types/lib-graphql</code></a> package track the library itself — install the same version as the <code>com.enonic.lib:lib-graphql</code> dependency in <code>build.gradle</code>.</p>
 </div>
 <div class="paragraph">
-<p>The declarations are ambient, so no <code>paths</code> mapping is needed — add the package to <code>types</code> in <code>tsconfig.json</code>:</p>
+<p>Add the package to both <code>types</code> and <code>paths</code> in <code>tsconfig.json</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-json" data-lang="json">{
   "compilerOptions": {
-    "types": ["@enonic-types/global", "@enonic-types/lib-graphql"]
+    "types": ["@enonic-types/global", "@enonic-types/lib-graphql"],
+    "paths": {
+      "/lib/graphql": ["./node_modules/@enonic-types/lib-graphql/graphql.d.ts"],
+      "/lib/graphql-connection": ["./node_modules/@enonic-types/lib-graphql/graphql-connection.d.ts"],
+      "/lib/graphql-rx": ["./node_modules/@enonic-types/lib-graphql/graphql-rx.d.ts"]
+    }
   }
 }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>The <code>types</code> entry types <code>require('/lib/graphql')</code> and its siblings.
+The <code>paths</code> entries resolve <code>import &#8230;&#8203; from '/lib/graphql'</code>; TypeScript treats a module name starting with <code>/</code> as a path, so they cannot be left out.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -593,7 +602,7 @@ See the <a href="modules.ahtml">modules</a> for every exported constant and func
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-29 08:46:23 UTC
+Last updated 2026-09-29 11:28:57 UTC
 </div>
 </div>
 </body>

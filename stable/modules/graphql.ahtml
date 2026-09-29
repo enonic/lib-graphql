@@ -474,6 +474,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>The main module defines GraphQL types, assembles them into a schema, and executes operations against that schema.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The module&#8217;s exports are read-only, and it has no default export.
+Load it with <code>require('/lib/graphql')</code>, a namespace import, or named imports, and replace the whole module rather than assigning to an export.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1680,7 +1693,7 @@ Passing an object keeps the GraphQL names uppercase while resolvers receive the 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-29 08:46:23 UTC
+Last updated 2026-09-29 11:28:57 UTC
 </div>
 </div>
 </body>

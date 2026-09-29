@@ -462,6 +462,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>This optional module creates Relay-style connection types and the opaque cursors they expose.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The module&#8217;s exports are read-only, and it has no default export.
+Load it with <code>require('/lib/graphql-connection')</code>, a namespace import, or named imports.
+Connection types always encode their cursors with the module&#8217;s own <code>encodeCursor</code>.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -745,7 +759,7 @@ const start = parseInt(value, 10);</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-29 08:46:23 UTC
+Last updated 2026-09-29 11:28:57 UTC
 </div>
 </div>
 </body>

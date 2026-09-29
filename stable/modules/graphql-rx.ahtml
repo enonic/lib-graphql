@@ -462,6 +462,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>This optional module provides the publisher and subscriber objects used by GraphQL subscriptions.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The module&#8217;s exports are read-only, and it has no default export.
+Load it with <code>require('/lib/graphql-rx')</code>, a namespace import, or named imports.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Subscription events need a transport that stays open, and the library does not provide one.
 A <a href="https://developer.enonic.com/docs/code/stable/web/apis">universal API</a> can serve either a WebSocket channel or an <a href="https://developer.enonic.com/docs/code/stable/web/sse">SSE</a> stream, and each event is an <a href="graphql.ahtml#execution-result">ExecutionResult</a> either way.</p>
@@ -894,7 +907,7 @@ A subscription feeding a broadcast group outlives any single client and is not c
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-29 08:46:23 UTC
+Last updated 2026-09-29 11:28:57 UTC
 </div>
 </div>
 </body>
