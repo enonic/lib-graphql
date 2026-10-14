@@ -15,8 +15,8 @@ importers:
         specifier: ~8.1.0-RC2
         version: 8.1.0-RC2
       '@enonic-types/global':
-        specifier: ~8.1.0-RC2
-        version: 8.1.0-RC2
+        specifier: ~8.1.0-RC4
+        version: 8.1.0-RC4
       cross-env:
         specifier: ~10.1.0
         version: 10.1.0
@@ -92,8 +92,11 @@ packages:
   '@enonic-types/core@8.1.0-RC2':
     resolution: {integrity: sha512-dwpgIXosVm9Ia1hnWKmH8XQytKieMO8WPuuuYB+GpC2b8cd0HtyklMIf1JJuCRz9olTeXF4hpRQuMpoDDdCDNQ==}
 
-  '@enonic-types/global@8.1.0-RC2':
-    resolution: {integrity: sha512-lycAXDHBOGLag3BnDQTeXUDBkM8fFjlRCb48aceCrQ1gOoTKkC3Tm+69eFDzpTKGEaAjhlzShT6OCRL2xiJotQ==}
+  '@enonic-types/core@8.1.0-RC4':
+    resolution: {integrity: sha512-S98gdcAPPyrKSgWG8/H5VfjFgO5mW0jDhiqZaMBc7ENY5JZ/DIfd7CJghvT9tpdyMd6+GJa2pcZakyVtXvqIXg==}
+
+  '@enonic-types/global@8.1.0-RC4':
+    resolution: {integrity: sha512-sFp0OtLz5OL2CJFXYx05737/cUCVtbV2OJAWB9m+9ic0TS0BgDl6t8vTGwZGFjFqM0ay6aBb4pTbtg9guKZJ5Q==}
 
   '@epic-web/invariant@1.0.0':
     resolution: {integrity: sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA==}
@@ -457,9 +460,11 @@ snapshots:
 
   '@enonic-types/core@8.1.0-RC2': {}
 
-  '@enonic-types/global@8.1.0-RC2':
+  '@enonic-types/core@8.1.0-RC4': {}
+
+  '@enonic-types/global@8.1.0-RC4':
     dependencies:
-      '@enonic-types/core': 8.1.0-RC2
+      '@enonic-types/core': 8.1.0-RC4
 
   '@epic-web/invariant@1.0.0': {}
 
