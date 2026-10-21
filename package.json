@@ -18,7 +18,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "~2.5.15",
-        "@enonic-types/core": "~8.1.0-RC4",
+        "@enonic-types/core": "~8.1.0",
         "@enonic-types/global": "~8.1.0",
         "cross-env": "~10.1.0",
         "esbuild": "~0.28.2",
