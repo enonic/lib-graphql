@@ -41,7 +41,7 @@ dependencies {
 
 node {
     download = true
-    version = "24.19.0"
+    version = "24.22.3"
     pnpmVersion = "11.29.0"
 }
 
